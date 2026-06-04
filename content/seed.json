@@ -1,0 +1,16 @@
+{
+  "departments": [
+    {
+      "name": "Artificial Intelligence & Machine Learning",
+      "slug": "artificial-intelligence-machine-learning",
+      "description": "Focus on neural networks, deep learning, and cognitive computing."
+    },
+    {
+      "name": "Computer Science & Engineering",
+      "slug": "computer-science-engineering",
+      "description": "Software engineering, cloud architecture, and modern programming."
+    }
+  ],
+  "faculty": [],
+  "lastUpdated": "2026-05-25T16:10:30.115Z"
+}
