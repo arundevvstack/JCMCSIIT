@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, Bus, MapPin, Navigation, Phone, ShieldCheck, Map } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Bus, MapPin, Navigation, Phone, ShieldCheck, Map } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Transportation | JCMCSIIT',
