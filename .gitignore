@@ -42,3 +42,6 @@ next-env.d.ts
 
 # large data files (exceed GitHub's 100MB limit)
 /content/
+
+# GitHub Actions workflows (PAT lacks 'workflow' scope)
+.github/workflows/
