@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { savePage, deletePage } from "@/actions/cms";
-import { Plus, Save, Trash2, Globe, Lock, Search } from "lucide-react";
+import { Plus, Save, Trash2, Globe, Lock, Search, FileText } from "lucide-react";
 
 type PageData = {
   id: string;
