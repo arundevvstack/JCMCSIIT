@@ -124,6 +124,7 @@ const navLinks: NavLink[] = [
   {
     label: "Downloads",
     children: [
+      { label: "E-Brochure", href: "/admissions/e-brochure" },
       { label: "Resources", href: "/downloads/resources" },
     ],
   },
