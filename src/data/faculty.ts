@@ -7,7 +7,7 @@ export const facultyData: Faculty[] = [
     "slug": "divya-g-pillai",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "",
+    "image_url": "/Faculty/EEE/Divya%20G%20Pillai.jpg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -33,7 +33,7 @@ export const facultyData: Faculty[] = [
     "slug": "anoja-c-m",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "",
+    "image_url": "/Faculty/Anoja.jpg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -59,7 +59,7 @@ export const facultyData: Faculty[] = [
     "slug": "sarika-b-c",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "",
+    "image_url": "/Faculty/Sarika.jpg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -72,7 +72,7 @@ export const facultyData: Faculty[] = [
     "slug": "neethu-s-s",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "",
+    "image_url": "/Faculty/Neethu%20cse.jpeg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -85,7 +85,7 @@ export const facultyData: Faculty[] = [
     "slug": "nibin-sabu",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "",
+    "image_url": "/Faculty/nibin.jpg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -111,7 +111,7 @@ export const facultyData: Faculty[] = [
     "slug": "anjana-s-p",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "",
+    "image_url": "/Faculty/EEE/Anjana%20S%20P.jpg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -124,7 +124,7 @@ export const facultyData: Faculty[] = [
     "slug": "anu-r-john",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "",
+    "image_url": "/Faculty/EEE/Anu%20R%20John.jpg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -137,7 +137,7 @@ export const facultyData: Faculty[] = [
     "slug": "arathiraj-b-s",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "",
+    "image_url": "/Faculty/ECE/Arathy%20Raj%20B%20S.jpg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -150,7 +150,7 @@ export const facultyData: Faculty[] = [
     "slug": "arathy-krishnan",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "",
+    "image_url": "/Faculty/Civil/Arathy%20Krishnan.jpg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -163,7 +163,7 @@ export const facultyData: Faculty[] = [
     "slug": "sangeetha-john-c-s",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "",
+    "image_url": "/Faculty/Civil/Sangeetha%20John%20C%20S.jpg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -189,7 +189,7 @@ export const facultyData: Faculty[] = [
     "slug": "ardra-b",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "",
+    "image_url": "/Faculty/Ardra.jpg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
