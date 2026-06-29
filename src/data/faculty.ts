@@ -7,7 +7,7 @@ export const facultyData: Faculty[] = [
     "slug": "divya-g-pillai",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/EEE/Divya%20G%20Pillai.jpg",
+    "image_url": "/Faculty/EEE/Divya_G_Pillai.jpg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -72,7 +72,7 @@ export const facultyData: Faculty[] = [
     "slug": "neethu-s-s",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/Neethu%20cse.jpeg",
+    "image_url": "/Faculty/Neethu_cse.jpeg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -111,7 +111,7 @@ export const facultyData: Faculty[] = [
     "slug": "anjana-s-p",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/EEE/Anjana%20S%20P.jpg",
+    "image_url": "/Faculty/EEE/Anjana_S_P.jpg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -124,7 +124,7 @@ export const facultyData: Faculty[] = [
     "slug": "anu-r-john",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/EEE/Anu%20R%20John.jpg",
+    "image_url": "/Faculty/EEE/Anu_R_John.jpg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -137,7 +137,7 @@ export const facultyData: Faculty[] = [
     "slug": "arathiraj-b-s",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/ECE/Arathy%20Raj%20B%20S.jpg",
+    "image_url": "/Faculty/ECE/Arathy_Raj_B_S.jpg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -150,7 +150,7 @@ export const facultyData: Faculty[] = [
     "slug": "arathy-krishnan",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/Civil/Arathy%20Krishnan.jpg",
+    "image_url": "/Faculty/Civil/Arathy_Krishnan.jpg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -163,7 +163,7 @@ export const facultyData: Faculty[] = [
     "slug": "sangeetha-john-c-s",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/Civil/Sangeetha%20John%20C%20S.jpg",
+    "image_url": "/Faculty/Civil/Sangeetha_John_C_S.jpg",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"

@@ -324,6 +324,7 @@ export function Navbar() {
                 </div>
               ) : (
                 <Link
+                  key={item.label}
                   href={item.href!}
                   className={`whitespace-nowrap px-2.5 py-2 rounded-lg text-[13px] font-semibold transition-colors ${isSolid ? 'text-slate-700 hover:text-primary' : 'text-slate-800 hover:text-primary'}`}
                 >
