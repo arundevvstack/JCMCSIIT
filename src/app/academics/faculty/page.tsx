@@ -34,7 +34,7 @@ export default function FacultyPage() {
         </div>
         
         <div className="container relative z-10 mx-auto px-4 text-center">
-          <h1 className="mb-6 text-4xl font-bold md:text-5xl lg:text-6xl">
+          <h1 className="mb-6 text-4xl font-bold md:text-5xl lg:text-6xl text-white">
             Our Distinguished Faculty
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-slate-300 md:text-xl">

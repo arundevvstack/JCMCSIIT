@@ -7,7 +7,7 @@ export const facultyData: Faculty[] = [
     "slug": "divya-g-pillai",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/default_avatar.png",
+    "image_url": "",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -20,7 +20,7 @@ export const facultyData: Faculty[] = [
     "slug": "alan-don-benny",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/default_avatar.png",
+    "image_url": "",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -33,7 +33,7 @@ export const facultyData: Faculty[] = [
     "slug": "anoja-c-m",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/default_avatar.png",
+    "image_url": "",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -46,7 +46,7 @@ export const facultyData: Faculty[] = [
     "slug": "nitya-v-arnold",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/default_avatar.png",
+    "image_url": "",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -59,7 +59,7 @@ export const facultyData: Faculty[] = [
     "slug": "sarika-b-c",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/default_avatar.png",
+    "image_url": "",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -72,7 +72,7 @@ export const facultyData: Faculty[] = [
     "slug": "neethu-s-s",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/default_avatar.png",
+    "image_url": "",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -85,7 +85,7 @@ export const facultyData: Faculty[] = [
     "slug": "nibin-sabu",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/default_avatar.png",
+    "image_url": "",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -98,7 +98,7 @@ export const facultyData: Faculty[] = [
     "slug": "swapna-v",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/default_avatar.png",
+    "image_url": "",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -111,7 +111,7 @@ export const facultyData: Faculty[] = [
     "slug": "anjana-s-p",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/default_avatar.png",
+    "image_url": "",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -124,7 +124,7 @@ export const facultyData: Faculty[] = [
     "slug": "anu-r-john",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/default_avatar.png",
+    "image_url": "",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -137,7 +137,7 @@ export const facultyData: Faculty[] = [
     "slug": "arathiraj-b-s",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/default_avatar.png",
+    "image_url": "",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -150,7 +150,7 @@ export const facultyData: Faculty[] = [
     "slug": "arathy-krishnan",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/default_avatar.png",
+    "image_url": "",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -163,7 +163,7 @@ export const facultyData: Faculty[] = [
     "slug": "sangeetha-john-c-s",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/default_avatar.png",
+    "image_url": "",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
@@ -189,7 +189,7 @@ export const facultyData: Faculty[] = [
     "slug": "ardra-b",
     "designation": "Faculty Member",
     "department_id": "engineering",
-    "image_url": "/Faculty/default_avatar.png",
+    "image_url": "",
     "departments": {
       "name": "Engineering",
       "slug": "engineering"
