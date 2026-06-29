@@ -28,10 +28,10 @@ export function VideoModal() {
       <button
         id="watch-profile-video-btn"
         onClick={() => setOpen(true)}
-        className="group inline-flex h-16 items-center justify-center gap-3 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm px-10 font-bold text-white transition-all hover:bg-white/10 hover:border-white/40 w-full sm:w-auto shadow-sm"
+        className="group inline-flex h-16 items-center justify-center gap-3 rounded-full border border-slate-300 bg-white px-10 font-bold text-slate-700 transition-all hover:bg-slate-50 hover:border-slate-400 w-full sm:w-auto shadow-sm"
       >
-        <span className="relative flex h-8 w-8 items-center justify-center rounded-full bg-white/20 group-hover:bg-emerald-500 transition-colors duration-300 shrink-0">
-          <Play className="h-4 w-4 text-white fill-white ml-0.5" />
+        <span className="relative flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 group-hover:bg-emerald-500 transition-colors duration-300 shrink-0">
+          <Play className="h-4 w-4 text-slate-600 fill-slate-600 group-hover:text-white group-hover:fill-white ml-0.5 transition-colors duration-300" />
         </span>
         <span className="text-lg tracking-wide">Watch Profile Video</span>
       </button>

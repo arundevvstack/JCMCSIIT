@@ -2,17 +2,18 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Search, ArrowRight, Microchip, Cpu, Code2, HeartPulse, Building2, Wrench } from "lucide-react";
+import { Sparkles, Search, ArrowRight, Microchip, Cpu, Code2, HeartPulse, Building2, Wrench, Zap } from "lucide-react";
 import { ParallaxImage } from "@/components/ui/parallax-image";
 import Link from "next/link";
 
 const courses = [
   { id: "aiml", name: "Artificial Intelligence & ML", icon: Microchip, tags: ["AI", "Data", "Algorithms"], image: "/courses/aiml_course_1779729860073.png" },
-  { id: "cse", name: "Computer Science & Engg", icon: Code2, tags: ["Software", "Web", "Cloud"], image: "/courses/cse_course_1779729874773.png" },
   { id: "biomedical-robotic", name: "Biomedical & Robotic Engg", icon: HeartPulse, tags: ["Healthcare", "Robotics", "Biology"], image: "/courses/bmre_course_1779729888838.png" },
+  { id: "civil", name: "Civil Engineering", icon: Building2, tags: ["Infrastructure", "Construction", "Smart Cities"], image: "/courses/ce_course_1779729938816.png" },
+  { id: "cse", name: "Computer Science & Engg", icon: Code2, tags: ["Software", "Web", "Cloud"], image: "/courses/cse_course_1779729874773.png" },
   { id: "ece", name: "Electronics & Communication", icon: Cpu, tags: ["Circuits", "IoT", "Signals"], image: "/courses/ece_course_1779729905116.png" },
-  { id: "mechanical", name: "Mechanical Engineering", icon: Wrench, tags: ["Design", "Machines", "Automotive"], image: "/courses/me_course_1779729919795.png" },
-  { id: "civil", name: "Civil Engineering", icon: Building2, tags: ["Infrastructure", "Construction", "Smart Cities"], image: "/courses/ce_course_1779729938816.png" }
+  { id: "eee", name: "Electrical & Electronics Engg", icon: Zap, tags: ["Power Systems", "Energy", "Smart Grid"], image: "/courses/eee_course_1779729928372.png" },
+  { id: "mechanical", name: "Mechanical Engineering", icon: Wrench, tags: ["Design", "Machines", "Automotive"], image: "/courses/me_course_1779729919795.png" }
 ];
 
 export function AICourseExplorer() {

@@ -1,11 +1,18 @@
 import { Metadata } from 'next';
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { DepartmentView } from '@/components/departments/department-view';
+import { departmentsData } from '@/data/departments';
+import { notFound } from 'next/navigation';
+
+const departmentSlug = 'civil';
 
 export const metadata: Metadata = {
-  title: 'Ce | JCMC SIIT',
-  description: 'Learn more about Ce at JCMC SIIT.',
+  title: departmentsData[departmentSlug]?.seo.metaTitle || 'Department | JCMCSIIT',
+  description: departmentsData[departmentSlug]?.seo.metaDescription || '',
 };
 
 export default function Page() {
-  return <ComingSoon title="Ce" />;
+  const data = departmentsData[departmentSlug];
+  if (!data) return notFound();
+
+  return <DepartmentView data={data} />;
 }

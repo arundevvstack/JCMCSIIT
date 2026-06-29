@@ -64,7 +64,7 @@ export default function EBrochurePage() {
                 </p>
                 
                 <a
-                  href="/brochure.pdf" // Placeholder link
+                  href="/admission/E_Brochure_2026.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-3 bg-indigo-500 text-white font-bold text-lg py-4 px-10 rounded-xl hover:bg-indigo-600 transition-all shadow-[0_8px_30px_rgb(99,102,241,0.3)] hover:shadow-[0_8px_30px_rgb(99,102,241,0.5)] hover:-translate-y-1"

@@ -1,15 +1,18 @@
 import { Metadata } from 'next';
-import { ContentLayout } from '@/components/layout/content-layout';
+import { DepartmentView } from '@/components/departments/department-view';
+import { departmentsData } from '@/data/departments';
+import { notFound } from 'next/navigation';
+
+const departmentSlug = 'aiml';
 
 export const metadata: Metadata = {
-  title: 'Aiml | JCMCSIIT',
-  description: 'Aiml at John Cox Memorial C.S.I Institute Of Technology',
+  title: departmentsData[departmentSlug]?.seo.metaTitle || 'Department | JCMCSIIT',
+  description: departmentsData[departmentSlug]?.seo.metaDescription || '',
 };
 
 export default function Page() {
-  return (
-    <ContentLayout title="Aiml">
-      <p className="text-slate-500 italic">Content under update.</p>
-    </ContentLayout>
-  );
+  const data = departmentsData[departmentSlug];
+  if (!data) return notFound();
+
+  return <DepartmentView data={data} />;
 }

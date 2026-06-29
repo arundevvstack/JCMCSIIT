@@ -13,22 +13,27 @@ export function SmartFooter() {
             
             {/* Column 1 */}
             <div>
-              <h3 className="text-[13px] font-bold text-[#1c4762] mb-4 tracking-wider uppercase">Departments</h3>
+              <h3 className="text-[13px] font-bold text-[#1c4762] mb-4 tracking-wider uppercase">B.Tech</h3>
               <ul className="space-y-3">
+                <li><Link href="/academics/departments/aiml" className="text-sm text-slate-700 hover:underline">AI & ML</Link></li>
+                <li><Link href="/academics/departments/biomedical-robotic" className="text-sm text-slate-700 hover:underline">Biomedical & Robotic</Link></li>
+                <li><Link href="/academics/departments/civil" className="text-sm text-slate-700 hover:underline">Civil</Link></li>
                 <li><Link href="/academics/departments/cse" className="text-sm text-slate-700 hover:underline">Computer Science</Link></li>
-                <li><Link href="/academics/departments/aiml" className="text-sm text-slate-700 hover:underline">Artificial Intelligence</Link></li>
                 <li><Link href="/academics/departments/ece" className="text-sm text-slate-700 hover:underline">Electronics & Comm</Link></li>
-                <li><Link href="/academics/departments/me" className="text-sm text-slate-700 hover:underline">Mechanical Engg</Link></li>
-                <li><Link href="/academics/departments/ce" className="text-sm text-slate-700 hover:underline">Civil Engg</Link></li>
+                <li><Link href="/academics/departments/eee" className="text-sm text-slate-700 hover:underline">Electrical & Electronics</Link></li>
+                <li><Link href="/academics/departments/mechanical" className="text-sm text-slate-700 hover:underline">Mechanical</Link></li>
               </ul>
             </div>
 
             {/* Column 2 */}
             <div>
-              <h3 className="text-[13px] font-bold text-[#1c4762] mb-4 tracking-wider uppercase">Academics</h3>
+              <h3 className="text-[13px] font-bold text-[#1c4762] mb-4 tracking-wider uppercase">Diploma</h3>
               <ul className="space-y-3">
-                <li><Link href="/academics/ug" className="text-sm text-slate-700 hover:underline">Undergraduate Programs</Link></li>
-                <li><Link href="/academics/pg" className="text-sm text-slate-700 hover:underline">Graduate Programs</Link></li>
+                <li><Link href="/academics/departments/diploma-civil-engineering" className="text-sm text-slate-700 hover:underline">Civil</Link></li>
+                <li><Link href="/academics/departments/diploma-computer-engineering" className="text-sm text-slate-700 hover:underline">Computer</Link></li>
+                <li><Link href="/academics/departments/diploma-electronics-communication" className="text-sm text-slate-700 hover:underline">Electronics & Comm</Link></li>
+                <li><Link href="/academics/departments/diploma-electrical-engineering" className="text-sm text-slate-700 hover:underline">Electrical</Link></li>
+                <li><Link href="/academics/departments/diploma-mechanical-engineering" className="text-sm text-slate-700 hover:underline">Mechanical</Link></li>
                 <li className="pt-4"><h3 className="text-[13px] font-bold text-[#1c4762] mb-3 tracking-wider uppercase">Research</h3></li>
                 <li><Link href="/research/centers" className="text-sm text-slate-700 hover:underline">Research Centers</Link></li>
                 <li><Link href="/research/labs" className="text-sm text-slate-700 hover:underline">Innovation Labs</Link></li>

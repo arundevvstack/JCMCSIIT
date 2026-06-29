@@ -34,19 +34,35 @@ const navLinks: NavLink[] = [
     children: [
       {
         label: "Departments",
+        href: "/academics/departments",
         children: [
-          { label: "AI & ML", href: "/academics/departments/aiml" },
-          { label: "Biomedical & Robotic", href: "/academics/departments/biomedical-robotic" },
-          { label: "Computer Science", href: "/academics/departments/cse" },
-          { label: "Electronics & Comm", href: "/academics/departments/ece" },
-          { label: "Electrical & Electronics", href: "/academics/departments/eee" },
-          { label: "Mechanical Engineering", href: "/academics/departments/mechanical" },
-          { label: "Civil Engineering", href: "/academics/departments/civil" },
+          {
+            label: "B.Tech",
+            children: [
+              { label: "Artificial Intelligence & Machine Learning", href: "/academics/departments/aiml" },
+              { label: "Biomedical & Robotic Engineering", href: "/academics/departments/biomedical-robotic" },
+              { label: "Civil Engineering", href: "/academics/departments/civil" },
+              { label: "Computer Science & Engineering", href: "/academics/departments/cse" },
+              { label: "Electronics & Communication Engineering", href: "/academics/departments/ece" },
+              { label: "Electrical & Electronics Engineering", href: "/academics/departments/eee" },
+              { label: "Mechanical Engineering", href: "/academics/departments/mechanical" },
+            ]
+          },
+          {
+            label: "Diploma",
+            children: [
+              { label: "Civil", href: "/academics/departments/diploma-civil-engineering" },
+              { label: "Computer", href: "/academics/departments/diploma-computer-engineering" },
+              { label: "Electronics & Communication", href: "/academics/departments/diploma-electronics-communication" },
+              { label: "Electrical", href: "/academics/departments/diploma-electrical-engineering" },
+              { label: "Mechanical", href: "/academics/departments/diploma-mechanical-engineering" },
+            ]
+          }
         ]
       },
       { label: "Academic Calendar", href: "/academics/academic-calendar" },
       { label: "Syllabus", href: "/academics/syllabus" },
-      { label: "Faculty Directory", href: "/academics/faculty" },
+      { label: "Faculty Directory", href: "/academics/faculty" }
     ],
   },
   {
@@ -163,13 +179,23 @@ export function Navbar() {
       if (item.children) {
         return (
           <div key={item.label} className={`${level === 0 ? "border-b border-slate-50 pb-2 mb-1" : "mt-1"}`}>
-            <button 
-              onClick={() => toggleMobileExpanded(item.label)}
-              className={`w-full text-left flex items-center justify-between py-2 ${level === 0 ? "mt-3" : ""} ${level > 0 ? "pl-3 text-base font-medium text-slate-700" : "text-xs font-bold uppercase text-slate-400 tracking-wider"}`}
-            >
-              {item.label}
-              <ChevronDown className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
-            </button>
+            <div className={`w-full flex items-center justify-between py-1 ${level === 0 ? "mt-3" : ""} ${level > 0 ? "pl-3 text-base font-medium text-slate-700" : "text-xs font-bold uppercase text-slate-400 tracking-wider"}`}>
+              {item.href ? (
+                <Link href={item.href} onClick={() => setMobileMenuOpen(false)} className="hover:text-primary flex-1 py-1">
+                  {item.label}
+                </Link>
+              ) : (
+                <button onClick={() => toggleMobileExpanded(item.label)} className="flex-1 text-left py-1">
+                  {item.label}
+                </button>
+              )}
+              <button 
+                onClick={() => toggleMobileExpanded(item.label)}
+                className="p-1"
+              >
+                <ChevronDown className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
+              </button>
+            </div>
             {isExpanded && (
               <div className="pl-2 border-l border-slate-100 ml-2 mt-1 flex flex-col gap-1">
                 {renderMobileLinks(item.children, level + 1)}
@@ -205,10 +231,10 @@ export function Navbar() {
         isSolid ? "bg-white/70 backdrop-blur-2xl shadow-sm py-2 border-b border-slate-200/50" : "bg-white/0 py-6"
       }`}
     >
-      <div className="layout-grid">
-        <div className="flex items-center justify-between">
+      <div className="w-full max-w-[120rem] mx-auto px-4 md:px-8 lg:px-12 xl:px-16">
+        <div className="flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-3 shrink-0">
-            <div className="relative w-[15rem] h-[3.5rem] md:w-[18rem] md:h-[4rem] lg:w-[18rem] lg:h-[4.5rem] shrink-0">
+            <div className="relative w-[18rem] h-[4rem] md:w-[22rem] md:h-[5rem] lg:w-[26rem] lg:h-[6rem] shrink-0 -ml-2 lg:-ml-4">
               <Image
                 src="/logo.png"
                 alt="JCMCSIIT Logo"
@@ -220,7 +246,7 @@ export function Navbar() {
             </div>
           </Link>
 
-          <nav className="hidden xl:flex items-center gap-1">
+          <nav className="hidden xl:flex flex-wrap items-center justify-end gap-x-1 gap-y-2 flex-1 ml-4">
             {navLinks.map((item) =>
               item.children ? (
                 <div
@@ -229,9 +255,9 @@ export function Navbar() {
                   onMouseEnter={() => handleMouseEnter(item.label)}
                   onMouseLeave={handleMouseLeave}
                 >
-                  <button className={`whitespace-nowrap flex items-center gap-1 px-2.5 py-2 rounded-lg text-[13px] font-semibold transition-colors ${isSolid ? 'text-slate-700 hover:text-primary' : 'text-white/90 hover:text-white'}`}>
+                  <button className={`whitespace-nowrap flex items-center gap-1 px-2.5 py-2 rounded-lg text-[13px] font-semibold transition-colors ${isSolid ? 'text-slate-700 hover:text-primary' : 'text-slate-800 hover:text-primary'}`}>
                     {item.label}
-                    <ChevronDown className={`h-3 w-3 shrink-0 transition-transform ${openDropdown === item.label ? (isSolid ? "rotate-180 text-primary" : "rotate-180 text-white") : (isSolid ? "text-slate-400" : "text-white/60")}`} />
+                    <ChevronDown className={`h-3 w-3 shrink-0 transition-transform ${openDropdown === item.label ? (isSolid ? "rotate-180 text-primary" : "rotate-180 text-primary") : (isSolid ? "text-slate-400" : "text-slate-500")}`} />
                   </button>
                   {openDropdown === item.label && (
                     <div className="absolute top-full left-0 pt-3 z-50">
@@ -244,10 +270,16 @@ export function Navbar() {
                             onMouseLeave={handleSubMouseLeave}
                           >
                             {child.children ? (
-                              <button className="w-full text-left flex items-center justify-between px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-primary hover:bg-slate-50 transition-colors">
-                                {child.label}
+                              <div className="w-full flex items-center justify-between px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-primary hover:bg-slate-50 transition-colors">
+                                {child.href ? (
+                                  <Link href={child.href} className="flex-1">
+                                    {child.label}
+                                  </Link>
+                                ) : (
+                                  <span className="flex-1 cursor-default">{child.label}</span>
+                                )}
                                 <ChevronRight className="h-4 w-4" />
-                              </button>
+                              </div>
                             ) : (
                               <Link
                                 href={child.href!}
@@ -292,18 +324,25 @@ export function Navbar() {
                 </div>
               ) : (
                 <Link
-                  key={item.label}
                   href={item.href!}
-                  className={`whitespace-nowrap px-2.5 py-2 rounded-lg text-[13px] font-semibold transition-colors ${isSolid ? 'text-slate-700 hover:text-primary' : 'text-white/90 hover:text-white'}`}
+                  className={`whitespace-nowrap px-2.5 py-2 rounded-lg text-[13px] font-semibold transition-colors ${isSolid ? 'text-slate-700 hover:text-primary' : 'text-slate-800 hover:text-primary'}`}
                 >
                   {item.label}
                 </Link>
               )
             )}
-            <div className={`ml-1 pl-2 border-l shrink-0 ${isSolid ? 'border-slate-200' : 'border-white/20'}`}>
+            <div className="hidden xl:flex items-center gap-4">
+              <Link 
+                href="/admissions/application-form"
+                className={`text-[13px] font-semibold transition-colors ${isSolid ? 'text-slate-700 hover:text-primary' : 'text-slate-800 hover:text-primary'}`}
+              >
+                Admissions 2026
+              </Link>
+            </div>
+            <div className={`ml-1 pl-2 border-l shrink-0 ${isSolid ? 'border-slate-200' : 'border-slate-300'}`}>
               <Link
                 href="/admissions/application-form"
-                className={`whitespace-nowrap shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all shadow-[0_4px_14px_0_rgb(0,0,0,0.1)] hover:shadow-[0_6px_20px_rgba(0,118,255,0.23)] ${isSolid ? 'bg-foreground text-white hover:bg-primary' : 'bg-white text-slate-900 hover:bg-white/90'}`}
+                className={`whitespace-nowrap shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all shadow-[0_4px_14px_0_rgb(0,0,0,0.1)] hover:shadow-[0_6px_20px_rgba(0,118,255,0.23)] ${isSolid ? 'bg-foreground text-white hover:bg-primary' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
               >
                 Apply Now
               </Link>
@@ -311,7 +350,7 @@ export function Navbar() {
           </nav>
 
           <button
-            className={`xl:hidden p-2 rounded-xl transition-colors ${isSolid ? 'text-slate-700 hover:bg-slate-100' : 'text-white hover:bg-white/10'}`}
+            className={`xl:hidden p-2 rounded-xl transition-colors ${isSolid ? 'text-slate-700 hover:bg-slate-100' : 'text-slate-800 hover:bg-slate-200'}`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
