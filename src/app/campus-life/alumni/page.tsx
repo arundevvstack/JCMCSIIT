@@ -29,7 +29,7 @@ export default function AlumniPage() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-20">
           {[
-            { label: "Total Alumni", value: "15,000+", icon: Users },
+            { label: "Total Alumni", value: "2054+", icon: Users },
             { label: "Countries", value: "20+", icon: Globe },
             { label: "Entrepreneurs", value: "150+", icon: Briefcase },
           ].map((stat, i) => (

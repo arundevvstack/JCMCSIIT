@@ -1,13 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { TrendingUp, Users, Building, Award, ArrowUpRight } from "lucide-react";
+import { TrendingUp, Users, Building, Award, ArrowUpRight, Building2, Trophy } from "lucide-react";
 
 const stats = [
   { label: "Placement Rate", value: "98.5%", icon: TrendingUp },
   { label: "Highest Package", value: "45 LPA", icon: Award },
-  { label: "Recruiting Partners", value: "250+", icon: Building },
-  { label: "Alumni Network", value: "15k+", icon: Users },
+  { label: "Top Recruiters", value: "50+", icon: Building2 },
+  { label: "Alumni Network", value: "2054+", icon: Users },
 ];
 
 const companies = [

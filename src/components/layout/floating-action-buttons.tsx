@@ -1,10 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { Image as ImageIcon, CreditCard, UserPlus, Users, Sparkles } from "lucide-react";
 
 export function FloatingActionButtons() {
+  const { scrollY } = useScroll();
+  const [hidden, setHidden] = useState(false);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    if (latest > previous && latest > 150) {
+      setHidden(true);
+    } else {
+      setHidden(false);
+    }
+  });
+
   const buttons = [
     {
       id: "gallery",
@@ -24,7 +37,7 @@ export function FloatingActionButtons() {
       id: "admission",
       label: "Admission 2026",
       icon: UserPlus,
-      href: "https://jcmcsiit.ac.in/Enquiry.php",
+      href: "/admissions/application-form",
       isNew: true,
     },
     {
@@ -38,7 +51,16 @@ export function FloatingActionButtons() {
   ];
 
   return (
-    <div className="fixed top-1/2 right-0 -translate-y-1/2 z-40 flex flex-col gap-3 items-end pointer-events-none px-4">
+    <motion.div 
+      className="fixed top-1/2 right-0 -translate-y-1/2 z-40 flex flex-col gap-2 md:gap-3 items-end pointer-events-none px-2 md:px-4"
+      variants={{
+        visible: { x: 0, opacity: 1 },
+        hidden: { x: 400, opacity: 0 }
+      }}
+      initial="visible"
+      animate={hidden ? "hidden" : "visible"}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+    >
       {buttons.map((btn, index) => {
         const Icon = btn.icon;
         
@@ -54,12 +76,12 @@ export function FloatingActionButtons() {
               href={btn.href}
               target={btn.href.startsWith('http') ? '_blank' : undefined}
               rel={btn.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-              className="group flex items-center justify-end h-14 bg-white/90 backdrop-blur-md border border-slate-200/50 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_40px_rgb(28,71,98,0.2)] transition-all duration-300 overflow-hidden"
+              className="group flex items-center justify-end h-12 md:h-14 bg-white/90 backdrop-blur-md border border-slate-200/50 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_40px_rgb(28,71,98,0.2)] transition-all duration-300 overflow-hidden"
             >
               {/* Always Visible Text Content */}
-              <div className="px-6 flex flex-col justify-center whitespace-nowrap overflow-hidden">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-[#1c4762] text-sm tracking-wide">{btn.label}</span>
+              <div className="px-4 md:px-6 flex flex-col justify-center whitespace-nowrap overflow-hidden hidden sm:flex">
+                <div className="flex items-center gap-1.5 md:gap-2">
+                  <span className="font-bold text-[#1c4762] text-xs md:text-sm tracking-wide">{btn.label}</span>
                   {btn.isNew && (
                     <span className="flex items-center text-[9px] font-black uppercase tracking-wider text-white bg-gradient-to-r from-blue-600 to-emerald-500 px-1.5 py-0.5 rounded-sm animate-pulse">
                       <Sparkles className="w-3 h-3 mr-0.5" />
@@ -73,13 +95,13 @@ export function FloatingActionButtons() {
               </div>
 
               {/* Fixed Icon Container */}
-              <div className="w-14 h-14 flex items-center justify-center shrink-0 bg-[#1c4762] text-white rounded-full group-hover:scale-105 transition-transform duration-300">
-                <Icon className="w-5 h-5" />
+              <div className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center shrink-0 bg-[#1c4762] text-white rounded-full group-hover:scale-105 transition-transform duration-300">
+                <Icon className="w-4 h-4 md:w-5 md:h-5" />
               </div>
             </Link>
           </motion.div>
         );
       })}
-    </div>
+    </motion.div>
   );
 }

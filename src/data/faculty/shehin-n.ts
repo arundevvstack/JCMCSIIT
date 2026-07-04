@@ -3,70 +3,76 @@ import { Faculty } from "@/types/faculty";
 export const shehinnData: Faculty = {
   "id": "shehin-n",
   "slug": "shehin-n",
-  "name": "Shehin N",
-  "designation": "HOD & Professor",
+  "name": "Mr Shehin N",
+  "designation": "Asst Prof",
   "department_id": "me",
-  "email": "",
   "image_url": "/Faculty/Final/Mr Shehin N.jpg",
   "departments": {
     "name": "Mechanical Engineering",
     "slug": "me"
   },
   "profile_data": {
-    "highestQualification": "M.Tech",
-    "teachingExperience": "3 Years",
-    "phone": "",
-    "officeLocation": "",
-    "publications": [
+    "academicQualifications": [
       {
-        "title": "Interests in composite methods for improving weight reduction and impact anlaysis.",
-        "journal": "",
+        "degree": "B tech In Mechanical Engineering",
+        "institution": "",
         "year": ""
       },
       {
-        "title": "*Additional Certifications, Courses, or Training Programmes Completed",
-        "journal": "",
+        "degree": "M tech in Machine Design",
+        "institution": "",
         "year": ""
+      }
+    ],
+    "areasOfExpertise": [
+      "Machine Design .",
+      "Analysis of machine parts.",
+      "Composite Materials.",
+      "3d and 2d design."
+    ],
+    "academicProjects": {
+      "btechProjects": [
+        "Mutliway hacksaw with 4 way cutting blade."
+      ],
+      "mtechThesis": [
+        "Use of the GFRP composite for the bumper plate in the vechine.cash test and stimulated design.",
+        "Fabrication of GFRP composite."
+      ]
+    },
+    "researchInterests": [
+      "Interests in composite methods for improving weight reduction and impact anlaysis."
+    ],
+    "certifications": [
+      "Diploma on the Mechanical Building Construction.",
+      "Diploma in the MEP (Mechanical Electrical Plumbing).",
+      "Certification in Auto Cad And Soild work software ."
+    ],
+    "technicalSkills": {
+      "skills": [
+        "Design",
+        "Mechanical skills",
+        "Building Maintenance",
+        "Teaching",
+        "2d And 3 d Design"
+      ]
+    },
+    "teachingExperience": [
+      {
+        "designation": "Teaching Experience",
+        "institution": "Engineering college",
+        "duration": "3 years"
+      }
+    ],
+    "industryExperience": [
+      {
+        "designation": "MEP co ordinater",
+        "institution": "Mechanical Industry",
+        "duration": "2 year"
       },
       {
-        "title": "Diploma on the Mechanical Building Construction.",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "Diploma in the MEP (Mechanical Electrical Plumbing).",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "Certification in Auto Cad And Soild work software .",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "* Technical Skills and Areas of Expertise",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "*Teaching Experience and Industry Experience (if applicable)",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "3 years teaching in Engineering college",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "2 year in the MEP co ordinater in the Mechanical Industry",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "1 year in the Aircraft Maintenace in Air india Engineering service",
-        "journal": "",
-        "year": ""
+        "designation": "Aircraft Maintenace",
+        "institution": "Air india Engineering service",
+        "duration": "1 year"
       }
     ]
   }

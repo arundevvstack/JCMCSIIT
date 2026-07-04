@@ -20,6 +20,7 @@ import { sarikabcData } from "./sarika-b-c";
 import { seenamkData } from "./seena-m-k";
 import { shehinnData } from "./shehin-n";
 import { swapnavData } from "./swapna-v";
+import { tintussData } from "./tintu-s-s";
 
 export const facultyData: Faculty[] = [
   abisharajdsData,
@@ -42,5 +43,6 @@ export const facultyData: Faculty[] = [
   sarikabcData,
   seenamkData,
   shehinnData,
-  swapnavData
+  swapnavData,
+  tintussData
 ];

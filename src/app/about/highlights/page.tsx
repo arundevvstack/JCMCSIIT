@@ -46,8 +46,10 @@ const colorMap: Record<string, { ring: string; iconBg: string; iconColor: string
 
 const stats = [
   { number: '2009', label: 'Year Established' },
-  { number: '7+',   label: 'B.Tech Programs'  },
+  { number: '7',    label: 'B.Tech Programs'  },
+  { number: '5',    label: 'Diploma Programs' },
   { number: '130+', label: 'Faculty Members'  },
+  { number: '2054+', label: 'Global Alumni'   },
   { number: 'NBA',  label: 'Accredited'       },
 ];
 
@@ -78,7 +80,7 @@ export default function HighlightsPage() {
         </div>
 
         {/* Stats Strip */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-14">
           {stats.map((s, i) => (
             <div key={i} className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center hover:shadow-md transition-shadow">
               <p className="text-3xl md:text-4xl font-black text-blue-600 mb-1">{s.number}</p>
@@ -117,9 +119,9 @@ export default function HighlightsPage() {
             <h2 className="text-2xl md:text-4xl font-black text-white mb-2">Institution at a Glance</h2>
             <p className="text-white/50 text-sm">AICTE Approved · KTU Affiliated · NBA Accredited</p>
           </div>
-          <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-0 divide-x divide-white/10">
+          <div className="relative z-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-y-8 gap-x-0 md:divide-x divide-white/10 mt-6">
             {stats.map((s, i) => (
-              <div key={i} className="text-center px-6 py-4">
+              <div key={i} className="text-center px-4 md:px-6">
                 <p className="text-4xl md:text-5xl font-black text-emerald-400 mb-2">{s.number}</p>
                 <p className="text-white/60 text-sm font-semibold uppercase tracking-wider">{s.label}</p>
               </div>

@@ -76,7 +76,7 @@ export function DiplomaProgrammes() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-lg text-slate-600"
           >
-            AICTE-approved diploma courses designed to build practical engineering skills, innovation, and career readiness.
+            SBTE-approved diploma courses designed to build practical engineering skills, innovation, and career readiness.
           </motion.p>
         </div>
 

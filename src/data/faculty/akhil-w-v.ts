@@ -3,56 +3,62 @@ import { Faculty } from "@/types/faculty";
 export const akhilwvData: Faculty = {
   "id": "akhil-w-v",
   "slug": "akhil-w-v",
-  "name": "Akhil W V",
-  "designation": "HOD & Professor",
+  "name": "Mr Akhil W V",
+  "designation": "Asst Prof",
   "department_id": "me",
-  "email": "",
   "image_url": "/Faculty/Final/Mr Akhil W V.jpg",
   "departments": {
     "name": "Mechanical Engineering",
     "slug": "me"
   },
   "profile_data": {
-    "highestQualification": "M.Tech",
-    "teachingExperience": "9 Years",
-    "phone": "",
-    "officeLocation": "",
-    "publications": [
+    "academicQualifications": [
       {
-        "title": "Interests in composite methods for improving weight reduction and impact anlaysis.",
-        "journal": "",
+        "degree": "B E in Mechanical Engineering",
+        "institution": "",
         "year": ""
       },
       {
-        "title": "*Additional Certifications, Courses, or Training Programmes Completed",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "Inplant training in“KSRTC”.",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "1 year experience in Aotomobile industry under govt of kerala",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "* Technical Skills and Areas of Expertise",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "*Teaching Experience and Industry Experience (if applicable)",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "9 years teaching Experience in Engineering college",
-        "journal": "",
+        "degree": "M E in Manufacturing Engineering",
+        "institution": "",
         "year": ""
       }
-    ]
+    ],
+    "areasOfExpertise": [
+      "Manufacturing Engineering",
+      "Production Engineering",
+      "Composite Materials.",
+      "3d and 2d design."
+    ],
+    "academicProjects": {
+      "btechProjects": [
+        "“CHARACTERISTICS OF BULK METALLIC GLASSES”"
+      ],
+      "mtechThesis": [
+        "Post-Graduation Project Work “MECHANICAL PROPERTY EVALUATION OF FISH TAIL PALM TREE FIBER REINFORCED POLYESTER COMPOSITES”"
+      ]
+    },
+    "researchInterests": [
+      "Interests in composite methods for improving weight reduction and impact anlaysis."
+    ],
+    "trainingProgrammes": [
+      "Inplant training in“KSRTC”."
+    ],
+    "industryExperience": [
+      {
+        "designation": "Experience",
+        "institution": "Aotomobile industry under govt of kerala",
+        "duration": "1 year"
+      }
+    ],
+    "technicalSkills": {
+      "skills": [
+        "Design",
+        "Mechanical skills",
+        "Teaching",
+        "2d And 3 d Design"
+      ]
+    },
+    "teachingExperience": "9 years teaching Experience in Engineering college"
   }
 };

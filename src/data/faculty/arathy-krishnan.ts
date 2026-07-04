@@ -4,75 +4,52 @@ export const arathykrishnanData: Faculty = {
   "id": "arathy-krishnan",
   "slug": "arathy-krishnan",
   "name": "ARATHY KRISHNAN",
-  "designation": "Assistant Professor",
-  "department_id": "civil",
-  "email": "",
+  "designation": "Assistant professor",
+  "department_id": "ce",
   "image_url": "/Faculty/Final/ARATHY KRISHNAN.jpg",
   "departments": {
     "name": "Civil Engineering",
-    "slug": "civil"
+    "slug": "ce"
   },
   "profile_data": {
-    "highestQualification": "M.Tech",
-    "teachingExperience": "6 Years",
-    "phone": "",
-    "officeLocation": "",
-    "publications": [
+    "highestQualification": "PG Degree : Geotechnical Engineering",
+    "academicQualifications": [
       {
-        "title": "1.Analyszing the effect of eco-DRR practices on slope stability in a landslide-prone transport corridor in the Western Ghats,India",
-        "journal": "",
-        "year": ""
+        "degree": "PG Degree: Geotechnical Engineering",
+        "institution": "Kalam Technical university",
+        "year": "2017-2019"
       },
       {
-        "title": "Int. j. Disast. Studies Climate Resil, 2025, 1(1):35-46",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "Thiruvananthapuram Medical college Traffic decongesion plan",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "Thiruvananthapuram Medical college",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "Study on reduction of Permeability in Field soil using clay",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "International Conference on Innovative Trends in Science and Technology (ICITST 2018),",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "Sarabhai Institute of Science and Technology",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "Landslide susceptibility mapping of Ponmudi-Kallar region using TRIGRS",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "International Conference on Recent Scientific Research in Engineering and Technology,",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "John cox Memorial CSI Institute of Technology(JIT)",
-        "journal": "",
-        "year": ""
-      },
-      {
-        "title": "TEACHING EXPERIENCE :   6 YEARS  AND 10 MONTHS",
-        "journal": "",
-        "year": ""
+        "degree": "Degree: Civil Engineering",
+        "institution": "CUSAT",
+        "year": "2013-2017"
       }
-    ]
+    ],
+    "areasOfExpertise": [
+      "Geotechnical Engineering"
+    ],
+    "academicProjects": {
+      "pgProjects": [
+        "Landslide susceptibility mapping using TRIGRS and Rainfall effects in slopes"
+      ],
+      "ugProjects": [
+        "Thiruvananthapuram Medical college Traffic decongestion plan"
+      ]
+    },
+    "technicalSkills": {
+      "tools": [
+        "Internship 1: Habitat Technology group, Poojapura, Thiruvananthapuram",
+        "Internship 2: PWD Building Sub Division, Nedumangad"
+      ]
+    },
+    "publications": [
+      "Analyszing the effect of eco-DRR practices on slope stability in a landslide-prone transport corridor in the Western Ghats,India. Int. j. Disast. Studies Climate Resil, 2025, 1(1):35-46"
+    ],
+    "paperPresentations": [
+      "Thiruvananthapuram Medical college Traffic decongesion plan (Thiruvananthapuram Medical college, 2017)",
+      "Study on reduction of Permeability in Field soil using clay (International Conference on Innovative Trends in Science and Technology ICITST 2018, Sarabhai Institute of Science and Technology, 2018)",
+      "Landslide susceptibility mapping of Ponmudi-Kallar region using TRIGRS (International Conference on Recent Scientific Research in Engineering and Technology, John cox Memorial CSI Institute of Technology, 2019)"
+    ],
+    "teachingExperience": "6 YEARS AND 10 MONTHS"
   }
 };

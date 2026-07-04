@@ -20,7 +20,7 @@ export function FacultyProfile({ faculty }: FacultyProfileProps) {
       
       {/* Hero Section */}
       <div className="flex flex-col md:flex-row gap-8 items-start mb-12">
-        <div className="flex-shrink-0 relative w-48 h-64 md:w-64 md:h-80 rounded-xl overflow-hidden shadow-xl border-4 border-white dark:border-zinc-800">
+        <div className="flex-shrink-0 relative w-56 h-72 md:w-80 md:h-[400px] rounded-[5px] overflow-hidden shadow-xl border-4 border-white dark:border-zinc-800">
           <Image
             src={faculty.image_url || '/Faculty/default_avatar.png'}
             alt={faculty.name}
@@ -191,6 +191,47 @@ export function FacultyProfile({ faculty }: FacultyProfileProps) {
                   </ul>
                 </div>
               )}
+
+              {profile.publications?.books && profile.publications.books.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-3">Books</h3>
+                  <ul className="list-disc pl-5 space-y-2 text-zinc-600 dark:text-zinc-400">
+                    {profile.publications.books.map((pub: string, idx: number) => (
+                      <li key={idx}>{pub}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {profile.publications?.bookChapters && profile.publications.bookChapters.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-3">Book Chapters</h3>
+                  <ul className="list-disc pl-5 space-y-2 text-zinc-600 dark:text-zinc-400">
+                    {profile.publications.bookChapters.map((pub: string, idx: number) => (
+                      <li key={idx}>{pub}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {profile.publications?.patents && profile.publications.patents.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-3">Patents</h3>
+                  <ul className="list-disc pl-5 space-y-2 text-zinc-600 dark:text-zinc-400">
+                    {profile.publications.patents.map((pub: string, idx: number) => (
+                      <li key={idx}>{pub}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {Array.isArray(profile.publications) && profile.publications.length > 0 && (
+                <ul className="list-disc pl-5 space-y-2 text-zinc-600 dark:text-zinc-400">
+                  {profile.publications.map((pub: any, idx: number) => (
+                    <li key={idx}>{typeof pub === 'string' ? pub : pub.title}</li>
+                  ))}
+                </ul>
+              )}
             </section>
           )}
 
@@ -260,7 +301,7 @@ export function FacultyProfile({ faculty }: FacultyProfileProps) {
           )}
 
           {/* FDPs, Workshops, Seminars, Certifications */}
-          {((profile.fdps?.length || 0) > 0 || (profile.workshops?.length || 0) > 0 || (profile.seminars?.length || 0) > 0 || (profile.trainingProgrammes?.length || 0) > 0 || (profile.certifications?.length || 0) > 0 || (profile.conferences?.length || 0) > 0) && (
+          {((profile.fdps?.length || 0) > 0 || (profile.workshops?.length || 0) > 0 || (profile.seminars?.length || 0) > 0 || (profile.trainingProgrammes?.length || 0) > 0 || (profile.certifications?.length || 0) > 0 || (profile.conferences?.length || 0) > 0 || (profile.moocs?.length || 0) > 0 || (profile.nptel?.length || 0) > 0) && (
             <section>
               <h2 className="text-2xl font-bold mb-6 flex items-center gap-2 border-b pb-2"><Users className="w-6 h-6 text-primary" /> Professional Development</h2>
               
@@ -319,6 +360,24 @@ export function FacultyProfile({ faculty }: FacultyProfileProps) {
                   </ul>
                 </div>
               )}
+
+              {Array.isArray(profile.moocs) && profile.moocs.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="font-semibold mb-3">MOOCs</h3>
+                  <ul className="list-disc pl-5 space-y-2 text-zinc-600 dark:text-zinc-400">
+                    {profile.moocs.map((mooc: any, idx: number) => <li key={idx}>{mooc}</li>)}
+                  </ul>
+                </div>
+              )}
+
+              {Array.isArray(profile.nptel) && profile.nptel.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="font-semibold mb-3">NPTEL Courses</h3>
+                  <ul className="list-disc pl-5 space-y-2 text-zinc-600 dark:text-zinc-400">
+                    {profile.nptel.map((course: any, idx: number) => <li key={idx}>{course}</li>)}
+                  </ul>
+                </div>
+              )}
             </section>
           )}
         </div>
@@ -332,6 +391,34 @@ export function FacultyProfile({ faculty }: FacultyProfileProps) {
               <h3 className="text-lg font-bold mb-4 flex items-center gap-2"><Target className="w-5 h-5 text-primary" /> Areas of Expertise</h3>
               <div className="flex flex-wrap gap-2">
                 {profile.areasOfExpertise.map((area, idx) => (
+                  <span key={idx} className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-3 py-1 rounded-full text-sm font-medium">
+                    {area}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Areas of Interest */}
+          {profile.areasOfInterest && profile.areasOfInterest.length > 0 && (
+            <div className="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6 border border-zinc-100 dark:border-zinc-800">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2"><Target className="w-5 h-5 text-primary" /> Areas of Interest</h3>
+              <div className="flex flex-wrap gap-2">
+                {profile.areasOfInterest.map((area, idx) => (
+                  <span key={idx} className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-3 py-1 rounded-full text-sm font-medium">
+                    {area}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Research Interests */}
+          {profile.researchInterests && profile.researchInterests.length > 0 && (
+            <div className="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6 border border-zinc-100 dark:border-zinc-800">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2"><Target className="w-5 h-5 text-primary" /> Research Interests</h3>
+              <div className="flex flex-wrap gap-2">
+                {profile.researchInterests.map((area, idx) => (
                   <span key={idx} className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-3 py-1 rounded-full text-sm font-medium">
                     {area}
                   </span>
@@ -419,7 +506,7 @@ export function FacultyProfile({ faculty }: FacultyProfileProps) {
           )}
 
           {/* Additional Achievements / Misc */}
-          {((profile.rankHolders?.length || 0) > 0 || (profile.paperPresentations?.length || 0) > 0 || (profile.consultancy?.length || 0) > 0 || (profile.extensionActivities?.length || 0) > 0) && (
+          {((profile.rankHolders?.length || 0) > 0 || (profile.paperPresentations?.length || 0) > 0 || (profile.consultancy?.length || 0) > 0 || (profile.extensionActivities?.length || 0) > 0 || (profile.awards?.length || 0) > 0 || (profile.achievements?.length || 0) > 0 || (profile.studentGuidance?.ugProjects?.length || 0) > 0) && (
             <div className="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6 border border-zinc-100 dark:border-zinc-800">
               <h3 className="text-lg font-bold mb-4">Other Activities & Achievements</h3>
               
@@ -451,10 +538,40 @@ export function FacultyProfile({ faculty }: FacultyProfileProps) {
               )}
               
               {profile.extensionActivities && profile.extensionActivities.length > 0 && (
-                <div className="mb-2">
+                <div className="mb-4">
                   <h4 className="font-semibold text-zinc-800 dark:text-zinc-200">Extension Activities</h4>
                   <ul className="list-disc pl-5 space-y-1 text-sm text-zinc-600 dark:text-zinc-400 mt-1">
                     {profile.extensionActivities.map((r, i) => <li key={i}>{r}</li>)}
+                  </ul>
+                </div>
+              )}
+
+              {profile.awards && profile.awards.length > 0 && (
+                <div className="mb-4">
+                  <h4 className="font-semibold text-zinc-800 dark:text-zinc-200">Awards</h4>
+                  <ul className="list-disc pl-5 space-y-1 text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                    {profile.awards.map((r: any, i: number) => <li key={i}>{typeof r === 'string' ? r : r.title}</li>)}
+                  </ul>
+                </div>
+              )}
+
+              {profile.achievements && profile.achievements.length > 0 && (
+                <div className="mb-4">
+                  <h4 className="font-semibold text-zinc-800 dark:text-zinc-200">Achievements</h4>
+                  <ul className="list-disc pl-5 space-y-1 text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                    {profile.achievements.map((r: any, i: number) => <li key={i}>{typeof r === 'string' ? r : r.title}</li>)}
+                  </ul>
+                </div>
+              )}
+
+              {profile.studentGuidance && (
+                <div className="mb-2">
+                  <h4 className="font-semibold text-zinc-800 dark:text-zinc-200">Student Mentoring & Guidance</h4>
+                  <ul className="list-disc pl-5 space-y-1 text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                    {profile.studentGuidance.ugProjects?.map((r, i) => <li key={`ug-${i}`}>UG Project: {r}</li>)}
+                    {profile.studentGuidance.pgProjects?.map((r, i) => <li key={`pg-${i}`}>PG Project: {r}</li>)}
+                    {profile.studentGuidance.researchGuidance?.map((r, i) => <li key={`res-${i}`}>Research: {r}</li>)}
+                    {profile.studentGuidance.mentoring?.map((r, i) => <li key={`ment-${i}`}>{r}</li>)}
                   </ul>
                 </div>
               )}

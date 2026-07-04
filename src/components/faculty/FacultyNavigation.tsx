@@ -24,7 +24,7 @@ export function FacultyNavigation({ previousFaculty, nextFaculty, departmentSlug
           </div>
 
           <div className="w-full sm:w-1/3 flex justify-center">
-            <Link href={`/academics/departments/${departmentSlug}`} className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-primary hover:border-primary transition-all">
+            <Link href="/academics/faculty" className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:text-primary hover:border-primary transition-all">
               <Users className="w-4 h-4" /> Back to Directory
             </Link>
           </div>

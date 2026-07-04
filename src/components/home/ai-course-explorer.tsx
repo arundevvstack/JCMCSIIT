@@ -40,7 +40,7 @@ export function AICourseExplorer() {
             <span className="text-xs font-semibold uppercase tracking-widest text-slate-600">Intelligence Engine</span>
           </motion.div>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 text-slate-900" style={{ fontFamily: "var(--font-heading)" }}>
-            Programs Offered.
+            B.Tech Programs Offered.
           </h2>
           <p className="text-slate-500 max-w-2xl text-lg md:text-xl font-editorial leading-relaxed">
             Explore our B.Tech engineering disciplines or use our intelligence engine to find your perfect match.

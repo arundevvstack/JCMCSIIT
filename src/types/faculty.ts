@@ -110,6 +110,8 @@ export interface FacultyProfileData {
   seminars?: string[];
   trainingProgrammes?: string[];
   certifications?: string[];
+  moocs?: string[];
+  nptel?: string[];
 
   // Memberships & Admin
   professionalMemberships?: string[];

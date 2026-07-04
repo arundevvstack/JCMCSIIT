@@ -19,10 +19,21 @@ import { FloatingActionButtons } from "@/components/layout/floating-action-butto
 import { VideoModal } from "@/components/home/video-modal";
 import { DiplomaProgrammes } from "@/components/home/diploma-programmes";
 
+const SectionAnimate = ({ children }: { children: React.ReactNode }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 40 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-10%" }}
+    transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+  >
+    {children}
+  </motion.div>
+);
+
 export default function Home() {
-  const containerRef = useRef(null);
+  const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({
-    target: containerRef,
+    target: heroRef,
     offset: ["start start", "end start"],
   });
 
@@ -48,30 +59,33 @@ export default function Home() {
   };
 
   return (
-    <div ref={containerRef} className="relative bg-white selection:bg-primary/20">
+    <div className="-mt-20 relative bg-white selection:bg-primary/20">
       <FloatingActionButtons />
       
       {/* Cinematic Hero */}
-      <main className="-mt-20 relative h-[100dvh] min-h-[600px] w-full overflow-hidden flex flex-col items-center justify-center pt-20 pb-10 bg-slate-50">
+      <main ref={heroRef} className="relative h-[100dvh] min-h-[600px] w-full overflow-hidden flex flex-col items-center justify-center pt-20 pb-10 bg-slate-50">
         
         {/* Fullscreen Parallax Background */}
         <motion.div 
           style={{ y, opacity }}
-          className="absolute inset-0 z-0 w-full h-full scale-110"
+          className="absolute inset-0 z-0 w-full h-full scale-125"
         >
           <Image 
-            src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=2000"
+            src="/images/aaa.png"
             alt="JCMCSIIT Campus"
             fill
             priority
-            className="object-cover opacity-30 mix-blend-overlay"
+            className="object-cover object-top opacity-80"
             sizes="100vw"
             quality={90}
           />
           {/* Atmospheric Gradients for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/70 to-white z-10"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-100/30 to-transparent z-10 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-white/10 to-white/90 z-10 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-100/10 to-transparent z-10 mix-blend-multiply pointer-events-none"></div>
         </motion.div>
+        
+        {/* Seamless transition gradient at the bottom */}
+        <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none"></div>
         
         <motion.div style={{ y: yText }} className="layout-grid relative z-20 flex flex-col items-center text-center w-full mt-10">
           
@@ -108,7 +122,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.4, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="text-xl md:text-3xl text-slate-600 max-w-4xl mb-12 leading-snug font-editorial"
+            className="text-xl md:text-3xl text-slate-800 max-w-4xl mb-12 leading-snug font-editorial bg-white/40 backdrop-blur-md px-8 py-5 rounded-3xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
           >
             John Cox Memorial CSI Institute of Technology. A premium academic ecosystem engineered for global innovators, researchers, and technical leaders.
           </motion.p>
@@ -138,21 +152,21 @@ export default function Home() {
       </main>
 
       {/* Diploma Programmes Showcase */}
-      <DiplomaProgrammes />
-      <AICourseExplorer />
+      <SectionAnimate><DiplomaProgrammes /></SectionAnimate>
+      <SectionAnimate><AICourseExplorer /></SectionAnimate>
       
-      <FeaturedBanner />
+      <SectionAnimate><FeaturedBanner /></SectionAnimate>
 
-      <CampusLifeGrid />
-      <UpcomingEvents />
-      <FeaturedResearch />
+      <SectionAnimate><CampusLifeGrid /></SectionAnimate>
+      <SectionAnimate><UpcomingEvents /></SectionAnimate>
+      <SectionAnimate><FeaturedResearch /></SectionAnimate>
 
-      <CampusNews />
+      <SectionAnimate><CampusNews /></SectionAnimate>
 
-      <PlacementDashboard />
-      <JitCampusGallery />
-      <FeaturedLegacy />
-      <FeaturedGlobal />
+      <SectionAnimate><PlacementDashboard /></SectionAnimate>
+      <SectionAnimate><JitCampusGallery /></SectionAnimate>
+      <SectionAnimate><FeaturedLegacy /></SectionAnimate>
+      <SectionAnimate><FeaturedGlobal /></SectionAnimate>
     </div>
   );
 }
