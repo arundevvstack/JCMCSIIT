@@ -100,7 +100,7 @@ const navLinks: NavLink[] = [
       { label: "NSS", href: "/campus-life/nss" },
       { label: "Student Council", href: "/campus-life/student-support/students-council" },
       { label: "Sports & Recreation", href: "/campus-life/student-support/sports" },
-      { label: "Alumni Network", href: "/campus-life/alumni" },
+      { label: "Alumni Network", href: "/alumni" },
     ],
   },
   {
@@ -333,22 +333,6 @@ export function Navbar() {
                 </Link>
               )
             )}
-            <div className="hidden xl:flex items-center gap-4">
-              <Link 
-                href="/admissions/application-form"
-                className={`text-[13px] font-semibold transition-colors ${isSolid ? 'text-slate-700 hover:text-primary' : 'text-slate-800 hover:text-primary'}`}
-              >
-                Admissions 2026
-              </Link>
-            </div>
-            <div className={`ml-1 pl-2 border-l shrink-0 ${isSolid ? 'border-slate-200' : 'border-slate-300'}`}>
-              <Link
-                href="/admissions/application-form"
-                className={`whitespace-nowrap shrink-0 px-4 py-2 rounded-full text-xs font-semibold transition-all shadow-[0_4px_14px_0_rgb(0,0,0,0.1)] hover:shadow-[0_6px_20px_rgba(0,118,255,0.23)] ${isSolid ? 'bg-foreground text-white hover:bg-primary' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
-              >
-                Apply Now
-              </Link>
-            </div>
           </nav>
 
           <button

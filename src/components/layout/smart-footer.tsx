@@ -72,7 +72,7 @@ export function SmartFooter() {
                 <li><Link href="/downloads/resources/map" className="text-sm text-slate-700 hover:underline">Campus Map</Link></li>
                 <li><Link href="/downloads/resources/library" className="text-sm text-slate-700 hover:underline">Central Library</Link></li>
                 <li><Link href="/downloads/resources/directory" className="text-sm text-slate-700 hover:underline">Directory</Link></li>
-                <li><Link href="/downloads/resources/alumni" className="text-sm text-slate-700 hover:underline">Alumni Network</Link></li>
+                <li><Link href="/alumni" className="text-sm text-slate-700 hover:underline">Alumni Network</Link></li>
               </ul>
             </div>
 
@@ -80,9 +80,12 @@ export function SmartFooter() {
 
           {/* Action Buttons */}
           <div className="w-full lg:w-48 flex flex-col gap-3 shrink-0">
-            <Link href="/admissions/apply" className="flex items-center justify-center py-2 px-4 border border-slate-300 text-sm font-medium text-slate-800 hover:bg-slate-50 transition-colors bg-white shadow-sm">
-              Applying
-            </Link>
+            <div className="flex items-center justify-between gap-3 p-1.5 border border-slate-200 rounded-full bg-white shadow-sm hover:shadow-md transition-shadow">
+              <span className="text-[13px] font-bold text-slate-700 pl-3 whitespace-nowrap">Admissions 2026</span>
+              <Link href="/admissions/application-form" className="shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors">
+                Apply Now
+              </Link>
+            </div>
             <Link href="/about/campus-overview/visit" className="flex items-center justify-center py-2 px-4 border border-slate-300 text-sm font-medium text-slate-800 hover:bg-slate-50 transition-colors bg-white shadow-sm">
               Visiting
             </Link>

@@ -113,7 +113,6 @@ export default function FeesScholarshipsPage() {
               <h3 className="font-bold text-amber-900 mb-2 uppercase tracking-wide">Important Note</h3>
               <ul className="list-disc list-inside space-y-1 text-amber-800">
                 <li>University Fee will be collected additionally as per the norms of the University.</li>
-                <li>Additional fund will be collected from students who score less than <strong>75% in Plus Two</strong>.</li>
               </ul>
             </div>
           </div>
@@ -228,7 +227,7 @@ export default function FeesScholarshipsPage() {
           <div className="relative z-10">
             <div className="flex items-center mb-8">
               <Percent className="h-8 w-8 text-amber-400 mr-4" />
-              <h2 className="text-3xl font-bold">Scholarship Schemes</h2>
+              <h2 className="text-3xl font-bold text-white">Scholarship Schemes</h2>
             </div>
             <p className="text-blue-100 text-lg mb-8 max-w-2xl">
               Scholarship Schemes are available for Meritorious Students and those belonging to CSI/SIUC/BPL categories to encourage academic excellence and provide financial aid.
