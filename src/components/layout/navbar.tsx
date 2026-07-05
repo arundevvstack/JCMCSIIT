@@ -348,7 +348,8 @@ export function Navbar() {
         <div className="absolute top-full left-0 w-full bg-white border-b border-slate-200 shadow-xl py-4 px-6 flex flex-col gap-1 xl:hidden max-h-[80vh] overflow-y-auto">
           {renderMobileLinks(navLinks)}
           <Link
-            href="/admissions/application-form"
+            href="https://forms.gle/NjqqxdBqvoa9Q7WU9"
+            target="_blank" rel="noopener noreferrer"
             onClick={() => setMobileMenuOpen(false)}
             className="mt-4 w-full h-12 rounded-xl bg-foreground text-white font-semibold flex items-center justify-center shadow-md"
           >

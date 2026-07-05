@@ -12,7 +12,7 @@ const courses = [
   { id: "civil", name: "Civil Engineering", icon: Building2, tags: ["Infrastructure", "Construction", "Smart Cities"], image: "/courses/ce_course_1779729938816.png" },
   { id: "cse", name: "Computer Science & Engg", icon: Code2, tags: ["Software", "Web", "Cloud"], image: "/courses/cse_course_1779729874773.png" },
   { id: "ece", name: "Electronics & Communication", icon: Cpu, tags: ["Circuits", "IoT", "Signals"], image: "/courses/ece_course_1779729905116.png" },
-  { id: "eee", name: "Electrical & Electronics Engg", icon: Zap, tags: ["Power Systems", "Energy", "Smart Grid"], image: "/courses/eee_course_1779729928372.png" },
+  { id: "eee", name: "Electrical & Electronics Engg", icon: Zap, tags: ["Power Systems", "Energy", "Smart Grid"], image: "/courses/eee_course.png" },
   { id: "mechanical", name: "Mechanical Engineering", icon: Wrench, tags: ["Design", "Machines", "Automotive"], image: "/courses/me_course_1779729919795.png" }
 ];
 

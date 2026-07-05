@@ -81,7 +81,7 @@ export default function OnlinePaymentPage() {
                    {/* In a real scenario, this would be an <Image> tag pointing to /images/payment-qr.png.
                        We are providing a placeholder indicating where to place the image. */}
                    <div className="text-slate-400 font-medium text-center px-4">
-                      Upload your QR Code image to <br/><code className="text-emerald-600 bg-emerald-50 px-2 py-1 rounded mt-2 block text-xs">/public/images/payment-qr.png</code><br/> and replace this div with an <code>&lt;Image&gt;</code> component.
+                      Will upload soon...
                    </div>
                 </div>
               </div>

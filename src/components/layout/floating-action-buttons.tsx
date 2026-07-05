@@ -37,14 +37,14 @@ export function FloatingActionButtons() {
       id: "admission",
       label: "Admission 2026",
       icon: UserPlus,
-      href: "/admissions/application-form",
+      href: "https://forms.gle/NjqqxdBqvoa9Q7WU9",
       isNew: true,
     },
     {
       id: "alumni",
       label: "Alumni Meet 2K26",
       icon: Users,
-      href: "https://docs.google.com/forms/d/e/1FAIpQLSc8v0_ds_DEBYIF3K1XVwHCRbq0bRbcOMJtk85Rh5NoT9FI-w/closedform",
+      href: "https://docs.google.com/forms/d/1bttuO4P62IULd_Rlg7MDceSyQnxWBZcub9Rx6N9Zd8c/viewform",
       isNew: true,
       subtext: "May 1st, 9:30 AM"
     }
@@ -76,27 +76,27 @@ export function FloatingActionButtons() {
               href={btn.href}
               target={btn.href.startsWith('http') ? '_blank' : undefined}
               rel={btn.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-              className="group flex items-center justify-end h-12 md:h-14 bg-white/90 backdrop-blur-md border border-slate-200/50 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_40px_rgb(28,71,98,0.2)] transition-all duration-300 overflow-hidden"
+              className="group flex items-center justify-end h-10 md:h-12 bg-white/90 backdrop-blur-md border border-slate-200/50 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_40px_rgb(28,71,98,0.2)] transition-all duration-300 overflow-hidden"
             >
               {/* Always Visible Text Content */}
-              <div className="px-4 md:px-6 flex flex-col justify-center whitespace-nowrap overflow-hidden hidden sm:flex">
+              <div className="px-3 md:px-5 flex flex-col justify-center whitespace-nowrap overflow-hidden hidden sm:flex">
                 <div className="flex items-center gap-1.5 md:gap-2">
-                  <span className="font-bold text-[#1c4762] text-xs md:text-sm tracking-wide">{btn.label}</span>
+                  <span className="font-bold text-[#1c4762] text-[10px] md:text-xs tracking-wide">{btn.label}</span>
                   {btn.isNew && (
-                    <span className="flex items-center text-[9px] font-black uppercase tracking-wider text-white bg-gradient-to-r from-blue-600 to-emerald-500 px-1.5 py-0.5 rounded-sm animate-pulse">
-                      <Sparkles className="w-3 h-3 mr-0.5" />
+                     <span className="flex items-center text-[8px] font-black uppercase tracking-wider text-white bg-gradient-to-r from-blue-600 to-emerald-500 px-1 py-[1px] rounded-sm animate-pulse">
+                      <Sparkles className="w-2.5 h-2.5 mr-0.5" />
                       New
                     </span>
                   )}
                 </div>
                 {btn.subtext && (
-                  <span className="text-[10px] text-slate-500 font-medium">{btn.subtext}</span>
+                  <span className="text-[9px] text-slate-500 font-medium">{btn.subtext}</span>
                 )}
               </div>
 
               {/* Fixed Icon Container */}
-              <div className="w-12 h-12 md:w-14 md:h-14 flex items-center justify-center shrink-0 bg-[#1c4762] text-white rounded-full group-hover:scale-105 transition-transform duration-300">
-                <Icon className="w-4 h-4 md:w-5 md:h-5" />
+              <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center shrink-0 bg-[#1c4762] text-white rounded-full group-hover:scale-105 transition-transform duration-300">
+                <Icon className="w-3.5 h-3.5 md:w-4 md:h-4" />
               </div>
             </Link>
           </motion.div>

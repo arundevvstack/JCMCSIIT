@@ -60,7 +60,7 @@ export function FeaturedBanner() {
 
             <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4">
               <Link
-                href="/admissions"
+                href="https://forms.gle/NjqqxdBqvoa9Q7WU9" target="_blank" rel="noopener noreferrer"
                 className="group relative inline-flex h-14 items-center justify-center overflow-hidden rounded-full bg-[#1c4762] px-8 font-bold text-white transition-all hover:bg-[#102e41] shadow-[0_8px_20px_rgb(28,71,98,0.2)]"
               >
                 <span className="mr-3 tracking-wide">Start Your Application</span>

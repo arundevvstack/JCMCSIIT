@@ -69,9 +69,13 @@ export default function AlumniPage() {
           <p className="text-slate-600 leading-relaxed max-w-2xl mx-auto mb-8">
             Stay connected with your alma mater. Register on our alumni portal to access networking events, mentorship programs, and campus updates.
           </p>
-          <button className="px-8 py-3 rounded-xl bg-foreground text-white font-semibold hover:bg-foreground/90 transition-all shadow-lg flex items-center gap-2 mx-auto">
+          <a 
+            href="https://docs.google.com/forms/d/1bttuO4P62IULd_Rlg7MDceSyQnxWBZcub9Rx6N9Zd8c/viewform" 
+            target="_blank" rel="noopener noreferrer"
+            className="px-8 py-3 rounded-xl bg-foreground text-white font-semibold hover:bg-foreground/90 transition-all shadow-lg flex items-center gap-2 mx-auto w-fit"
+          >
             Register as Alumni <ArrowUpRight className="h-5 w-5" />
-          </button>
+          </a>
         </div>
 
       </div>

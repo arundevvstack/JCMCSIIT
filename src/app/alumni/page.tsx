@@ -47,8 +47,8 @@ export default function AlumniPage() {
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
             <Link 
-              href="https://forms.gle/rRajcv1vd8Y5pMsz8" 
-              target="_blank"
+              href="https://docs.google.com/forms/d/1bttuO4P62IULd_Rlg7MDceSyQnxWBZcub9Rx6N9Zd8c/viewform" 
+              target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-slate-900 text-white px-8 py-3.5 rounded-full font-bold text-sm hover:bg-blue-600 transition-colors shadow-lg hover:shadow-blue-500/25"
             >
               Alumni Registration Form <ExternalLink className="w-4 h-4" />
