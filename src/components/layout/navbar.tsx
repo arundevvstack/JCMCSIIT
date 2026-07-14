@@ -229,18 +229,18 @@ export function Navbar() {
       animate={{ y: 0 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className={`fixed top-10 left-0 right-0 z-50 transition-all duration-500 ${
-        isSolid ? "bg-white/70 backdrop-blur-2xl shadow-sm py-2 border-b border-slate-200/50" : "bg-white/0 py-6"
+        isSolid ? "bg-white/70 backdrop-blur-2xl shadow-sm py-1.5 border-b border-slate-200/50" : "bg-white/0 py-4"
       }`}
     >
       <div className="w-full max-w-[120rem] mx-auto px-4 md:px-8 lg:px-12 xl:px-16">
         <div className="flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-3 shrink-0">
-            <div className="relative w-[18rem] h-[4rem] md:w-[22rem] md:h-[5rem] lg:w-[26rem] lg:h-[6rem] shrink-0 -ml-2 lg:-ml-4">
+            <div className="relative w-[12.6rem] h-[2.8rem] md:w-[15.4rem] md:h-[3.5rem] lg:w-[18.2rem] lg:h-[4.2rem] shrink-0 -ml-2 lg:-ml-4">
               <Image
                 src="/logo.png"
                 alt="JCMCSIIT Logo"
                 fill
-                sizes="(max-width: 768px) 15rem, (max-width: 1024px) 18rem, 18rem"
+                sizes="(max-width: 768px) 12.6rem, (max-width: 1024px) 15.4rem, 18.2rem"
                 className="object-contain object-left"
                 priority
               />

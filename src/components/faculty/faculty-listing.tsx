@@ -117,25 +117,27 @@ export function FacultyListing({ initialFaculty, departments }: FacultyListingPr
                 <div className="bg-white/70 backdrop-blur-md rounded-3xl p-6 border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_-15px_rgba(16,185,129,0.15)] hover:-translate-y-1 transition-all duration-300 h-full flex flex-col relative overflow-hidden group-hover:bg-white group-hover:border-emerald-500/20">
                   
                   {/* Photo & Name */}
-                  <div className="flex items-center gap-5 mb-6">
-                    <div className="h-20 w-20 rounded-2xl bg-slate-100 flex items-center justify-center overflow-hidden shrink-0 shadow-inner relative">
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 mb-6 text-center sm:text-left">
+                    <div className="h-28 w-28 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden shrink-0 ring-4 ring-emerald-50 relative">
                       {faculty.image_url ? (
                         <Image 
                           src={faculty.image_url} 
                           alt={faculty.name} 
                           fill
                           className="object-cover"
-                          sizes="80px"
+                          sizes="112px"
                         />
                       ) : (
-                        <User className="h-8 w-8 text-slate-400" />
+                        <User className="h-10 w-10 text-slate-400" />
                       )}
                     </div>
-                    <div>
-                      <h2 className="text-lg font-bold text-slate-900 leading-tight mb-1 group-hover:text-emerald-600 transition-colors line-clamp-2">
+                    <div className="pt-2">
+                      <h2 className="text-xl font-bold text-slate-900 leading-tight mb-1.5 group-hover:text-emerald-600 transition-colors line-clamp-2">
                         {faculty.name}
                       </h2>
-                      <p className="text-sm font-semibold text-emerald-600">{faculty.designation}</p>
+                      <span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-600 ring-1 ring-inset ring-emerald-600/20">
+                        {faculty.designation}
+                      </span>
                     </div>
                   </div>
                   
@@ -153,11 +155,20 @@ export function FacultyListing({ initialFaculty, departments }: FacultyListingPr
                         <span className="text-sm text-slate-600 line-clamp-2">{faculty.profile_data.highestQualification}</span>
                       </div>
                     )}
-                    {(faculty.profile_data?.teachingExperience || faculty.profile_data?.industryExperience) && (
+                    {(faculty.profile_data?.totalExperience || faculty.profile_data?.teachingExperience || faculty.profile_data?.industryExperience) && (
                       <div className="flex items-start gap-3">
                         <Briefcase className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
                         <span className="text-sm text-slate-600 line-clamp-2">
-                          {[faculty.profile_data?.teachingExperience, faculty.profile_data?.industryExperience].filter(Boolean).join(" • ")}
+                          {(() => {
+                            const p = faculty.profile_data;
+                            if (p?.totalExperience) return p.totalExperience;
+                            let parts = [];
+                            if (Array.isArray(p?.teachingExperience) && p.teachingExperience.length > 0) parts.push("Teaching Experience");
+                            else if (typeof p?.teachingExperience === 'string') parts.push(p.teachingExperience);
+                            if (Array.isArray(p?.industryExperience) && p.industryExperience.length > 0) parts.push("Industry Experience");
+                            else if (typeof p?.industryExperience === 'string') parts.push(p.industryExperience);
+                            return parts.length > 0 ? parts.join(" • ") : "Experience Details Available";
+                          })()}
                         </span>
                       </div>
                     )}
