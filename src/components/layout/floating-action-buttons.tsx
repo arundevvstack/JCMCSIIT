@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
-import { Image as ImageIcon, CreditCard, UserPlus, Users, Sparkles } from "lucide-react";
+import { Image as ImageIcon, CreditCard, UserPlus, Users, Sparkles, FileText } from "lucide-react";
 
 export function FloatingActionButtons() {
   const { scrollY } = useScroll();
@@ -47,6 +47,13 @@ export function FloatingActionButtons() {
       href: "https://docs.google.com/forms/d/1bttuO4P62IULd_Rlg7MDceSyQnxWBZcub9Rx6N9Zd8c/viewform",
       isNew: true,
       subtext: "May 1st, 9:30 AM"
+    },
+    {
+      id: "admission-schedule",
+      label: "B.Tech Admission Schedule",
+      icon: FileText,
+      href: "/PDF/Schedule%20of%20B.Tech%20Admission.pdf",
+      isNew: true,
     }
   ];
 
@@ -74,8 +81,8 @@ export function FloatingActionButtons() {
           >
             <Link 
               href={btn.href}
-              target={btn.href.startsWith('http') ? '_blank' : undefined}
-              rel={btn.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+              target={btn.href.startsWith('http') || btn.href.endsWith('.pdf') ? '_blank' : undefined}
+              rel={btn.href.startsWith('http') || btn.href.endsWith('.pdf') ? 'noopener noreferrer' : undefined}
               className="group flex items-center justify-end h-10 md:h-12 bg-white/90 backdrop-blur-md border border-slate-200/50 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_40px_rgb(28,71,98,0.2)] transition-all duration-300 overflow-hidden"
             >
               {/* Always Visible Text Content */}

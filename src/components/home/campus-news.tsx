@@ -6,11 +6,19 @@ import { motion } from "framer-motion";
 
 const newsItems = [
   {
+    id: "admission",
+    title: "Schedule of B.Tech Admission 2026",
+    category: "ADMISSIONS",
+    image: "https://www.jcmcsiit.ac.in/img/02.jpg",
+    isLarge: true,
+    link: "/PDF/Schedule%20of%20B.Tech%20Admission.pdf",
+  },
+  {
     id: 1,
     title: "JCMCSIIT Secures Major DST Grant for AI Healthcare Research",
     category: "RESEARCH & INNOVATION",
     image: "/courses/aiml_course_1779729860073.png",
-    isLarge: true,
+    isLarge: false,
   },
   {
     id: 2,
@@ -88,9 +96,12 @@ export function CampusNews() {
 }
 
 function NewsCard({ item, className = "" }: { item: any; className?: string }) {
+  const href = item.link || `/news/${item.id}`;
+  const target = item.link?.endsWith('.pdf') ? "_blank" : undefined;
+
   if (item.isLarge) {
     return (
-      <Link href={`/news/${item.id}`} className={`group relative overflow-hidden bg-slate-900 min-h-[350px] shadow-sm hover:shadow-md transition-shadow ${className}`}>
+      <Link href={href} target={target} className={`group relative overflow-hidden bg-slate-900 min-h-[350px] shadow-sm hover:shadow-md transition-shadow ${className}`}>
         <ParallaxImage
           src={item.image}
           alt={item.title}
@@ -112,7 +123,7 @@ function NewsCard({ item, className = "" }: { item: any; className?: string }) {
   }
 
   return (
-    <Link href={`/news/${item.id}`} className={`group flex flex-col bg-white shadow-sm hover:shadow-md transition-shadow h-full ${className}`}>
+    <Link href={href} target={target} className={`group flex flex-col bg-white shadow-sm hover:shadow-md transition-shadow h-full ${className}`}>
       <div className="relative h-48 w-full overflow-hidden bg-slate-100">
         <ParallaxImage
           src={item.image}

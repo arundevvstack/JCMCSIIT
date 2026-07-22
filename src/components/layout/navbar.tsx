@@ -125,6 +125,7 @@ const navLinks: NavLink[] = [
     label: "Downloads",
     children: [
       { label: "E-Brochure", href: "/admissions/e-brochure" },
+      { label: "B.Tech Admission Schedule", href: "/PDF/Schedule%20of%20B.Tech%20Admission.pdf" },
       { label: "Resources", href: "/downloads/resources" },
     ],
   },
@@ -182,7 +183,7 @@ export function Navbar() {
           <div key={item.label} className={`${level === 0 ? "border-b border-slate-50 pb-2 mb-1" : "mt-1"}`}>
             <div className={`w-full flex items-center justify-between py-1 ${level === 0 ? "mt-3" : ""} ${level > 0 ? "pl-3 text-base font-medium text-slate-700" : "text-xs font-bold uppercase text-slate-400 tracking-wider"}`}>
               {item.href ? (
-                <Link href={item.href} onClick={() => setMobileMenuOpen(false)} className="hover:text-primary flex-1 py-1">
+                <Link href={item.href} onClick={() => setMobileMenuOpen(false)} target={item.href.endsWith('.pdf') ? '_blank' : undefined} className="hover:text-primary flex-1 py-1">
                   {item.label}
                 </Link>
               ) : (
@@ -211,6 +212,7 @@ export function Navbar() {
           key={item.label}
           href={item.href!}
           onClick={() => setMobileMenuOpen(false)}
+          target={item.href?.endsWith('.pdf') ? '_blank' : undefined}
           className={`block ${level === 0 ? "py-3 text-lg font-semibold text-slate-800 border-b border-slate-50" : "py-2 pl-3 text-base font-medium text-slate-700 hover:text-primary transition-colors"}`}
         >
           {item.label}
@@ -273,7 +275,7 @@ export function Navbar() {
                             {child.children ? (
                               <div className="w-full flex items-center justify-between px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-primary hover:bg-slate-50 transition-colors">
                                 {child.href ? (
-                                  <Link href={child.href} className="flex-1">
+                                  <Link href={child.href} target={child.href.endsWith('.pdf') ? '_blank' : undefined} className="flex-1">
                                     {child.label}
                                   </Link>
                                 ) : (
@@ -284,6 +286,7 @@ export function Navbar() {
                             ) : (
                               <Link
                                 href={child.href!}
+                                target={child.href?.endsWith('.pdf') ? '_blank' : undefined}
                                 className="block px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-primary hover:bg-slate-50 transition-colors"
                               >
                                 {child.label}
@@ -300,13 +303,14 @@ export function Navbar() {
                                           <span className="flex items-center justify-between text-slate-800 font-semibold mb-1 border-b border-slate-100 pb-1">{subChild.label}</span>
                                           <div className="flex flex-col gap-1 mt-1">
                                             {subChild.children.map(deep => (
-                                              <Link key={deep.label} href={deep.href!} className="text-slate-500 hover:text-primary transition-colors py-1">{deep.label}</Link>
+                                              <Link key={deep.label} href={deep.href!} target={deep.href?.endsWith('.pdf') ? '_blank' : undefined} className="text-slate-500 hover:text-primary transition-colors py-1">{deep.label}</Link>
                                             ))}
                                           </div>
                                         </div>
                                       ) : (
                                         <Link
                                           href={subChild.href!}
+                                          target={subChild.href?.endsWith('.pdf') ? '_blank' : undefined}
                                           className="block px-5 py-2.5 text-sm font-medium text-slate-600 hover:text-primary hover:bg-slate-50 transition-colors"
                                         >
                                           {subChild.label}
