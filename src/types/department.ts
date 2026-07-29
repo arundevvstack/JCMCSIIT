@@ -14,6 +14,7 @@ export interface DepartmentData {
   programme: string;
   vision?: string;
   mission?: string | string[];
+  objectives?: string[];
   hod?: {
     name: string;
     message: string;

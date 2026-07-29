@@ -64,8 +64,17 @@ export const departmentsData: Record<string, DepartmentData> = {
     name: "Department of Biomedical & Robotic Engineering",
     shortDescription: "Creating next-generation healthcare professionals and intelligent system engineers.",
     fullDescription: "The department combines biomedical sciences, healthcare technologies, robotics, artificial intelligence, automation and embedded systems to create next-generation healthcare professionals and intelligent system engineers.",
-    vision: "To lead in the integration of engineering and biomedical sciences for improved healthcare solutions.",
-    mission: "To provide state-of-the-art education and research facilities in biomedical and robotic engineering.",
+    vision: "To inspire and empower future engineers to integrate biomedical science and robotics, driving technological advancements that enhance human health, rehabilitation, and quality of life and to lead the evolution of biomedical and robotic engineering by fostering creativity, entrepreneurship, and collaboration, building a sustainable future where technology and human well-being converge.",
+    mission: [
+      "To deliver an industry-aligned curriculum combining biomedical systems, robotics, AI, and mechatronics, cultivating technically skilled, socially responsible engineers capable of designing innovative healthcare and automation solutions.",
+      "To promote hands-on learning through labs, project-based courses, internships, and interdisciplinary electives, bridging theory and real-world application for impactful societal benefits.",
+      "To nurture entrepreneurship and collaboration by encouraging partnerships with healthcare institutions and industries—empowering students to develop assistive medical devices, rehabilitation systems, and cutting-edge robotic solutions."
+    ],
+    objectives: [
+      "Provide students with strong foundations and practical skills in biomedical engineering, robotics, AI, and mechatronics through hands-on labs and industry-relevant coursework.",
+      "Encourage innovation and problem-solving through project-based learning, internships, and real-world healthcare challenges, leading to research, patents, and technology development.",
+      "Build strong industry and academic partnerships to support curriculum development, and the creation of advanced medical and assistive technologies."
+    ],
     programme: "B.Tech in Biomedical & Robotic Engineering",
     hod: {
       name: "Head of Department",
@@ -329,8 +338,13 @@ export const departmentsData: Record<string, DepartmentData> = {
     name: "Department of Mechanical Engineering",
     shortDescription: "Preparing students in manufacturing, CAD/CAM, thermal engineering, robotics, and renewable energy.",
     fullDescription: "The department prepares students in manufacturing, CAD/CAM, thermal engineering, robotics, renewable energy and modern production systems through practical engineering education.",
-    vision: "To achieve excellence in mechanical engineering education and research.",
-    mission: "To impart quality education and training to meet industrial challenges.",
+    vision: "To be a center of excellence in mechanical engineering education, research, and innovation, contributing to sustainable development and addressing industry and societal challenges through ethical practices and lifelong learning.",
+    mission: [
+      "To impart high-quality education in mechanical engineering that equips students with fundamental knowledge, technical skills, and problem-solving abilities aligned with industry requirements.",
+      "To foster research, innovation, and entrepreneurship by encouraging students and faculty to work on contemporary engineering problems and develop sustainable solutions.",
+      "To cultivate professional ethics, leadership, and teamwork by promoting collaborative learning and effective communication among students, faculty, and stakeholders.",
+      "To create an environment of lifelong learning and continuous improvement that enables students to adapt to technological advancements and societal needs."
+    ],
     programme: "B.Tech in Mechanical Engineering",
     hod: {
       name: "Head of Department",

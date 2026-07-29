@@ -1,5 +1,5 @@
 import { DepartmentData } from '@/types/department';
-import { BookOpen, Target, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { BookOpen, Target, ShieldCheck, CheckCircle2, Flag } from 'lucide-react';
 
 export function DepartmentAbout({ data }: { data: DepartmentData }) {
   return (
@@ -40,6 +40,19 @@ export function DepartmentAbout({ data }: { data: DepartmentData }) {
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm mt-6">
                 <h3 className="text-xl font-bold text-slate-900 mb-2">Vision & Mission</h3>
                 <p className="text-slate-500 italic">Content will be updated by the department.</p>
+              </div>
+            )}
+
+            {/* Objectives */}
+            {data.objectives && data.objectives.length > 0 && (
+              <div className="mt-6 p-6 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm">
+                <Flag className="w-8 h-8 text-primary mb-4" />
+                <h3 className="text-xl font-bold text-slate-900 mb-3">Objectives</h3>
+                <ul className="text-slate-600 text-sm leading-relaxed space-y-2 list-decimal pl-4">
+                  {data.objectives.map((item, idx) => (
+                    <li key={idx}>{item}</li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>
