@@ -1,7 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { TrendingUp, Users, Building, Award, ArrowUpRight, Building2, Trophy } from "lucide-react";
+import { TrendingUp, Users, Building, Award, ArrowUpRight, Building2, Trophy, Briefcase, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 
 const stats = [
   { label: "Placement Rate", value: "98.5%", icon: TrendingUp },
@@ -11,14 +13,30 @@ const stats = [
 ];
 
 const companies = [
-  "Microsoft", "Amazon", "Google", "TCS", "Infosys", "Wipro", "Cognizant", "IBM", "Tech Mahindra", "Oracle"
+  { name: "Microsoft", url: "https://careers.microsoft.com" },
+  { name: "Amazon", url: "https://www.amazon.jobs" },
+  { name: "Google", url: "https://careers.google.com" },
+  { name: "TCS", url: "https://www.tcs.com/careers" },
+  { name: "Infosys", url: "https://www.infosys.com/careers.html" },
+  { name: "Wipro", url: "https://careers.wipro.com" },
+  { name: "Cognizant", url: "https://careers.cognizant.com" },
+  { name: "IBM", url: "https://www.ibm.com/careers" },
+  { name: "Tech Mahindra", url: "https://careers.techmahindra.com" },
+  { name: "Oracle", url: "https://careers.oracle.com" }
+];
+
+const recentPlacements = [
+  { name: "Arjun Nair", dept: "Computer Science", company: "Microsoft", package: "45 LPA", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" },
+  { name: "Meenakshi R.", dept: "Electronics (ECE)", company: "Amazon", package: "32 LPA", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop" },
+  { name: "Karthik Menon", dept: "AI & ML", company: "Google", package: "38 LPA", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop" },
+  { name: "Ananya S.", dept: "Civil Engineering", company: "L&T", package: "12 LPA", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop" },
 ];
 
 export function PlacementDashboard() {
   return (
-    <section className="py-32 relative w-full bg-white">
+    <section className="py-32 relative w-full bg-white overflow-hidden">
       <div className="layout-grid">
-        <div className="flex flex-col md:flex-row gap-16 lg:gap-24 items-center">
+        <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center mb-24">
           
           <div className="flex-1 space-y-8">
             <motion.div
@@ -75,16 +93,19 @@ export function PlacementDashboard() {
               
               <div className="flex flex-wrap gap-3">
                 {companies.map((company, i) => (
-                  <motion.div
-                    key={company}
+                  <motion.a
+                    href={company.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    key={company.name}
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.1 + (i * 0.05) }}
-                    className="px-5 py-2.5 rounded-full bg-slate-50 border border-slate-100/80 text-[14px] font-semibold text-slate-600 hover:bg-white hover:border-slate-200 hover:text-slate-900 hover:shadow-sm transition-all cursor-default"
+                    className="px-5 py-2.5 rounded-full bg-slate-50 border border-slate-100/80 text-[14px] font-semibold text-slate-600 hover:bg-white hover:border-slate-200 hover:text-primary hover:shadow-sm transition-all"
                   >
-                    {company}
-                  </motion.div>
+                    {company.name}
+                  </motion.a>
                 ))}
               </div>
 
@@ -105,6 +126,35 @@ export function PlacementDashboard() {
           </motion.div>
 
         </div>
+
+        {/* Recently Placed Students Showcase */}
+        <div className="w-full mt-12">
+          <div className="flex items-center justify-between mb-12">
+            <h3 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
+              <Trophy className="h-8 w-8 text-amber-500" />
+              B.Tech Campus Placements 2026
+            </h3>
+            <div className="h-px bg-slate-200 flex-1 ml-10 hidden md:block"></div>
+          </div>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="bg-white rounded-[2.5rem] p-4 md:p-8 border border-slate-200/60 shadow-sm relative overflow-hidden flex justify-center"
+          >
+            {/* 
+              Poster Image: B.TECH CAMPUS PLACEMENTS 2026
+            */}
+            <img 
+              src="/images/Placements/palcements.jpeg" 
+              alt="B.Tech Campus Placements 2026" 
+              className="w-full max-w-5xl h-auto rounded-2xl object-contain shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100"
+            />
+          </motion.div>
+        </div>
+
       </div>
     </section>
   );

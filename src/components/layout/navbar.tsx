@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X, ChevronDown, ChevronRight } from "lucide-react";
+import { Menu, X, ChevronDown, ChevronRight, Phone, Mail } from "lucide-react";
 import { motion } from "framer-motion";
 
 type NavLink = {
@@ -231,23 +231,35 @@ export function Navbar() {
       animate={{ y: 0 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className={`fixed top-10 left-0 right-0 z-50 transition-all duration-500 ${
-        isSolid ? "bg-white/70 backdrop-blur-2xl shadow-sm py-1.5 border-b border-slate-200/50" : "bg-white/0 py-4"
+        isSolid ? "bg-white shadow-md py-2 border-b border-slate-200" : "bg-white/95 backdrop-blur-2xl py-3 shadow-md border-b border-slate-200"
       }`}
     >
       <div className="w-full max-w-[120rem] mx-auto px-4 md:px-8 lg:px-12 xl:px-16">
         <div className="flex items-center justify-between gap-4">
-          <Link href="/" className="flex items-center gap-3 shrink-0">
-            <div className="relative w-[12.6rem] h-[2.8rem] md:w-[15.4rem] md:h-[3.5rem] lg:w-[18.2rem] lg:h-[4.2rem] shrink-0 -ml-2 lg:-ml-4">
-              <Image
-                src="/logo.png"
-                alt="JCMCSIIT Logo"
-                fill
-                sizes="(max-width: 768px) 12.6rem, (max-width: 1024px) 15.4rem, 18.2rem"
-                className="object-contain object-left"
-                priority
-              />
+          <div className="flex flex-col">
+            <Link href="/" className="flex items-center gap-3 shrink-0">
+              <div className="relative w-[18rem] h-[4rem] md:w-[24rem] md:h-[5.5rem] lg:w-[28rem] lg:h-[6.5rem] shrink-0 -ml-2 lg:-ml-4 transition-all duration-300">
+                <Image
+                  src="/logo.png"
+                  alt="JCMCSIIT Logo"
+                  fill
+                  sizes="(max-width: 768px) 18rem, (max-width: 1024px) 24rem, 28rem"
+                  className="object-contain object-left"
+                  priority
+                />
+              </div>
+            </Link>
+            <div className="hidden sm:flex items-center gap-3 lg:-ml-1 -mt-3 md:-mt-4 lg:-mt-5 mb-2 z-10">
+              <a href="tel:04712550936" className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200/60 px-3 py-1.5 rounded-md transition-all shadow-sm">
+                <Phone className="w-3.5 h-3.5" />
+                <span>0471-2550936</span>
+              </a>
+              <a href="mailto:principal@jcmcsiit.ac.in" className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200/60 px-3 py-1.5 rounded-md transition-all shadow-sm">
+                <Mail className="w-3.5 h-3.5" />
+                <span>principal@jcmcsiit.ac.in</span>
+              </a>
             </div>
-          </Link>
+          </div>
 
           <nav className="hidden xl:flex flex-wrap items-center justify-end gap-x-1 gap-y-2 flex-1 ml-4">
             {navLinks.map((item) =>

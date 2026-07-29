@@ -4,14 +4,14 @@ import { ParallaxImage } from "@/components/ui/parallax-image";
 import { motion } from "framer-motion";
 
 const galleryImages = [
-  { id: 1, src: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=800", alt: "JIT Campus Main Building" },
-  { id: 2, src: "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&q=80&w=800", alt: "JIT Campus Academic Block" },
-  { id: 3, src: "https://images.unsplash.com/photo-1590402494682-bf3468869186?auto=format&fit=crop&q=80&w=800", alt: "JIT Campus Corridors" },
-  { id: 4, src: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=800", alt: "JIT Campus Laboratories" },
-  { id: 5, src: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=80&w=800", alt: "JIT Campus Classroom" },
-  { id: 6, src: "https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&q=80&w=800", alt: "JIT Campus Students" },
-  { id: 7, src: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=800", alt: "JIT Campus Seminar Hall" },
-  { id: 8, src: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800", alt: "JIT Campus Auditorium" },
+  { id: 1, src: "/images/about/campus-1.jpg", alt: "JIT Campus Main Building" },
+  { id: 2, src: "/images/about/campus-2.jpg", alt: "JIT Campus Academic Block" },
+  { id: 3, src: "/images/about/campus-3.jpg", alt: "JIT Campus Corridors" },
+  { id: 4, src: "/images/about/campus-4.jpg", alt: "JIT Campus Laboratories" },
+  { id: 5, src: "/images/about/campus-5.jpg", alt: "JIT Campus Classroom" },
+  { id: 6, src: "/campus/cl_clubs_1779730917017.png", alt: "JIT Campus Student Clubs" },
+  { id: 7, src: "/campus/cl_sports_1779730932385.png", alt: "JIT Campus Sports" },
+  { id: 8, src: "/campus/cl_student_life_1779730901783.png", alt: "JIT Campus Student Life" },
 ];
 
 export function JitCampusGallery() {

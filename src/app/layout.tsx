@@ -5,11 +5,6 @@ import { Navbar } from "@/components/layout/navbar";
 import { SmartFooter } from "@/components/layout/smart-footer";
 import { NewsTicker } from "@/components/layout/news-ticker";
 import { SchemaOrg } from "@/components/schema-org";
-import dynamic from "next/dynamic";
-
-const AIChatbot = dynamic(() => import("@/components/chat/ai-chatbot").then(mod => mod.AIChatbot), { 
-  loading: () => null // Don't block render with a loader
-});
 
 const inter = Inter({
   variable: "--font-inter",
@@ -60,7 +55,6 @@ export default function RootLayout({
           {children}
         </div>
         <SmartFooter />
-        <AIChatbot />
       </body>
     </html>
   );

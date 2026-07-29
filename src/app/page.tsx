@@ -13,7 +13,7 @@ import { FeaturedResearch } from "@/components/home/featured-research";
 import { CampusNews } from "@/components/home/campus-news";
 import { PlacementDashboard } from "@/components/home/placement-dashboard";
 import { FeaturedLegacy } from "@/components/home/featured-legacy";
-import { FeaturedGlobal } from "@/components/home/featured-global";
+import { Scholarships } from "@/components/home/scholarships";
 import { JitCampusGallery } from "@/components/home/jit-campus-gallery";
 import { FloatingActionButtons } from "@/components/layout/floating-action-buttons";
 import { VideoModal } from "@/components/home/video-modal";
@@ -133,9 +133,10 @@ export default function Home() {
         </motion.div>
       </main>
 
+      {/* B.Tech Programmes Showcase */}
+      <SectionAnimate><AICourseExplorer /></SectionAnimate>
       {/* Diploma Programmes Showcase */}
       <SectionAnimate><DiplomaProgrammes /></SectionAnimate>
-      <SectionAnimate><AICourseExplorer /></SectionAnimate>
       
       <SectionAnimate><FeaturedBanner /></SectionAnimate>
 
@@ -146,9 +147,9 @@ export default function Home() {
       <SectionAnimate><CampusNews /></SectionAnimate>
 
       <SectionAnimate><PlacementDashboard /></SectionAnimate>
+      <SectionAnimate><Scholarships /></SectionAnimate>
       <SectionAnimate><JitCampusGallery /></SectionAnimate>
       <SectionAnimate><FeaturedLegacy /></SectionAnimate>
-      <SectionAnimate><FeaturedGlobal /></SectionAnimate>
     </div>
   );
 }

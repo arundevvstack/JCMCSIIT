@@ -1,17 +1,14 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Target, ShieldCheck, Briefcase, Building2, Users, Globe, TrendingUp, BookOpen, ChevronRight, GraduationCap, AlertTriangle, BookMarked, Wrench, CheckCircle2 } from 'lucide-react';
+import { Target, ShieldCheck, Briefcase, Building2, Users, Mail, Globe, CheckCircle2, TrendingUp, BookOpen, ChevronRight, GraduationCap, AlertTriangle, BookMarked, Wrench } from 'lucide-react';
 import { facultyData } from '@/data/faculty';
 import { departmentsData } from '@/data/departments';
 import { LabAccordion } from '@/components/departments/lab-accordion';
-import { notFound } from 'next/navigation';
-
-const departmentSlug = 'ece';
 
 export const metadata: Metadata = {
-  title: 'B.Tech in Electronics & Communication Engineering | JCMCSIIT',
-  description: 'AICTE-approved B.Tech in Electronics & Communication at JCMCSIIT. Empowering students to innovate and create sustainable solutions for societal and global challenges.',
+  title: 'Diploma in Electronics & Communication | JCMCSIIT',
+  description: 'AICTE-approved Diploma in Electronics & Communication at JCMCSIIT. Empowering students to innovate and create sustainable solutions for societal and global challenges.',
 };
 
 const DOC_FACULTY = [
@@ -134,9 +131,8 @@ const LABS = [
   { name: 'E-Waste Facility (Dept. of ECE)' }
 ];
 
-export default function ECEPage() {
-  const data = departmentsData[departmentSlug];
-  if (!data) return notFound();
+export default function DiplomaECEPage() {
+  const data = departmentsData["diploma-electronics-communication"];
   
   // Mapping the static document faculty to the central database if they exist
   const eceFaculty = DOC_FACULTY.map(docF => {
@@ -162,17 +158,17 @@ export default function ECEPage() {
           <div className="max-w-4xl">
             <div className="flex flex-wrap gap-3 mb-6">
               <div className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary font-semibold text-sm border border-primary/20">
-                {data?.programme || 'B.Tech'}
+                {data?.programme || 'Diploma'}
               </div>
               <div className="inline-block px-4 py-1.5 rounded-full bg-slate-100 text-slate-700 font-semibold text-sm border border-slate-200">
-                Duration: 4 Years
+                Duration: {data?.duration || '3 Years'}
               </div>
               <div className="inline-block px-4 py-1.5 rounded-full bg-slate-100 text-slate-700 font-semibold text-sm border border-slate-200">
-                Eligibility: Plus Two / Equivalent
+                Eligibility: {data?.eligibility || 'SSLC / 10th Pass'}
               </div>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-slate-900 mb-6">
-              {data?.name || 'Department of Electronics & Communication Engineering'}
+              {data?.name || 'Diploma in Electronics & Communication'}
             </h1>
             <p className="text-xl md:text-2xl text-slate-600 leading-relaxed mb-8">
               Empowering students to innovate and create sustainable solutions for societal and global challenges.

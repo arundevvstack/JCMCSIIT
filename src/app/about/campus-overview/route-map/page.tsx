@@ -177,7 +177,7 @@ export default function RouteMapPage() {
             </div>
             <div className="flex flex-col sm:flex-row gap-3 shrink-0">
               <Link
-                href="/about/campus/location"
+                href="/about/campus-overview/location"
                 className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-white text-sm font-bold px-5 py-3 rounded-2xl hover:bg-white/20 transition-colors"
               >
                 <MapPin className="w-4 h-4" /> Campus Overview

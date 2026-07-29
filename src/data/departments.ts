@@ -275,8 +275,12 @@ export const departmentsData: Record<string, DepartmentData> = {
     name: "Department of Electrical & Electronics Engineering",
     shortDescription: "Providing education in electrical machines, power systems, automation, and renewable energy.",
     fullDescription: "The department provides education in electrical machines, power systems, automation, renewable energy, embedded technologies and industrial electronics through modern laboratories and industry-oriented learning.",
-    vision: "To be a premier department in electrical and electronics engineering.",
-    mission: "To create electrical engineers with strong technical and analytical skills.",
+    vision: "To provide quality education, training and research in Electrical and Electronics Engineering with integrity, innovation and ethical standards, thereby creating competent professionals who contribute to society",
+    mission: [
+      "To offer industry-relevant, value-based education and training in the field of Electrical and Electronics Engineering.",
+      "To impart quality education that fosters an enterprising spirit, skill development, a broad vision and lifelong learning attitudes among students.",
+      "To encourage innovation, teamwork and the development of emerging technologies in Electrical and Electronics Engineering for the benefit of society."
+    ],
     programme: "B.Tech in Electrical & Electronics Engineering",
     hod: {
       name: "Head of Department",

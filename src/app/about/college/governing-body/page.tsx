@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowLeft, Building2, CheckCircle2, Crown, Shield, BookOpen, Users } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -8,11 +9,11 @@ export const metadata: Metadata = {
 };
 
 const members = [
-  { sl: 1,  name: 'Bishop, South Kerala Diocese',    designation: 'Chairman',        role: 'Society of Technical Training (STT)',          badge: 'Chairman',   badgeColor: 'amber'   },
+  { sl: 1,  name: 'Bishop, South Kerala Diocese',    designation: 'Chairman',        role: 'Society of Technical Training (STT)',          badge: 'Chairman',   badgeColor: 'amber',   image: '/img/bishop_1.png' },
   { sl: 2,  name: 'Er. T. B Sanal Kumar',            designation: 'Secretary',       role: 'Member nominated by STT',                      badge: 'STT Member', badgeColor: 'blue'    },
   { sl: 3,  name: 'Mr. Mohan Kumar',                 designation: 'Manager of STT',  role: 'Member nominated by STT',                      badge: 'STT Member', badgeColor: 'blue'    },
-  { sl: 4,  name: 'Rev. AKHIL RL',                   designation: 'Bursar',          role: 'JCMCSIIT · Member nominated by STT',           badge: 'STT Member', badgeColor: 'blue'    },
-  { sl: 5,  name: 'Dr. Sheeba Jeba Malar J',         designation: 'Dean Academics',  role: 'JCMCSIIT · Faculty Member nominated by STT',   badge: 'Faculty',    badgeColor: 'emerald' },
+  { sl: 4,  name: 'Rev. AKHIL RL',                   designation: 'Bursar',          role: 'JCMCSIIT · Member nominated by STT',           badge: 'STT Member', badgeColor: 'blue',    image: '/img/Leading/Rev. AKHIL RL.jpeg' },
+  { sl: 5,  name: 'Dr. Sheeba Jeba Malar J',         designation: 'Dean Academics',  role: 'JCMCSIIT · Faculty Member nominated by STT',   badge: 'Faculty',    badgeColor: 'emerald', image: '/img/Leading/Dr.Sheeba.Jeba.Malar.webp' },
   { sl: 6,  name: 'Dr. Sanjit J',                    designation: 'Assoc. Prof & HOD ME', role: 'Faculty Member nominated by STT',          badge: 'Faculty',    badgeColor: 'emerald' },
   { sl: 7,  name: 'Dr. Ramesh Unnikrishnan',         designation: 'Nominee of AICTE', role: 'AICTE Representative',                        badge: 'AICTE',      badgeColor: 'violet'  },
   { sl: 8,  name: 'Prof. T. Gnanalal',               designation: 'Educationalist',  role: 'Member nominated by RO',                       badge: 'RO Member',  badgeColor: 'cyan'    },
@@ -20,7 +21,7 @@ const members = [
   { sl: 10, name: 'Prof. Dr. Shalij P.R',            designation: 'DTE',             role: 'Govt. of Kerala · Member nominated by State',  badge: 'Govt.',      badgeColor: 'orange'  },
   { sl: 11, name: 'Prof. Dr. Dorairangaswamy',       designation: 'Member',          role: 'Member nominated by STT',                      badge: 'STT Member', badgeColor: 'blue'    },
   { sl: 12, name: 'Prof. Dr. SasiKumaran Nair',      designation: 'Member',          role: 'Member nominated by STT',                      badge: 'STT Member', badgeColor: 'blue'    },
-  { sl: 13, name: 'Dr. Anshad A.S',                  designation: 'Principal',       role: 'JCMCSIIT · Member Secretary',                  badge: 'Secretary',  badgeColor: 'rose'    },
+  { sl: 13, name: 'Dr. Anshad A.S',                  designation: 'Principal',       role: 'JCMCSIIT · Member Secretary',                  badge: 'Secretary',  badgeColor: 'rose',    image: '/Faculty/Others/Dr.Anshad.A.S.jpg' },
 ];
 
 const functions = [
@@ -122,8 +123,12 @@ export default function GoverningBodyPage() {
             {members.map((m, i) => (
               <div key={m.sl} className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-lg hover:border-blue-200 transition-all duration-300 flex items-start gap-4">
                 {/* Avatar */}
-                <div className={`w-12 h-12 rounded-2xl ${avatarColors[i % avatarColors.length]} flex items-center justify-center shrink-0 text-white font-black text-lg`}>
-                  {m.name.split(' ').find(w => /[A-Z]/.test(w[0]))?.charAt(0) ?? m.sl}
+                <div className={`w-12 h-12 rounded-2xl ${avatarColors[i % avatarColors.length]} flex items-center justify-center shrink-0 text-white font-black text-lg overflow-hidden relative`}>
+                  {m.image ? (
+                    <Image src={m.image} alt={m.name} fill className="object-cover" sizes="48px" />
+                  ) : (
+                    m.name.split(' ').find(w => /[A-Z]/.test(w[0]))?.charAt(0) ?? m.sl
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 mb-1">

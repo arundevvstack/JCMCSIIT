@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, MapPin, Clock, Navigation, Train, Bus, Car, Phone, ExternalLink } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Navigation, Train, Bus, Car, Phone, ExternalLink, Building2, Lightbulb, Users, Trophy, Heart, ShieldCheck } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Campus Location | JCMCSIIT',
@@ -29,17 +29,73 @@ export default function CampusLocationPage() {
         </div>
 
         {/* Hero */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
+        <div className="text-center max-w-4xl mx-auto mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-200 bg-blue-50 mb-6">
             <MapPin className="w-4 h-4 text-blue-600" />
-            <span className="text-sm font-bold text-blue-700 uppercase tracking-widest">Campus & Location</span>
+            <span className="text-sm font-bold text-blue-700 uppercase tracking-widest">Campus Overview</span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 mb-5">
-            Find <span className="text-blue-600">Our Campus</span>
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 mb-6">
+            Engineering the <span className="text-blue-600">Intelligence of Tomorrow</span>
           </h1>
-          <p className="text-slate-500 text-lg leading-relaxed">
-            Strategically located in the heart of Thiruvananthapuram, our campus is easily accessible from all major transport hubs.
+          <p className="text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto">
+            <strong className="text-slate-900">John Cox Memorial CSI Institute of Technology (JIT)</strong> is situated at Kannammoola, Thiruvananthapuram, in a serene and academically enriching environment that fosters learning, innovation, research, and holistic development. Strategically located on the Kannammoola–Medical College Road, the campus enjoys excellent connectivity to major transportation hubs and important landmarks, making it easily accessible for students, faculty, and visitors.
           </p>
+        </div>
+
+        {/* Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-20 max-w-5xl mx-auto">
+          {[
+            {
+              icon: Building2,
+              title: "Modern Infrastructure",
+              color: "text-blue-600",
+              bgColor: "bg-blue-50",
+              desc: "Thoughtfully designed with spacious and ICT-enabled classrooms, well-equipped laboratories, advanced computer centres, smart classrooms, workshops, seminar halls, departmental facilities, and a well-stocked central library with digital learning resources. High-speed internet connectivity and campus-wide Wi-Fi support technology-enabled teaching, learning, and research."
+            },
+            {
+              icon: Lightbulb,
+              title: "Innovation & Entrepreneurship",
+              color: "text-amber-600",
+              bgColor: "bg-amber-50",
+              desc: "Committed to innovation, JIT houses an Innovation Lab, an Institution's Innovation Council (IIC), an active IEDC supported by the Kerala Startup Mission, and an Incubation Centre. IEEE Student Branch provides platforms for technical learning, leadership development, networking, and participation in national and international technical activities."
+            },
+            {
+              icon: Users,
+              title: "Holistic Development",
+              color: "text-purple-600",
+              bgColor: "bg-purple-50",
+              desc: "Promoting excellence beyond academics, students actively participate in NSS, professional societies, technical clubs, cultural associations, and various co-curricular and extracurricular activities that cultivate leadership, teamwork, creativity, and social responsibility."
+            },
+            {
+              icon: Trophy,
+              title: "Sports & Recreation",
+              color: "text-emerald-600",
+              bgColor: "bg-emerald-50",
+              desc: "Excellent sports facilities encourage physical fitness and team spirit. Students have access to a football ground, basketball court, volleyball court, and indoor games facilities. A spacious auditorium and seminar halls serve as venues for academic conferences, technical festivals, cultural programmes, workshops, and institutional events."
+            },
+            {
+              icon: Heart,
+              title: "Student Welfare & Values",
+              color: "text-rose-600",
+              bgColor: "bg-rose-50",
+              desc: "A hygienic cafeteria, transportation facilities, counselling, mentoring services, medical support, common rooms, adequate parking facilities, and a safe, eco-friendly environment. Reflecting the values of the Church of South India, the campus includes a chapel for prayer, reflection, and spiritual enrichment."
+            },
+            {
+              icon: ShieldCheck,
+              title: "Inspiring Environment",
+              color: "text-cyan-600",
+              bgColor: "bg-cyan-50",
+              desc: "With continuous surveillance, disciplined campus management, and robust student support systems, JIT ensures a secure and welcoming atmosphere. The blend of modern infrastructure, experienced faculty, and strong ethical foundation prepares students to become competent professionals and responsible citizens."
+            }
+          ].map((feature, i) => (
+            <div key={i} className="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm hover:shadow-md transition-shadow group">
+              <div className={`w-12 h-12 rounded-2xl ${feature.bgColor} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                <feature.icon className={`w-6 h-6 ${feature.color}`} />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">{feature.title}</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">{feature.desc}</p>
+            </div>
+          ))}
         </div>
 
         {/* Address + CTA Card */}
@@ -186,7 +242,7 @@ export default function CampusLocationPage() {
             </div>
             <div className="flex gap-3 shrink-0">
               <Link
-                href="/about/campus/route-map"
+                href="/about/campus-overview/route-map"
                 className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-white text-sm font-bold px-5 py-3 rounded-2xl hover:bg-white/20 transition-colors"
               >
                 <Navigation className="w-4 h-4" /> View Route Map

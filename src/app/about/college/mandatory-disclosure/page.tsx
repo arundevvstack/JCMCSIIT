@@ -50,12 +50,12 @@ const disclosureSections = [
 ];
 
 const programs = [
-  { name: 'Artificial Intelligence & Machine Learning', code: 'AI&ML', intake: 60  },
+  { name: 'Artificial Intelligence & Machine Learning', code: 'AI&ML', intake: 30  },
   { name: 'Biomedical & Robotic Engineering',           code: 'BME',   intake: 30  },
-  { name: 'Computer Science & Engineering',             code: 'CSE',   intake: 120 },
-  { name: 'Electronics & Communication Engineering',    code: 'ECE',   intake: 60  },
-  { name: 'Electrical & Electronics Engineering',       code: 'EEE',   intake: 60  },
-  { name: 'Mechanical Engineering',                     code: 'ME',    intake: 60  },
+  { name: 'Computer Science & Engineering',             code: 'CSE',   intake: 60  },
+  { name: 'Electronics & Communication Engineering',    code: 'ECE',   intake: 30  },
+  { name: 'Electrical & Electronics Engineering',       code: 'EEE',   intake: 30  },
+  { name: 'Mechanical Engineering',                     code: 'ME',    intake: 30  },
   { name: 'Civil Engineering',                          code: 'CE',    intake: 60  },
 ];
 

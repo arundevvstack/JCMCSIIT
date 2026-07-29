@@ -21,8 +21,8 @@ export function FeaturedLegacy() {
       {/* Background Image with Parallax */}
       <motion.div style={{ y }} className="absolute inset-0 z-0 scale-125 origin-center">
         <Image
-          src="/campus/featured_legacy.png"
-          alt="JCMCSIIT Library and Legacy"
+          src="/images/about/campus-1.jpg"
+          alt="JCMCSIIT Campus and Legacy"
           fill
           className="object-cover opacity-60"
           sizes="100vw"

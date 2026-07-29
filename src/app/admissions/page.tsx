@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { CheckCircle2, Calendar, FileText, PhoneCall, Bot, ArrowRight } from "lucide-react";
+import { CheckCircle2, Calendar, FileText, PhoneCall, Bot, ArrowRight, Mail } from "lucide-react";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -64,9 +64,9 @@ export default function AdmissionsPage() {
                     Schedule a 1-on-1 session with our admission experts.
                   </p>
                 </div>
-                <button className="w-full py-3.5 rounded-xl bg-white border border-slate-200/80 text-slate-900 font-semibold hover:bg-slate-50 transition-colors shadow-sm">
+                <a href="tel:+919496981555" className="block w-full text-center py-3.5 rounded-xl bg-white border border-slate-200/80 text-slate-900 font-semibold hover:bg-slate-50 transition-colors shadow-sm">
                   Schedule Call
-                </button>
+                </a>
               </div>
               
               <div className="bg-slate-50/50 p-10 rounded-[2rem] border border-slate-100/80 flex flex-col justify-between group hover:bg-white hover:border-slate-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300">
@@ -77,9 +77,9 @@ export default function AdmissionsPage() {
                     Up to 100% scholarships for meritorious students.
                   </p>
                 </div>
-                <button className="w-full py-3.5 rounded-xl bg-white border border-slate-200/80 text-slate-900 font-semibold hover:bg-slate-50 transition-colors shadow-sm">
+                <Link href="/admissions/fees-scholarships" className="block w-full text-center py-3.5 rounded-xl bg-white border border-slate-200/80 text-slate-900 font-semibold hover:bg-slate-50 transition-colors shadow-sm">
                   View Details
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -99,31 +99,22 @@ export default function AdmissionsPage() {
               </button>
             </div>
 
-            {/* AI Assistant Placeholder */}
-            <div className="bg-slate-50/50 p-8 rounded-[2rem] border border-slate-100 relative overflow-hidden group">
-              <div className="flex items-start gap-4 mb-6 relative z-10">
-                <div className="h-12 w-12 rounded-full bg-white border border-slate-200 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-                  <Bot className="h-6 w-6 text-slate-900" />
-                </div>
-                <div className="pt-1">
-                  <h3 className="font-bold text-slate-900">AI Assistant</h3>
-                  <p className="text-[11px] font-bold uppercase text-green-600 tracking-wider flex items-center gap-1.5 mt-0.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                    Online
-                  </p>
-                </div>
-              </div>
-              <div className="bg-white rounded-2xl p-5 text-sm text-slate-600 font-medium border border-slate-200 mb-6 relative z-10 shadow-sm leading-relaxed">
-                "Hi! I can help you find the right course, explain fee structures, or check your eligibility. What would you like to know?"
-              </div>
-              <button className="w-full py-3.5 rounded-xl bg-white border border-slate-200/80 text-slate-900 font-semibold hover:bg-slate-50 transition-colors relative z-10 shadow-sm flex items-center justify-center gap-2">
-                Start Chat <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
+
             
-            <div className="flex items-center justify-center gap-3 text-sm font-semibold text-slate-600 mt-4 bg-white py-4 rounded-xl border border-slate-200/80 shadow-sm">
-              <PhoneCall className="h-4 w-4 text-slate-400" />
-              <span>WhatsApp: +91 9496981555</span>
+            <div className="flex flex-col gap-3 mt-4 bg-white p-6 rounded-[1.5rem] border border-slate-200/80 shadow-sm">
+              <h4 className="font-semibold text-slate-900 mb-2">Contact Admissions</h4>
+              <a href="https://wa.me/919496981555" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm font-semibold text-slate-600 hover:text-green-600 transition-colors">
+                <PhoneCall className="h-4 w-4" />
+                <span>WhatsApp: +91 9496981555</span>
+              </a>
+              <a href="tel:+919496981555" className="flex items-center gap-3 text-sm font-semibold text-slate-600 hover:text-primary transition-colors">
+                <PhoneCall className="h-4 w-4" />
+                <span>Call: +91 9496981555</span>
+              </a>
+              <a href="mailto:admissions@jcmcsiit.ac.in" className="flex items-center gap-3 text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">
+                <Mail className="h-4 w-4" />
+                <span>admissions@jcmcsiit.ac.in</span>
+              </a>
             </div>
           </div>
         </div>

@@ -13,7 +13,7 @@ export interface DepartmentData {
   fullDescription: string;
   programme: string;
   vision?: string;
-  mission?: string;
+  mission?: string | string[];
   hod?: {
     name: string;
     message: string;
