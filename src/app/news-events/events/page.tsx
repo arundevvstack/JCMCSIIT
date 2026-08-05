@@ -9,31 +9,34 @@ export const metadata: Metadata = {
 
 const events = [
   {
-    id: "hackathon-2026",
-    title: "AI & Web3 Hackathon 2026",
-    date: "March 15, 2026",
-    time: "09:00 AM - 48 Hours",
-    location: "Main Auditorium",
-    category: "Technical",
-    description: "Join the largest student-led hackathon in Kerala. Build the future of AI and decentralized web applications."
+    id: "poster-design-2026",
+    title: "Poster Design Competition: Future Powered by Signal Processing",
+    date: "August 07, 2026",
+    time: "Deadline: 11:59 PM",
+    location: "Online Submission",
+    category: "COMPETITION",
+    description: "The IEEE SPS SBC JCMCSIIT proudly presents a Poster Design Competition, inviting students to showcase their creativity by designing a poster based on the theme 'Future Powered by Signal Processing'.",
+    registerLink: "https://forms.gle/5HC4uC6KjMNHRrXq5",
+    detailsLink: "https://drive.google.com/file/d/1kukx4zKKA3bGCxca4L-YifMhsbAWdAA4/view?usp=sharing",
+    detailsText: "Rules & Regulations"
   },
   {
-    id: "tech-symposium",
-    title: "National Tech Symposium: INNOVA",
-    date: "April 02, 2026",
-    time: "10:00 AM - 05:00 PM",
-    location: "Conference Hall B",
-    category: "Symposium",
-    description: "A gathering of industry leaders, researchers, and students to discuss the impact of quantum computing."
+    id: "green-energy-2026",
+    title: "Green Energy Solutions: Building a Sustainable World",
+    date: "TBA",
+    time: "TBA",
+    location: "Seminar Hall",
+    category: "SEMINAR",
+    description: "Join us for an insightful seminar on building a sustainable, carbon-neutral world.",
   },
   {
-    id: "cultural-fest",
-    title: "SANSKRITI '26 - Annual Cultural Fest",
-    date: "April 20, 2026",
-    time: "05:00 PM onwards",
-    location: "Open Air Theatre",
-    category: "Cultural",
-    description: "Experience the vibrant culture of JCMCSIIT with music, dance, art, and theatrical performances."
+    id: "btech-admissions-2026",
+    title: "B.Tech Admissions Open 2026",
+    date: "August 01, 2026",
+    time: "Apply Now",
+    location: "Admission Office",
+    category: "ADMISSION",
+    description: "B.Tech Admissions for the 2026 academic year are now open. Secure your seat today."
   }
 ];
 
@@ -47,7 +50,7 @@ export default function EventsPage() {
             Campus Events.
           </h1>
           <p className="text-slate-500 max-w-2xl text-xl leading-relaxed">
-            From intense 48-hour hackathons to vibrant cultural festivals, explore what's happening at JCMCSIIT.
+            Explore what's happening at JCMCSIIT.
           </p>
         </div>
 
@@ -76,12 +79,26 @@ export default function EventsPage() {
               </div>
               
               <div className="md:w-48 shrink-0 flex flex-col gap-3 w-full">
-                <button className="w-full py-3 rounded-xl bg-foreground text-white font-semibold hover:bg-foreground/90 transition-colors shadow-sm">
-                  Register Now
-                </button>
-                <button className="w-full py-3 rounded-xl bg-white border border-slate-200 text-foreground font-semibold hover:bg-slate-50 transition-colors shadow-sm flex items-center justify-center gap-2">
-                  Details <ArrowRight className="h-4 w-4" />
-                </button>
+                {event.registerLink && (
+                  <Link 
+                    href={event.registerLink} 
+                    target={event.registerLink.startsWith("http") ? "_blank" : undefined}
+                    rel={event.registerLink.startsWith("http") ? "noopener noreferrer" : undefined}
+                    className="w-full py-3 rounded-xl bg-foreground text-white font-semibold hover:bg-foreground/90 transition-colors shadow-sm flex items-center justify-center text-center text-sm"
+                  >
+                    Register Now
+                  </Link>
+                )}
+                {event.detailsLink && (
+                  <Link 
+                    href={event.detailsLink}
+                    target={event.detailsLink.startsWith("http") ? "_blank" : undefined}
+                    rel={event.detailsLink.startsWith("http") ? "noopener noreferrer" : undefined}
+                    className="w-full py-3 rounded-xl bg-white border border-slate-200 text-foreground font-semibold hover:bg-slate-50 transition-colors shadow-sm flex items-center justify-center gap-2 text-sm text-center"
+                  >
+                    {event.detailsText || "Details"} <ArrowRight className="h-4 w-4" />
+                  </Link>
+                )}
               </div>
 
             </div>

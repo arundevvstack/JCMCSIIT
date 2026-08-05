@@ -101,14 +101,6 @@ export function UpcomingEvents() {
           ))}
         </div>
 
-        <div className="flex justify-center">
-          <Link
-            href="/news-events/events"
-            className="inline-flex items-center justify-center px-10 py-3 bg-[#1c4762] text-white font-bold rounded-md hover:bg-[#102e41] transition-colors duration-300"
-          >
-            More events
-          </Link>
-        </div>
       </div>
     </section>
   );
