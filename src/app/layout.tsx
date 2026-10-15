@@ -5,6 +5,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { SmartFooter } from "@/components/layout/smart-footer";
 import { NewsTicker } from "@/components/layout/news-ticker";
 import { SchemaOrg } from "@/components/schema-org";
+import { GraduationPopup } from "@/components/layout/graduation-popup";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -55,6 +56,7 @@ export default function RootLayout({
           {children}
         </div>
         <SmartFooter />
+        <GraduationPopup />
       </body>
     </html>
   );
