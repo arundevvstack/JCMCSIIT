@@ -2,8 +2,23 @@
 
 import { ParallaxImage } from "@/components/ui/parallax-image";
 import Link from "next/link";
+import { GRADUATION_EVENT, GRADUATION_EVENT_PATH } from "@/lib/graduation-event";
 
 const eventsData = [
+  {
+    id: 0,
+    title: GRADUATION_EVENT.title,
+    category: GRADUATION_EVENT.category,
+    image: GRADUATION_EVENT.poster,
+    month: GRADUATION_EVENT.month,
+    day: GRADUATION_EVENT.day,
+    time: `${GRADUATION_EVENT.date} · ${GRADUATION_EVENT.time} · ${GRADUATION_EVENT.location} · Register by ${GRADUATION_EVENT.registrationDeadline}`,
+    contain: true,
+    links: [
+      { text: "Register Now", url: GRADUATION_EVENT.registerLink },
+      { text: "Event Details", url: GRADUATION_EVENT_PATH },
+    ],
+  },
   {
     id: 1,
     title: "Poster Design Competition: Future Powered by Signal Processing",
@@ -51,6 +66,16 @@ export function UpcomingEvents() {
           {eventsData.map((event) => (
             <div key={event.id} className="group flex flex-col bg-white shadow-sm hover:shadow-lg transition-all duration-300 h-full border border-slate-100 relative">
               <Link href={event.links ? event.links[0].url : "/news-events/events"} className="relative w-full aspect-[4/5] overflow-hidden bg-slate-200 block">
+                {event.contain ? (
+                  // Original poster shown in full — no cropping or parallax scaling.
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={event.image}
+                    alt={`${event.title} poster`}
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-contain"
+                  />
+                ) : (
                 <ParallaxImage
                   src={event.image}
                   alt={event.title}
@@ -59,12 +84,15 @@ export function UpcomingEvents() {
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                   offset={10}
                 />
+                )}
                 
                 {/* Date Badge overlay */}
+                {!event.contain && (
                 <div className="absolute bottom-0 left-0 bg-[#1c1c1c] text-white flex flex-col items-center justify-center w-16 h-16 pointer-events-none">
                   <span className="text-[10px] font-bold tracking-widest uppercase">{event.month}</span>
                   <span className="text-2xl font-bold leading-none">{event.day}</span>
                 </div>
+                )}
               </Link>
               
               <div className="p-6 flex flex-col flex-1">

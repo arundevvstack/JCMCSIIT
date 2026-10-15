@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { GRADUATION_EVENT } from "@/lib/graduation-event";
 
-const POSTER_SRC = "/pinnacle.jpeg";
-const REGISTRATION_URL = "https://forms.gle/qGvnmm5juaKoggiv5";
+const POSTER_SRC = GRADUATION_EVENT.poster;
+const REGISTRATION_URL = GRADUATION_EVENT.registerLink;
 
 /**
  * Graduation & Course Completion Ceremony 2026 announcement popup.

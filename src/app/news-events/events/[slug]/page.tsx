@@ -1,9 +1,21 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Clock, MapPin, Users, Share2 } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, MapPin, Users, Share2, Hourglass } from "lucide-react";
+import { GRADUATION_EVENT } from "@/lib/graduation-event";
 
 const getEventData = (slug: string) => {
   const events: Record<string, any> = {
+    [GRADUATION_EVENT.slug]: {
+      title: GRADUATION_EVENT.title,
+      date: GRADUATION_EVENT.date,
+      time: GRADUATION_EVENT.time,
+      location: GRADUATION_EVENT.location,
+      category: GRADUATION_EVENT.category,
+      deadline: GRADUATION_EVENT.registrationDeadline,
+      registerLink: GRADUATION_EVENT.registerLink,
+      image: GRADUATION_EVENT.poster,
+      description: GRADUATION_EVENT.description,
+    },
     "hackathon-2026": {
       title: "AI & Web3 Hackathon 2026",
       date: "March 15, 2026",
@@ -68,8 +80,27 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
           <div className="flex items-center gap-2"><Calendar className="h-4 w-4 text-slate-400" /> {event.date}</div>
           <div className="flex items-center gap-2"><Clock className="h-4 w-4 text-slate-400" /> {event.time}</div>
           <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-slate-400" /> {event.location}</div>
-          <div className="flex items-center gap-2"><Users className="h-4 w-4 text-slate-400" /> {event.registrations} Registrations</div>
+          {event.deadline && (
+            <div className="flex items-center gap-2"><Hourglass className="h-4 w-4 text-slate-400" /> Register by {event.deadline}</div>
+          )}
+          {event.registrations && (
+            <div className="flex items-center gap-2"><Users className="h-4 w-4 text-slate-400" /> {event.registrations} Registrations</div>
+          )}
         </div>
+
+        {event.image && (
+          <div className="mb-12 flex justify-center">
+            {/* Original poster, displayed uncropped and unaltered. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={event.image}
+              alt={`${event.title} poster`}
+              width={1054}
+              height={1492}
+              className="w-full max-w-xl h-auto object-contain rounded-2xl shadow-lg"
+            />
+          </div>
+        )}
 
         <div className="prose prose-slate prose-lg max-w-none mb-16">
           {event.description.split("\n\n").map((para: string, i: number) => (
@@ -78,9 +109,21 @@ export default async function EventDetailPage({ params }: { params: Promise<{ sl
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4">
-          <button className="h-14 px-8 rounded-xl bg-foreground text-white font-semibold hover:bg-foreground/90 transition-all shadow-lg text-lg">
-            Register Now
-          </button>
+          {event.registerLink ? (
+            <a
+              id="event-register-now"
+              href={event.registerLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-14 px-8 rounded-xl bg-foreground text-white font-semibold hover:bg-foreground/90 transition-all shadow-lg text-lg flex items-center justify-center"
+            >
+              Register Now
+            </a>
+          ) : (
+            <button className="h-14 px-8 rounded-xl bg-foreground text-white font-semibold hover:bg-foreground/90 transition-all shadow-lg text-lg">
+              Register Now
+            </button>
+          )}
           <button className="h-14 px-8 rounded-xl bg-white border border-slate-200 text-foreground font-semibold hover:bg-slate-50 transition-colors shadow-sm flex items-center justify-center gap-2 text-lg">
             <Share2 className="h-5 w-5 text-slate-400" /> Share Event
           </button>

@@ -1,13 +1,43 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Calendar as CalendarIcon, MapPin, Clock, ArrowRight } from "lucide-react";
+import { Calendar as CalendarIcon, MapPin, Clock, ArrowRight, Hourglass } from "lucide-react";
+import { GRADUATION_EVENT, GRADUATION_EVENT_PATH } from "@/lib/graduation-event";
 
 export const metadata: Metadata = {
   title: "Events & Workshops | JCMCSIIT",
   description: "Discover upcoming tech symposiums, hackathons, and cultural events at JCMCSIIT.",
 };
 
-const events = [
+type EventItem = {
+  id: string;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  category: string;
+  description: string;
+  registerLink?: string;
+  detailsLink?: string;
+  detailsText?: string;
+  image?: string;
+  deadline?: string;
+};
+
+const events: EventItem[] = [
+  {
+    id: GRADUATION_EVENT.slug,
+    title: GRADUATION_EVENT.title,
+    date: GRADUATION_EVENT.date,
+    time: GRADUATION_EVENT.time,
+    location: GRADUATION_EVENT.location,
+    category: GRADUATION_EVENT.category,
+    description: GRADUATION_EVENT.description,
+    registerLink: GRADUATION_EVENT.registerLink,
+    detailsLink: GRADUATION_EVENT_PATH,
+    detailsText: "Event Details",
+    image: GRADUATION_EVENT.poster,
+    deadline: GRADUATION_EVENT.registrationDeadline,
+  },
   {
     id: "poster-design-2026",
     title: "Poster Design Competition: Future Powered by Signal Processing",
@@ -58,6 +88,25 @@ export default function EventsPage() {
           {events.map((event) => (
             <div key={event.id} className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col md:flex-row gap-8 items-start md:items-center">
               
+              {event.image && (
+                <a
+                  href={event.registerLink ?? event.image}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full md:w-44 shrink-0 rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 block"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={event.image}
+                    alt={`${event.title} poster`}
+                    width={1054}
+                    height={1492}
+                    loading="lazy"
+                    className="w-full h-auto object-contain"
+                  />
+                </a>
+              )}
+
               <div className="flex-1">
                 <span className="inline-block px-3 py-1 rounded-full bg-slate-50 border border-slate-100 text-xs font-semibold text-primary mb-4 uppercase tracking-wider">
                   {event.category}
@@ -75,6 +124,11 @@ export default function EventsPage() {
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 text-slate-400" /> {event.location}
                   </div>
+                  {event.deadline && (
+                    <div className="flex items-center gap-2">
+                      <Hourglass className="h-4 w-4 text-slate-400" /> Register by {event.deadline}
+                    </div>
+                  )}
                 </div>
               </div>
               
