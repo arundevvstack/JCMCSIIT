@@ -32,7 +32,11 @@ export const OFFICIAL_PRINCIPAL_MESSAGE: PrincipalMessageData = {
     designation: "Principal",
     institutionName: "John Cox Memorial CSI Institute of Technology",
     additionalRole: "Chairman of John Cox Memorial CSI Institute of Technology",
-    imagePath: "/images/principal.jpg",
+    imagePath: "/images/principal%20image.jpeg",
     imageAlt:
         "Dr. Kim J. Seelan, Principal of John Cox Memorial CSI Institute of Technology.",
 };
+
+export function resolvePrincipalImageSrc(imagePath: string): string {
+    return imagePath.trim().replace(/ /g, "%20");
+}

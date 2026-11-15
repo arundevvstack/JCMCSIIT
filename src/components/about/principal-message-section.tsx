@@ -1,7 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Award, Quote } from "lucide-react";
-import type { PrincipalMessageData } from "@/data/principal-message";
+import {
+    resolvePrincipalImageSrc,
+    type PrincipalMessageData,
+} from "@/data/principal-message";
 
 export function PrincipalMessageSection({
     content,
@@ -49,10 +52,12 @@ export function PrincipalMessageSection({
                             <div className="p-4 sm:p-5 bg-slate-50/70 border-b border-slate-100">
                                 <div className="overflow-hidden rounded-2xl bg-slate-100 border border-slate-200/70 shadow-sm">
                                     <Image
-                                        src={content.imagePath}
+                                        src={resolvePrincipalImageSrc(
+                                            content.imagePath
+                                        )}
                                         alt={content.imageAlt}
-                                        width={800}
-                                        height={1000}
+                                        width={910}
+                                        height={1058}
                                         unoptimized
                                         priority
                                         className="w-full h-auto block"

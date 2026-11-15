@@ -3,7 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Quote } from "lucide-react";
-import { OFFICIAL_PRINCIPAL_MESSAGE } from "@/data/principal-message";
+import {
+    OFFICIAL_PRINCIPAL_MESSAGE,
+    resolvePrincipalImageSrc,
+} from "@/data/principal-message";
 
 export function PrincipalMessagePreview() {
     const content = OFFICIAL_PRINCIPAL_MESSAGE;
@@ -17,10 +20,12 @@ export function PrincipalMessagePreview() {
                         <div className="lg:col-span-4">
                             <div className="max-w-sm mx-auto lg:max-w-none rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-md">
                                 <Image
-                                    src={content.imagePath}
+                                    src={resolvePrincipalImageSrc(
+                                        content.imagePath
+                                    )}
                                     alt={content.imageAlt}
-                                    width={800}
-                                    height={1000}
+                                    width={910}
+                                    height={1058}
                                     unoptimized
                                     className="w-full h-auto block"
                                 />
