@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, Geist_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/layout/navbar";
 import { SmartFooter } from "@/components/layout/smart-footer";
-import { NewsTicker } from "@/components/layout/news-ticker";
 import { SchemaOrg } from "@/components/schema-org";
-import { GraduationPopup } from "@/components/layout/graduation-popup";
+import { RootRouteShell } from "@/components/layout/root-route-shell";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -49,14 +47,10 @@ export default function RootLayout({
         <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,300,400&f[]=clash-display@200,400,700,500,600,300&display=swap" rel="stylesheet" />
         <SchemaOrg />
       </head>
-      <body suppressHydrationWarning className="min-h-full flex flex-col font-sans pt-20">
-        <NewsTicker />
-        <Navbar />
-        <div className="flex-1">
+      <body suppressHydrationWarning className="min-h-full flex flex-col font-sans">
+        <RootRouteShell footer={<SmartFooter />}>
           {children}
-        </div>
-        <SmartFooter />
-        <GraduationPopup />
+        </RootRouteShell>
       </body>
     </html>
   );

@@ -1,38 +1,28 @@
-import { NextResponse } from 'next/server';
-import { openai } from '@ai-sdk/openai';
-import { generateText } from 'ai';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { NextResponse } from "next/server";
+import { openai } from "@ai-sdk/openai";
+import { generateText } from "ai";
+import { AdminAuthError, requireAdminRole } from "@/lib/auth/rbac";
 
 export async function POST(req: Request) {
-  try {
-    // 1. Authenticate Request
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mock.supabase.co',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'mock',
-      {
-        cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value;
-          },
-        },
-      }
-    );
+    try {
+        await requireAdminRole(["SUPER_ADMIN", "ADMIN", "EDITOR"]);
 
-    const { data: { user } } = await supabase.auth.getUser();
+        const body = (await req.json()) as {
+            content?: unknown;
+            instruction?: unknown;
+        };
+        const content = typeof body.content === "string" ? body.content : "";
+        const instruction =
+            typeof body.instruction === "string" ? body.instruction : "";
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+        if (!content.trim()) {
+            return NextResponse.json(
+                { error: "Content is required" },
+                { status: 400 }
+            );
+        }
 
-    const { content, instruction } = await req.json();
-
-    if (!content) {
-      return NextResponse.json({ error: 'Content is required' }, { status: 400 });
-    }
-
-    const systemPrompt = `You are an expert academic editor and content strategist for John Cox Memorial CSI Institute of Technology (JCMCSIIT).
+        const systemPrompt = `You are an expert academic editor and content strategist for John Cox Memorial CSI Institute of Technology (JCMCSIIT).
 You format raw text into premium, elite, highly readable Markdown suitable for a world-class university website.
 Adhere to these rules:
 1. Use professional, inspiring academic tone (like Oxford or MIT).
@@ -42,15 +32,24 @@ Adhere to these rules:
 
 Specific user instruction: ${instruction || "Enhance for professionalism, clarity, and formatting."}`;
 
-    const { text } = await generateText({
-      model: openai('gpt-4o-mini'),
-      system: systemPrompt,
-      prompt: content,
-    });
+        const { text } = await generateText({
+            model: openai("gpt-4o-mini"),
+            system: systemPrompt,
+            prompt: content,
+        });
 
-    return NextResponse.json({ enhancedContent: text });
-  } catch (error: any) {
-    console.error("AI Enhance Error:", error);
-    return NextResponse.json({ error: 'Failed to enhance content' }, { status: 500 });
-  }
+        return NextResponse.json({ enhancedContent: text });
+    } catch (error: unknown) {
+        if (error instanceof AdminAuthError) {
+            return NextResponse.json(
+                { error: error.message },
+                { status: error.status }
+            );
+        }
+        console.error("AI Enhance Error:", error);
+        return NextResponse.json(
+            { error: "Failed to enhance content" },
+            { status: 500 }
+        );
+    }
 }

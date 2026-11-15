@@ -1,214 +1,434 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Plus, Save, Trash2, Search, FileText } from "lucide-react";
 import { savePage, deletePage } from "@/actions/cms";
-import { Plus, Save, Trash2, Globe, Lock, Search, FileText } from "lucide-react";
+import type { AdminRole } from "@/lib/auth/rbac";
+import { AdminStatusBadge } from "@/components/admin/admin-primitives";
 
-type PageData = {
-  id: string;
-  slug: string;
-  title: string;
-  content: string;
-  is_published: boolean;
-  updated_at: string;
+export type PageData = {
+    id: string;
+    slug: string;
+    route_path?: string | null;
+    title: string;
+    subtitle?: string | null;
+    summary?: string | null;
+    content: string;
+    status?: string;
+    integration_status?: string;
+    is_published: boolean;
+    updated_at: string;
 };
 
-export default function PagesManager({ initialPages }: { initialPages: PageData[] }) {
-  const [pages, setPages] = useState<PageData[]>(initialPages);
-  const [activePageId, setActivePageId] = useState<string | null>(initialPages[0]?.id || null);
-  const [isSaving, setIsSaving] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+export default function PagesManager({
+    initialPages,
+    role = "ADMIN",
+}: {
+    initialPages: PageData[];
+    role?: AdminRole;
+}) {
+    const router = useRouter();
+    const [isPending, startTransition] = useTransition();
+    const [pages, setPages] = useState<PageData[]>(initialPages);
+    const [activePageId, setActivePageId] = useState<string | null>(
+        initialPages[0]?.id || null
+    );
+    const [searchQuery, setSearchQuery] = useState("");
+    const [feedback, setFeedback] = useState<{
+        type: "success" | "error";
+        text: string;
+    } | null>(null);
 
-  const activePage = pages.find((p) => p.id === activePageId) || {
-    id: "",
-    slug: "",
-    title: "",
-    content: "",
-    is_published: false,
-    updated_at: "",
-  };
+    const canCreate =
+        role === "SUPER_ADMIN" || role === "ADMIN" || role === "EDITOR";
+    const canDelete = role === "SUPER_ADMIN" || role === "ADMIN";
+    const isEditor = role === "EDITOR";
 
-  const handleAddNew = () => {
-    const newPage: PageData = {
-      id: `new-${Date.now()}`,
-      slug: "new-page",
-      title: "New Page",
-      content: "# New Page\\n\\nStart typing here...",
-      is_published: false,
-      updated_at: new Date().toISOString(),
+    const activePage = pages.find((p) => p.id === activePageId) || null;
+
+    const handleAddNew = () => {
+        const newPage: PageData = {
+            id: `new-${Date.now()}`,
+            slug: "new-page",
+            route_path: "/new-page",
+            title: "New Institutional Page",
+            subtitle: "",
+            summary: "",
+            content: "# New Institutional Page\n\nEnter page content here...",
+            status: "draft",
+            integration_status: "pending",
+            is_published: false,
+            updated_at: new Date().toISOString(),
+        };
+        setFeedback(null);
+        setPages([newPage, ...pages]);
+        setActivePageId(newPage.id);
     };
-    setPages([newPage, ...pages]);
-    setActivePageId(newPage.id);
-  };
 
-  const handleChange = (field: keyof PageData, value: string | boolean) => {
-    setPages(pages.map((p) => (p.id === activePageId ? { ...p, [field]: value } : p)));
-  };
+    const handleChange = (field: keyof PageData, value: string | boolean) => {
+        setPages((prev) =>
+            prev.map((p) =>
+                p.id === activePageId ? { ...p, [field]: value } : p
+            )
+        );
+    };
 
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      const formData = new FormData();
-      if (!activePage.id.startsWith("new-")) {
-        formData.append("id", activePage.id);
-      }
-      formData.append("slug", activePage.slug);
-      formData.append("title", activePage.title);
-      formData.append("content", activePage.content);
-      formData.append("is_published", activePage.is_published.toString());
+    const handleSave = () => {
+        if (!activePage) return;
+        setFeedback(null);
 
-      await savePage(formData);
-      alert("Page saved successfully!");
-      // We should ideally refetch or the revalidatePath will handle it on next load, 
-      // but for UX we just update the local state to remove the "new-" prefix if needed.
-    } catch (err: any) {
-      alert("Error saving: " + err.message);
-    }
-    setIsSaving(false);
-  };
+        startTransition(async () => {
+            const formData = new FormData();
+            if (!activePage.id.startsWith("new-")) {
+                formData.append("id", activePage.id);
+            }
+            formData.append("slug", activePage.slug);
+            formData.append("title", activePage.title);
+            formData.append("subtitle", activePage.subtitle ?? "");
+            formData.append("summary", activePage.summary ?? "");
+            formData.append("content", activePage.content);
+            formData.append(
+                "status",
+                isEditor ? "draft" : activePage.status || "draft"
+            );
+            formData.append(
+                "integration_status",
+                activePage.integration_status || "pending"
+            );
 
-  const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this page?")) return;
-    
-    if (!activePage.id.startsWith("new-")) {
-      try {
-        await deletePage(activePage.id);
-      } catch (err: any) {
-        alert("Error deleting: " + err.message);
-        return;
-      }
-    }
-    
-    const newPages = pages.filter((p) => p.id !== activePageId);
-    setPages(newPages);
-    setActivePageId(newPages.length > 0 ? newPages[0].id : null);
-  };
+            const res = await savePage(formData);
+            if (res.ok) {
+                setFeedback({
+                    type: "success",
+                    text: res.message || "Page saved to Supabase.",
+                });
+                router.refresh();
+            } else {
+                setFeedback({
+                    type: "error",
+                    text: res.error || "Failed to save page.",
+                });
+            }
+        });
+    };
 
-  const filteredPages = pages.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()) || p.slug.toLowerCase().includes(searchQuery.toLowerCase()));
+    const handleDelete = () => {
+        if (!activePage) return;
+        if (
+            !window.confirm(
+                `Permanently delete "${activePage.title}" from public.pages?`
+            )
+        ) {
+            return;
+        }
 
-  return (
-    <div className="flex h-full gap-6">
-      {/* Sidebar List */}
-      <div className="w-80 bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col overflow-hidden shrink-0">
-        <div className="p-4 border-b border-slate-200 bg-slate-50">
-          <button 
-            onClick={handleAddNew}
-            className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2.5 rounded-xl font-bold hover:bg-blue-700 transition-colors mb-4"
-          >
-            <Plus className="w-4 h-4" /> Create New Page
-          </button>
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input 
-              type="text" 
-              placeholder="Search pages..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-            />
-          </div>
-        </div>
-        <div className="flex-1 overflow-y-auto p-2 space-y-1">
-          {filteredPages.map((page) => (
-            <button
-              key={page.id}
-              onClick={() => setActivePageId(page.id)}
-              className={`w-full text-left p-3 rounded-xl transition-all ${activePageId === page.id ? 'bg-blue-50 border-blue-200 border' : 'hover:bg-slate-50 border border-transparent'}`}
-            >
-              <div className="font-semibold text-slate-900 truncate">{page.title}</div>
-              <div className="flex items-center justify-between mt-1">
-                <span className="text-xs text-slate-500 truncate">/{page.slug}</span>
-                {page.is_published ? (
-                  <Globe className="w-3 h-3 text-emerald-500" />
-                ) : (
-                  <Lock className="w-3 h-3 text-amber-500" />
-                )}
-              </div>
-            </button>
-          ))}
-          {filteredPages.length === 0 && (
-            <div className="p-4 text-center text-slate-500 text-sm">No pages found.</div>
-          )}
-        </div>
-      </div>
+        if (activePage.id.startsWith("new-")) {
+            const remaining = pages.filter((p) => p.id !== activePageId);
+            setPages(remaining);
+            setActivePageId(remaining[0]?.id || null);
+            return;
+        }
 
-      {/* Editor Main Area */}
-      <div className="flex-1 bg-white rounded-3xl border border-slate-200 shadow-sm flex flex-col overflow-hidden">
-        {activePageId ? (
-          <>
-            {/* Toolbar */}
-            <div className="h-16 border-b border-slate-200 px-6 flex items-center justify-between bg-slate-50 shrink-0">
-              <h2 className="font-bold text-slate-800">Edit Page</h2>
-              <div className="flex items-center gap-3">
-                <label className="flex items-center gap-2 text-sm font-medium text-slate-700 mr-4 cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    checked={activePage.is_published}
-                    onChange={(e) => handleChange("is_published", e.target.checked)}
-                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-4 h-4"
-                  />
-                  Published
-                </label>
-                <button 
-                  onClick={handleDelete}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-bold hover:bg-red-100 transition-colors"
+        startTransition(async () => {
+            const res = await deletePage(activePage.id);
+            if (res.ok) {
+                const remaining = pages.filter((p) => p.id !== activePageId);
+                setPages(remaining);
+                setActivePageId(remaining[0]?.id || null);
+                setFeedback({
+                    type: "success",
+                    text: res.message || "Page deleted.",
+                });
+                router.refresh();
+            } else {
+                setFeedback({
+                    type: "error",
+                    text: res.error || "Failed to delete page.",
+                });
+            }
+        });
+    };
+
+    const filteredPages = pages.filter(
+        (p) =>
+            p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            p.slug.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    return (
+        <div className="space-y-4">
+            {feedback ? (
+                <div
+                    className={`rounded-xl px-4 py-3 text-xs font-medium border ${
+                        feedback.type === "success"
+                            ? "bg-emerald-950/40 border-emerald-500/30 text-emerald-200"
+                            : "bg-red-950/40 border-red-500/30 text-red-200"
+                    }`}
                 >
-                  <Trash2 className="w-4 h-4" /> Delete
-                </button>
-                <button 
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  className="flex items-center gap-2 px-6 py-2 bg-slate-900 text-white rounded-lg text-sm font-bold hover:bg-slate-800 transition-colors disabled:opacity-70"
-                >
-                  <Save className="w-4 h-4" /> {isSaving ? "Saving..." : "Save Changes"}
-                </button>
-              </div>
-            </div>
-
-            {/* Editor Form */}
-            <div className="flex-1 overflow-y-auto p-8 flex flex-col gap-6">
-              <div className="grid grid-cols-2 gap-6 shrink-0">
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">Page Title</label>
-                  <input 
-                    type="text" 
-                    value={activePage.title}
-                    onChange={(e) => handleChange("title", e.target.value)}
-                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-medium transition-all"
-                  />
+                    {feedback.text}
                 </div>
-                <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-2">URL Slug</label>
-                  <div className="flex items-center">
-                    <span className="px-4 py-2 bg-slate-100 border border-r-0 border-slate-200 rounded-l-xl text-slate-500 text-sm">/</span>
-                    <input 
-                      type="text" 
-                      value={activePage.slug}
-                      onChange={(e) => handleChange("slug", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))}
-                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-r-xl focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 font-mono text-sm transition-all"
-                    />
-                  </div>
-                </div>
-              </div>
+            ) : null}
 
-              <div className="flex-1 flex flex-col min-h-[400px]">
-                <label className="block text-sm font-bold text-slate-700 mb-2">Markdown Content</label>
-                <textarea 
-                  value={activePage.content}
-                  onChange={(e) => handleChange("content", e.target.value)}
-                  className="flex-1 w-full bg-slate-50 border border-slate-200 rounded-xl p-6 font-mono text-sm resize-none focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-slate-800"
-                  placeholder="# Enter your markdown here..."
-                />
-              </div>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[620px]">
+                {/* Sidebar List */}
+                <div className="lg:col-span-4 bg-[#12141C] rounded-2xl border border-white/[0.07] flex flex-col overflow-hidden">
+                    <div className="p-4 border-b border-white/[0.07] bg-[#0E1017] space-y-3">
+                        {canCreate ? (
+                            <button
+                                type="button"
+                                onClick={handleAddNew}
+                                className="w-full flex items-center justify-center gap-2 bg-[#D4AF37] hover:bg-[#E5C158] text-[#090A0D] py-2.5 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                            >
+                                <Plus className="w-4 h-4" /> Create New Page
+                            </button>
+                        ) : null}
+                        <div className="relative">
+                            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                            <input
+                                type="text"
+                                placeholder="Search pages..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full pl-9 pr-4 py-2 bg-[#0B0D12] border border-white/[0.08] rounded-xl text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-[#D4AF37]"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-2.5 space-y-1.5 max-h-[540px]">
+                        {filteredPages.map((page) => {
+                            const selected = activePageId === page.id;
+                            return (
+                                <button
+                                    key={page.id}
+                                    type="button"
+                                    onClick={() => setActivePageId(page.id)}
+                                    className={`w-full text-left p-3 rounded-xl border transition-all cursor-pointer ${
+                                        selected
+                                            ? "bg-[#D4AF37]/12 border-[#D4AF37]/35"
+                                            : "hover:bg-white/[0.03] border-transparent"
+                                    }`}
+                                >
+                                    <div className="text-xs font-semibold text-zinc-100 truncate">
+                                        {page.title}
+                                    </div>
+                                    <div className="flex items-center justify-between gap-2 mt-1.5">
+                                        <span className="text-[11px] font-mono text-zinc-400 truncate">
+                                            /{page.slug}
+                                        </span>
+                                        <AdminStatusBadge
+                                            status={
+                                                page.status ||
+                                                (page.is_published
+                                                    ? "published"
+                                                    : "draft")
+                                            }
+                                        />
+                                    </div>
+                                </button>
+                            );
+                        })}
+                        {filteredPages.length === 0 && (
+                            <div className="p-6 text-center text-zinc-500 text-xs">
+                                No page records in Supabase yet.
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Editor Area */}
+                <div className="lg:col-span-8 bg-[#12141C] rounded-2xl border border-white/[0.07] flex flex-col overflow-hidden">
+                    {activePage ? (
+                        <>
+                            <div className="px-6 py-4 border-b border-white/[0.07] bg-[#0E1017] flex flex-wrap items-center justify-between gap-3">
+                                <div>
+                                    <h2 className="text-sm font-bold text-zinc-100">
+                                        Page Editor
+                                    </h2>
+                                    <p className="text-[11px] text-zinc-400">
+                                        Integration:{" "}
+                                        <span className="font-mono text-[#E5C158]">
+                                            {activePage.integration_status ||
+                                                "pending"}
+                                        </span>
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <select
+                                        value={
+                                            isEditor
+                                                ? "draft"
+                                                : activePage.status || "draft"
+                                        }
+                                        disabled={isEditor}
+                                        onChange={(e) =>
+                                            handleChange(
+                                                "status",
+                                                e.target.value
+                                            )
+                                        }
+                                        className="h-9 px-3 rounded-xl bg-[#0B0D12] border border-white/[0.1] text-xs font-semibold text-zinc-200 focus:border-[#D4AF37] outline-none disabled:opacity-60"
+                                    >
+                                        <option value="draft">Draft</option>
+                                        {!isEditor ? (
+                                            <>
+                                                <option value="published">
+                                                    Published
+                                                </option>
+                                                <option value="archived">
+                                                    Archived
+                                                </option>
+                                            </>
+                                        ) : null}
+                                    </select>
+
+                                    {canDelete ? (
+                                        <button
+                                            type="button"
+                                            disabled={isPending}
+                                            onClick={handleDelete}
+                                            className="flex items-center gap-1.5 px-3.5 py-2 bg-red-500/10 text-red-300 border border-red-500/25 rounded-xl text-xs font-bold hover:bg-red-500/20 transition-colors cursor-pointer"
+                                        >
+                                            <Trash2 className="w-3.5 h-3.5" />{" "}
+                                            Delete
+                                        </button>
+                                    ) : null}
+
+                                    <button
+                                        type="button"
+                                        onClick={handleSave}
+                                        disabled={isPending}
+                                        className="flex items-center gap-2 px-5 py-2 bg-[#D4AF37] hover:bg-[#E5C158] text-[#090A0D] rounded-xl text-xs font-bold transition-colors disabled:opacity-60 cursor-pointer"
+                                    >
+                                        <Save className="w-3.5 h-3.5" />{" "}
+                                        {isPending
+                                            ? "Saving..."
+                                            : "Save Page"}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex-1 p-6 space-y-5 overflow-y-auto">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-300 mb-1.5">
+                                            Page Title
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={activePage.title}
+                                            onChange={(e) =>
+                                                handleChange(
+                                                    "title",
+                                                    e.target.value
+                                                )
+                                            }
+                                            className="w-full h-10 px-3.5 bg-[#0B0D12] border border-white/[0.1] rounded-xl focus:outline-none focus:border-[#D4AF37] text-xs text-zinc-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-300 mb-1.5">
+                                            URL Slug (e.g. about/college/profile)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={activePage.slug}
+                                            onChange={(e) =>
+                                                handleChange(
+                                                    "slug",
+                                                    e.target.value
+                                                        .toLowerCase()
+                                                        .replace(
+                                                            /[^a-z0-9-/]/g,
+                                                            "-"
+                                                        )
+                                                )
+                                            }
+                                            className="w-full h-10 px-3.5 bg-[#0B0D12] border border-white/[0.1] rounded-xl focus:outline-none focus:border-[#D4AF37] font-mono text-xs text-zinc-100"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-300 mb-1.5">
+                                            Subtitle (Optional)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={activePage.subtitle ?? ""}
+                                            onChange={(e) =>
+                                                handleChange(
+                                                    "subtitle",
+                                                    e.target.value
+                                                )
+                                            }
+                                            className="w-full h-10 px-3.5 bg-[#0B0D12] border border-white/[0.1] rounded-xl focus:outline-none focus:border-[#D4AF37] text-xs text-zinc-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-300 mb-1.5">
+                                            Frontend Integration Status
+                                        </label>
+                                        <select
+                                            value={
+                                                activePage.integration_status ||
+                                                "pending"
+                                            }
+                                            onChange={(e) =>
+                                                handleChange(
+                                                    "integration_status",
+                                                    e.target.value
+                                                )
+                                            }
+                                            className="w-full h-10 px-3.5 bg-[#0B0D12] border border-white/[0.1] rounded-xl focus:outline-none focus:border-[#D4AF37] text-xs text-zinc-100"
+                                        >
+                                            <option value="pending">
+                                                pending (Awaiting Route Binding)
+                                            </option>
+                                            <option value="code_managed">
+                                                code_managed (Static TSX Active)
+                                            </option>
+                                            <option value="connected">
+                                                connected (Live CMS Bound)
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col">
+                                    <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-300 mb-1.5">
+                                        Markdown Body Content
+                                    </label>
+                                    <textarea
+                                        rows={14}
+                                        value={activePage.content}
+                                        onChange={(e) =>
+                                            handleChange(
+                                                "content",
+                                                e.target.value
+                                            )
+                                        }
+                                        className="w-full bg-[#0B0D12] border border-white/[0.1] rounded-xl p-4 font-mono text-xs focus:outline-none focus:border-[#D4AF37] text-zinc-100"
+                                        placeholder="# Enter structured markdown here..."
+                                    />
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex-1 flex flex-col items-center justify-center p-12 text-center">
+                            <FileText className="w-12 h-12 mb-3 text-[#D4AF37]/40" />
+                            <h3 className="text-sm font-semibold text-zinc-200">
+                                Select or Create a Page
+                            </h3>
+                            <p className="text-xs text-zinc-500 mt-1">
+                                Choose an existing page from the left list or
+                                create a new draft record.
+                            </p>
+                        </div>
+                    )}
+                </div>
             </div>
-          </>
-        ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-slate-400">
-            <FileText className="w-16 h-16 mb-4 opacity-20" />
-            <p className="font-medium text-lg text-slate-500">Select a page to edit or create a new one.</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+        </div>
+    );
 }

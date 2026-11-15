@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Brain, ShieldCheck, Globe, GraduationCap } from "lucide-react";
+import { motion, type Variants } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRef } from "react";
@@ -18,6 +18,7 @@ import { JitCampusGallery } from "@/components/home/jit-campus-gallery";
 import { FloatingActionButtons } from "@/components/layout/floating-action-buttons";
 import { VideoModal } from "@/components/home/video-modal";
 import { DiplomaProgrammes } from "@/components/home/diploma-programmes";
+import { PrincipalMessagePreview } from "@/components/home/principal-message-preview";
 
 const SectionAnimate = ({ children }: { children: React.ReactNode }) => (
   <motion.div
@@ -46,7 +47,7 @@ export default function Home() {
     }
   };
 
-  const wordVariants: any = {
+  const wordVariants: Variants = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
   };
@@ -139,6 +140,7 @@ export default function Home() {
       <SectionAnimate><DiplomaProgrammes /></SectionAnimate>
       
       <SectionAnimate><FeaturedBanner /></SectionAnimate>
+      <SectionAnimate><PrincipalMessagePreview /></SectionAnimate>
 
       <SectionAnimate><CampusLifeGrid /></SectionAnimate>
       <SectionAnimate><UpcomingEvents /></SectionAnimate>
