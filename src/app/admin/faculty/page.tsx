@@ -153,7 +153,7 @@ export default async function AdminFacultyPage() {
                         name: "image_url",
                         label: "Photo URL / Asset Path",
                         type: "url",
-                        placeholder: "/faculty/cse/member.jpg",
+                        placeholder: "e.g. /Faculty/CSE/Vishnukumar_S.jpg",
                         mediaPicker: {
                             category: "image",
                             allowedBuckets: [

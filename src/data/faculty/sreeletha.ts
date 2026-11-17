@@ -6,7 +6,7 @@ export const sreelethaData: Faculty = {
   "name": "Prof. L. Sreeletha",
   "designation": "Associate Professor & HOD",
   "department_id": "civil",
-  "image_url": "/Faculty/Final/L.Sreeletha.jpg",
+  "image_url": "/Faculty/Civil/Sreeletha.jpg",
   "departments": {
     "name": "Civil Engineering",
     "slug": "civil"

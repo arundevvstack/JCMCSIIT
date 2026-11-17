@@ -102,7 +102,7 @@ export default async function AdminNewsPage() {
                         name: "featured_image_url",
                         label: "Featured Image URL",
                         type: "url",
-                        placeholder: "/images/news-banner.jpg",
+                        placeholder: "e.g. /pdf_extracted_assets/urja_event.jpg",
                         colSpan: 2,
                         mediaPicker: {
                             category: "image",

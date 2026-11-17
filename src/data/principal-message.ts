@@ -7,7 +7,6 @@ export interface PrincipalMessageData {
     principalName: string;
     designation: string;
     institutionName: string;
-    additionalRole?: string;
     imagePath: string;
     imageAlt: string;
 }

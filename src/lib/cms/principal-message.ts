@@ -17,7 +17,6 @@ const PrincipalMessageOverrideSchema = z.object({
     principalName: z.string().min(1).optional(),
     designation: z.string().min(1).optional(),
     institutionName: z.string().min(1).optional(),
-    additionalRole: z.string().min(1).optional(),
     imagePath: z.string().min(1).optional(),
     imageAlt: z.string().min(1).optional(),
 });

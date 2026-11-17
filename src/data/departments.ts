@@ -210,7 +210,7 @@ export const departmentsData: Record<string, DepartmentData> = {
     programme: "B.Tech in Civil Engineering",
     hod: {
       name: "Prof. L. Sreeletha",
-      image: "/Faculty/Final/L.Sreeletha.jpg",
+      image: "/Faculty/Civil/Sreeletha.jpg",
       message: "Welcome to the Department of Civil Engineering! Joined the department on 12.09.2009 and currently working as Associate Professor and HOD. Completed B.Tech in Civil Engineering from CET and M.E in Structural Engineering (pursuing Ph.D). With 14 years of professional experience in the construction industry and presentations in international conferences on Seismic Behaviour and Retrofit, I lead our team in providing high-quality technical education and hands-on laboratory training.",
     },
     faculty: [],

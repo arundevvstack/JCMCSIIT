@@ -75,14 +75,6 @@ export function PrincipalMessageSection({
                                 <p className="text-slate-700 font-medium text-sm mt-1">
                                     {content.institutionName}
                                 </p>
-
-                                {content.additionalRole ? (
-                                    <div className="mt-4 pt-4 border-t border-slate-100">
-                                        <p className="text-slate-600 text-sm font-medium leading-snug">
-                                            {content.additionalRole}
-                                        </p>
-                                    </div>
-                                ) : null}
                             </div>
                         </div>
                     </aside>
@@ -124,11 +116,6 @@ export function PrincipalMessageSection({
                                 <p className="text-slate-600 text-sm">
                                     {content.institutionName}
                                 </p>
-                                {content.additionalRole ? (
-                                    <p className="text-slate-600 text-sm mt-1 font-medium">
-                                        {content.additionalRole}
-                                    </p>
-                                ) : null}
                             </div>
                         </div>
                     </article>
