@@ -7,7 +7,7 @@ export interface PrincipalMessageData {
     principalName: string;
     designation: string;
     institutionName: string;
-    additionalRole: string;
+    additionalRole?: string;
     imagePath: string;
     imageAlt: string;
 }
@@ -31,7 +31,6 @@ export const OFFICIAL_PRINCIPAL_MESSAGE: PrincipalMessageData = {
     principalName: "Dr. Kim J. Seelan",
     designation: "Principal",
     institutionName: "John Cox Memorial CSI Institute of Technology",
-    additionalRole: "Chairman of John Cox Memorial CSI Institute of Technology",
     imagePath: "/images/principal%20image.jpeg",
     imageAlt:
         "Dr. Kim J. Seelan, Principal of John Cox Memorial CSI Institute of Technology.",

@@ -1,15 +1,11 @@
 import { Metadata } from 'next';
-import { ContentLayout } from '@/components/layout/content-layout';
+import { IeeeBranchView } from '@/components/cells/ieee-branch-view';
 
 export const metadata: Metadata = {
-  title: 'Ieee | JCMCSIIT',
-  description: 'Ieee at John Cox Memorial C.S.I Institute Of Technology',
+  title: 'IEEE Student Branch & Societies | JCMCSIIT',
+  description: 'IEEE Student Branch and Societies (IEEE SAS SBC, IEEE RAS SBC, IEEE WIE) at John Cox Memorial CSI Institute of Technology.',
 };
 
 export default function Page() {
-  return (
-    <ContentLayout title="Ieee">
-      <p className="text-slate-500 italic">Content under update.</p>
-    </ContentLayout>
-  );
+  return <IeeeBranchView />;
 }

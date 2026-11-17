@@ -22,6 +22,7 @@ import {
     AdminPageHeader,
     AdminStatCard,
     AdminStatusBadge,
+    formatAdminDateTime,
 } from "@/components/admin/admin-primitives";
 
 export interface DashboardSnapshot {
@@ -223,10 +224,10 @@ export function AdminDashboardClient({
                                             <AdminStatusBadge
                                                 status={log.action}
                                             />
-                                            <span className="text-[11px] text-zinc-500 hidden sm:inline">
-                                                {new Date(
+                                            <span className="text-[11px] text-zinc-500 hidden sm:inline font-mono">
+                                                {formatAdminDateTime(
                                                     log.created_at
-                                                ).toLocaleString()}
+                                                )}
                                             </span>
                                         </div>
                                     </div>

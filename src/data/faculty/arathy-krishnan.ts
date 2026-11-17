@@ -3,30 +3,33 @@ import { Faculty } from "@/types/faculty";
 export const arathykrishnanData: Faculty = {
   "id": "arathy-krishnan",
   "slug": "arathy-krishnan",
-  "name": "ARATHY KRISHNAN",
-  "designation": "Assistant professor",
-  "department_id": "ce",
-  "image_url": "/Faculty/Final/ARATHY KRISHNAN.jpg",
+  "name": "Mrs. Arathy Krishnan",
+  "designation": "Assistant Professor",
+  "department_id": "civil",
+  "image_url": "/pdf_extracted_assets/arathy_krishnan.jpg",
   "departments": {
     "name": "Civil Engineering",
-    "slug": "ce"
+    "slug": "civil"
   },
   "profile_data": {
-    "highestQualification": "PG Degree : Geotechnical Engineering",
+    "highestQualification": "M.Tech in Geotechnical Engineering",
     "academicQualifications": [
       {
-        "degree": "PG Degree: Geotechnical Engineering",
-        "institution": "Kalam Technical university",
+        "degree": "M.Tech in Geotechnical Engineering",
+        "institution": "APJ Abdul Kalam Technological University (KTU)",
         "year": "2017-2019"
       },
       {
-        "degree": "Degree: Civil Engineering",
+        "degree": "B.Tech in Civil Engineering",
         "institution": "CUSAT",
         "year": "2013-2017"
       }
     ],
     "areasOfExpertise": [
-      "Geotechnical Engineering"
+      "Geotechnical Engineering",
+      "Slope Stability & Landslide Analysis",
+      "Soil Mechanics",
+      "Environmental Geotechnics"
     ],
     "academicProjects": {
       "pgProjects": [
@@ -36,20 +39,14 @@ export const arathykrishnanData: Faculty = {
         "Thiruvananthapuram Medical college Traffic decongestion plan"
       ]
     },
-    "technicalSkills": {
-      "tools": [
-        "Internship 1: Habitat Technology group, Poojapura, Thiruvananthapuram",
-        "Internship 2: PWD Building Sub Division, Nedumangad"
-      ]
-    },
     "publications": [
-      "Analyszing the effect of eco-DRR practices on slope stability in a landslide-prone transport corridor in the Western Ghats,India. Int. j. Disast. Studies Climate Resil, 2025, 1(1):35-46"
+      "Analyszing the effect of eco-DRR practices on slope stability in a landslide-prone transport corridor in the Western Ghats, India. Int. j. Disast. Studies Climate Resil, 2025, 1(1):35-46."
     ],
     "paperPresentations": [
-      "Thiruvananthapuram Medical college Traffic decongesion plan (Thiruvananthapuram Medical college, 2017)",
-      "Study on reduction of Permeability in Field soil using clay (International Conference on Innovative Trends in Science and Technology ICITST 2018, Sarabhai Institute of Science and Technology, 2018)",
-      "Landslide susceptibility mapping of Ponmudi-Kallar region using TRIGRS (International Conference on Recent Scientific Research in Engineering and Technology, John cox Memorial CSI Institute of Technology, 2019)"
+      "Thiruvananthapuram Medical college Traffic decongestion plan (Thiruvananthapuram Medical college).",
+      "Study on reduction of Permeability in Field soil using clay (International Conference on Innovative Trends in Science and Technology ICITST 2018).",
+      "Landslide susceptibility mapping of Ponmudi-Kallar region using TRIGRS (International Conference on Recent Scientific Research in Engineering and Technology, John cox Memorial CSI Institute of Technology - JIT)."
     ],
-    "teachingExperience": "6 YEARS AND 10 MONTHS"
+    "teachingExperience": "Working as Assistant Professor (Dept. of CE) in John Cox Memorial CSI Institute of Technology, Trivandrum from 08/08/2019 till date (over 6 years 10 months)."
   }
 };

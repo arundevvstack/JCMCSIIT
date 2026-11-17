@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 import { Save, ShieldCheck } from "lucide-react";
 import { updateAdminMemberAction } from "@/actions/cms";
 import type { AdminRole } from "@/lib/auth/rbac";
-import { AdminStatusBadge } from "@/components/admin/admin-primitives";
+import {
+    AdminStatusBadge,
+    formatAdminDateTime,
+} from "@/components/admin/admin-primitives";
 
 export interface AdminUserRow {
     id: string;
@@ -102,9 +105,9 @@ export function UsersManager({
                                 <div className="text-[11px] text-zinc-500 pl-6">
                                     Last login:{" "}
                                     {m.last_login_at
-                                        ? new Date(
+                                        ? formatAdminDateTime(
                                               m.last_login_at
-                                          ).toLocaleString()
+                                          )
                                         : "Recorded in audit_logs"}
                                 </div>
                             </div>

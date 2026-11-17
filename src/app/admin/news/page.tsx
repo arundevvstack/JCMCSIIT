@@ -6,6 +6,7 @@ import {
     AdminPageHeader,
 } from "@/components/admin/admin-primitives";
 import { CmsCollectionManager } from "@/components/admin/cms-collection-manager";
+import { BASELINE_NEWS_ITEMS } from "@/lib/cms/news";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,17 @@ export default async function AdminNewsPage() {
             "id, title, slug, category, excerpt, content, featured_image_url, is_featured, show_in_ticker, status, published_at, updated_at"
         )
         .order("updated_at", { ascending: false });
+
+    // Fallback to baseline news articles if database table is not yet seeded
+    const sourceNews =
+        news && news.length > 0
+            ? news
+            : BASELINE_NEWS_ITEMS.map((n) => ({
+                  ...n,
+                  status: "published",
+                  show_in_ticker: false,
+                  updated_at: new Date().toISOString(),
+              }));
 
     return (
         <div className="space-y-6">
@@ -44,9 +56,14 @@ export default async function AdminNewsPage() {
             <CmsCollectionManager
                 entityLabel="News Article"
                 role={admin.role}
-                items={(news ?? []) as Record<string, unknown>[]}
+                items={sourceNews as Record<string, unknown>[]}
                 searchKeys={["title", "slug", "category"]}
                 columns={[
+                    {
+                        key: "featured_image_url",
+                        label: "Image",
+                        isImage: true,
+                    },
                     { key: "title", label: "Headline" },
                     { key: "category", label: "Category" },
                     { key: "slug", label: "Slug", isMono: true },

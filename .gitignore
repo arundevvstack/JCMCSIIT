@@ -46,3 +46,6 @@ next-env.d.ts
 
 # GitHub Actions workflows (PAT lacks 'workflow' scope)
 .github/workflows/
+
+# local scratch and investigation artifacts
+/scratch/

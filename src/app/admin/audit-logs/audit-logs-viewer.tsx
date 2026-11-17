@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { Search } from "lucide-react";
-import { AdminStatusBadge } from "@/components/admin/admin-primitives";
+import {
+    AdminStatusBadge,
+    formatAdminDateTime,
+} from "@/components/admin/admin-primitives";
 
 export interface AuditLogRow {
     id: string;
@@ -106,9 +109,9 @@ export function AuditLogsViewer({ logs }: { logs: AuditLogRow[] }) {
                                         className="hover:bg-white/[0.02]"
                                     >
                                         <td className="px-5 py-3.5 font-mono text-[11px] text-zinc-400 whitespace-nowrap">
-                                            {new Date(
+                                            {formatAdminDateTime(
                                                 log.created_at
-                                            ).toLocaleString()}
+                                            )}
                                         </td>
                                         <td className="px-5 py-3.5 font-medium text-zinc-200">
                                             {log.actor_email || "System"}

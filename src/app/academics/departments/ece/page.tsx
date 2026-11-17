@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Target, ShieldCheck, Briefcase, Building2, Users, Globe, TrendingUp, BookOpen, ChevronRight, GraduationCap, AlertTriangle, BookMarked, Wrench, CheckCircle2 } from 'lucide-react';
+import { Target, ShieldCheck, Briefcase, Building2, Users, Globe, TrendingUp, ChevronRight, GraduationCap, AlertTriangle, BookMarked, Wrench, CheckCircle2 } from 'lucide-react';
 import { facultyData } from '@/data/faculty';
 import { departmentsData } from '@/data/departments';
 import { LabAccordion } from '@/components/departments/lab-accordion';
@@ -15,21 +15,17 @@ export const metadata: Metadata = {
 };
 
 const DOC_FACULTY = [
-  { name: 'Dr. LIJI R F', designation: 'PROFESSOR & HOD ECE', qualification: 'ME, Ph.D' },
   { name: 'Dr. LIM J SEELAN', designation: 'PROFESSOR', qualification: 'ME, Ph.D' },
   { name: 'Mrs. TINI S RUSSEL', designation: 'ASSOCIATE PROFESSOR', qualification: 'ME' },
   { name: 'Mrs. SEENA M K', designation: 'ASSISTANT PROFESSOR', qualification: 'ME' },
   { name: 'Mrs. ARATHIRAJ B S', designation: 'ASSISTANT PROFESSOR', qualification: 'ME' },
-  { name: 'Mrs. ANOJA C M', designation: 'ASSISTANT PROFESSOR', qualification: 'ME' },
-  { name: 'Mr. ALWIN MOSES', designation: 'ASSISTANT PROFESSOR', qualification: 'M.Tech' },
-  { name: 'Mrs. AISWARYA N R', designation: 'ASSISTANT PROFESSOR', qualification: 'M.Tech' }
+  { name: 'Mrs. ANOJA C M', designation: 'ASSISTANT PROFESSOR', qualification: 'ME' }
 ];
 
 const TECHNICAL_STAFF = [
   { name: 'Mr. SANAL KUMAR T', designation: 'INSTRUCTOR GRADE 2' },
   { name: 'Mrs. LIJI V K', designation: 'INSTRUCTOR GRADE 2' },
-  { name: 'Mr. NOBLE REJI S S', designation: 'INSTRUCTOR GRADE 2' },
-  { name: 'Mr. VIMAL RAJ S R', designation: 'INSTRUCTOR GRADE 2' }
+  { name: 'Mr. NOBLE REJI S S', designation: 'INSTRUCTOR GRADE 2' }
 ];
 
 const LABS = [
@@ -76,14 +72,12 @@ const LABS = [
   },
   {
     name: 'Project Lab',
-    incharge: 'Mrs. AISWARYA N R',
-    instructor: 'Mr. SANALKUMAR T',
+    instructor: 'Mr. SANAL KUMAR T',
     equipment: 'LCR Q meter, Dedicated Systems, FPGA kit, Color Digital storage oscilloscope, Cathode ray oscilloscope, Regulated power supply, Signal generator, Bread board, Digital IC trainer kit, Analog IC tester, Function generator, multi meter, Access to scienceDirect-Elsevier Journal, Projector, 3D printer'
   },
   {
     name: 'Research Lab',
     incharge: 'Dr. LIM J SEELAN',
-    instructor: 'Mr. VIMALRAJ S R',
     equipment: 'Dedicated Systems, Color Digital Storage Oscilloscope, Power supply, Turnitin plagiarism checker, Access to scienceDirect-Elsevier Journal, V Lab, Multimeter, DELNET'
   },
   {
@@ -215,29 +209,70 @@ export default function ECEPage() {
             </div>
 
             <div className="space-y-8">
-              {/* Message from HOD */}
+              {/* Department Contact & Quick Access */}
               <div className="p-8 rounded-3xl bg-white border border-slate-200 shadow-sm">
-                <h3 className="text-2xl font-bold text-slate-900 mb-6">Head of Department</h3>
-                <div className="p-6 bg-slate-50 border border-slate-100 rounded-2xl flex flex-col items-center justify-center text-center space-y-4">
-                  <div className="w-24 h-24 bg-slate-200 rounded-full flex items-center justify-center border-4 border-white shadow-sm">
-                    <Users className="w-10 h-10 text-slate-400" />
-                  </div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-6">Department Information & Access</h3>
+                <div className="p-6 bg-slate-50 border border-slate-100 rounded-2xl space-y-4">
                   <div>
-                    <h4 className="text-xl font-bold text-slate-900">Dr. LIJI R F</h4>
-                    <p className="text-primary font-bold text-sm">PROFESSOR & HOD ECE</p>
-                    <p className="text-slate-500 text-xs font-medium uppercase tracking-wider mt-1">ME, Ph.D</p>
+                    <p className="text-xs uppercase tracking-wider font-bold text-slate-400 mb-1">Department Email</p>
+                    <a href="mailto:ece@jcmcsiit.ac.in" className="text-base font-semibold text-primary hover:underline">
+                      ece@jcmcsiit.ac.in
+                    </a>
                   </div>
-                  <div className="w-full h-px bg-slate-200 my-4"></div>
-                  <p className="text-slate-500 italic text-sm">Awaiting Official HOD Message.</p>
-                  <p className="text-slate-500 italic text-xs">(Awaiting Official HOD Photograph)</p>
+                  <div className="w-full h-px bg-slate-200"></div>
+                  <div>
+                    <p className="text-xs uppercase tracking-wider font-bold text-slate-400 mb-2">Academic Access & Resources</p>
+                    <div className="flex flex-col gap-2">
+                      <a
+                        href="https://ktu.edu.in/academics/syllabus"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-semibold text-slate-700 hover:text-primary flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200"
+                      >
+                        <span>KTU B.Tech ECE Syllabus</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                      </a>
+                      <a
+                        href="https://ktu.edu.in/academics/academic_calendar"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-semibold text-slate-700 hover:text-primary flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200"
+                      >
+                        <span>KTU Academic Calendar</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                      </a>
+                      <Link
+                        href="/downloads/resources"
+                        className="text-xs font-semibold text-slate-700 hover:text-primary flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200"
+                      >
+                        <span>Previous Question Papers & Question Bank</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               </div>
               
-              {/* Department Images Placeholder */}
+              {/* Department Images Gallery */}
               <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 shadow-sm">
-                 <h3 className="text-2xl font-bold text-slate-900 mb-6">Department Gallery</h3>
-                 <div className="aspect-video bg-slate-200 rounded-xl flex items-center justify-center border-2 border-dashed border-slate-300">
-                    <p className="text-slate-500 font-medium italic">Awaiting Official Department Photograph.</p>
+                 <h3 className="text-2xl font-bold text-slate-900 mb-4">Department Gallery</h3>
+                 <div className="grid grid-cols-2 gap-3">
+                   <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-200 border border-slate-300">
+                     <Image
+                       src="/ECE_Files/Library/ECE%20Library%20(1).jpg"
+                       alt="ECE Department Library & Labs"
+                       fill
+                       className="object-cover"
+                     />
+                   </div>
+                   <div className="relative aspect-video rounded-xl overflow-hidden bg-slate-200 border border-slate-300">
+                     <Image
+                       src="/ECE_Files/Library/ECE%20Library%20(2).jpg"
+                       alt="ECE Facilities"
+                       fill
+                       className="object-cover"
+                     />
+                   </div>
                  </div>
               </div>
             </div>
@@ -324,7 +359,7 @@ export default function ECEPage() {
             <div className="bg-emerald-50 border border-emerald-100 p-8 rounded-3xl">
               <h3 className="text-2xl font-bold text-emerald-900 mb-6 flex items-center">
                 <CheckCircle2 className="w-8 h-8 text-emerald-600 mr-3" />
-                Laboratory Do's
+                Laboratory Do&apos;s
               </h3>
               <ul className="space-y-4 text-emerald-800 text-sm font-medium">
                 <li className="flex items-start">
@@ -358,7 +393,7 @@ export default function ECEPage() {
             <div className="bg-red-50 border border-red-100 p-8 rounded-3xl">
               <h3 className="text-2xl font-bold text-red-900 mb-6 flex items-center">
                 <AlertTriangle className="w-8 h-8 text-red-600 mr-3" />
-                Laboratory Dont's
+                Laboratory Don&apos;ts
               </h3>
               <ul className="space-y-4 text-red-800 text-sm font-medium">
                 <li className="flex items-start">

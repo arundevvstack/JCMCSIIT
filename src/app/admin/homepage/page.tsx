@@ -36,6 +36,27 @@ export default async function AdminHomepagePage() {
             .order("sort_order", { ascending: true }),
     ]);
 
+    // Fallback to baseline campaign popup if database table is not yet seeded
+    const baselinePopups = [
+        {
+            id: "popup-graduation-2026",
+            title: "Graduation Ceremony 2026",
+            description:
+                "Registration is now open for the 2026 Graduating Batch.",
+            image_url:
+                "https://jcmcsiit.ac.in/Photogallery/2025/Annual%20Athletic%20Meet/IMG-20250320-WA0093.jpg",
+            cta_label: "Register Now",
+            cta_url: "/events/graduation-ceremony-2026",
+            frequency: "every_session",
+            is_enabled: true,
+            status: "published",
+            updated_at: new Date().toISOString(),
+        },
+    ];
+
+    const sourcePopups =
+        popups && popups.length > 0 ? popups : baselinePopups;
+
     return (
         <div className="space-y-8">
             <AdminPageHeader
@@ -64,9 +85,10 @@ export default async function AdminHomepagePage() {
                 <CmsCollectionManager
                     entityLabel="Popup"
                     role={admin.role}
-                    items={(popups ?? []) as Record<string, unknown>[]}
+                    items={sourcePopups as Record<string, unknown>[]}
                     searchKeys={["title", "cta_label", "frequency"]}
                     columns={[
+                        { key: "image_url", label: "Banner", isImage: true },
                         { key: "title", label: "Campaign Title" },
                         { key: "frequency", label: "Frequency", isMono: true },
                         { key: "is_enabled", label: "Enabled" },

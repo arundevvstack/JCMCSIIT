@@ -26,7 +26,6 @@ const defaultDisclosureSections = [
       { label: 'University Affiliation',       value: 'APJ Abdul Kalam Technological University (KTU)' },
       { label: 'Govt. of Kerala G.O.',         value: '(MS) No. 124/09/H.Edn dt. 3.8.09' },
       { label: 'NBA Accreditation',            value: 'Accredited (ECE Department)' },
-      { label: 'NAAC Status',                  value: 'Accredited' },
     ],
   },
   {

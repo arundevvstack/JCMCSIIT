@@ -20,7 +20,7 @@ export interface DepartmentData {
     message: string;
     image?: string;
   };
-  faculty?: any[]; // Or define a specific Faculty type later
+  faculty?: unknown[]; // Or define a specific Faculty type later
   labDetails?: string[];
   research?: string[];
   coreAreas?: string[];
@@ -32,6 +32,16 @@ export interface DepartmentData {
   events?: string[];
   galleryImages?: string[];
   downloads?: string[];
+  mous?: { partner: string; date?: string; description: string; image?: string; }[];
+  labRules?: { dos: string[]; donts: string[]; };
+  eventDetails?: { title: string; date?: string; organizedBy?: string; description: string; images?: string[]; }[];
+  downloadLinks?: { label: string; url: string; }[];
+  technicalStaff?: { name: string; designation: string; image?: string; qualification?: string; }[];
+  associationDetails?: { name: string; title?: string; description: string; logo?: string; posters?: string[]; }[];
+  festivals?: { name: string; title?: string; description: string; logo?: string; posters?: string[]; }[];
+  toppers?: { name: string; semester?: string; score?: string; rank?: string; batch?: string; }[];
+  placementDetails?: { title: string; count?: string; highlights?: string[]; companies?: string[]; image?: string; }[];
+  labFacilitiesDetailed?: { name: string; equipment?: string[]; experiments?: string[]; image?: string; description?: string; }[];
   
   // Added for Diploma
   duration?: string;
@@ -45,7 +55,7 @@ export interface DepartmentData {
 
   contactDetails: {
     email: string;
-    phone: string;
+    phone?: string;
     location: string;
   };
   seo: SEOData;

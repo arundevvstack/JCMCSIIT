@@ -214,3 +214,25 @@ export function AdminEmptyState({
         </div>
     );
 }
+
+/**
+ * Deterministic date formatter with explicit 'en-IN' locale and 'Asia/Kolkata' timezone
+ * to eliminate SSR/client React hydration mismatches on admin dashboards and log tables.
+ */
+export function formatAdminDateTime(
+    isoString: string | null | undefined
+): string {
+    if (!isoString) return "—";
+    const d = new Date(isoString);
+    if (Number.isNaN(d.getTime())) return "—";
+    return new Intl.DateTimeFormat("en-IN", {
+        timeZone: "Asia/Kolkata",
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+    }).format(d);
+}

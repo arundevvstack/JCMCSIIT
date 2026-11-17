@@ -11,10 +11,10 @@ export async function SmartFooter() {
     <footer className="w-full font-sans border-t border-slate-200">
       {/* Top Section - White Background */}
       <div className="bg-white py-12 md:py-16">
-        <div className="container mx-auto px-4 md:px-8 max-w-7xl flex flex-col lg:flex-row gap-12 lg:gap-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl flex flex-col xl:flex-row gap-10 xl:gap-8">
           
           {/* Link Columns */}
-          <div className="flex-1 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+          <div className="flex-1 min-w-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 xl:gap-8">
             
             {/* Column 1 */}
             <div>
@@ -84,7 +84,7 @@ export async function SmartFooter() {
           </div>
 
           {/* Action Buttons */}
-          <div className="w-full lg:w-48 flex flex-col gap-3 shrink-0">
+          <div className="w-full xl:w-52 flex flex-col sm:flex-row xl:flex-col gap-3 shrink-0">
             <div className="flex items-center justify-between gap-3 p-1.5 border border-slate-200 rounded-full bg-white shadow-sm hover:shadow-md transition-shadow">
               <span className="text-[13px] font-bold text-slate-700 pl-3 whitespace-nowrap">Admissions 2026</span>
               <Link href="/admissions/application-form" className="shrink-0 px-4 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors">
@@ -119,7 +119,7 @@ export async function SmartFooter() {
           <div className="w-full md:w-48 shrink-0">
             <Link href="/" className="inline-flex flex-col">
               <span className="text-2xl font-bold tracking-tight leading-none mb-1 font-editorial">JCMCSIIT</span>
-              <span className="text-[10px] uppercase tracking-widest font-semibold opacity-80">University</span>
+              <span className="text-[10px] uppercase tracking-widest font-semibold opacity-80">College of Engineering</span>
             </Link>
           </div>
 

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Target, ShieldCheck, Briefcase, Building2, Users, Mail, Globe, CheckCircle2, TrendingUp, BookOpen, ChevronRight, GraduationCap, AlertTriangle, BookMarked, Wrench } from 'lucide-react';
+import { Target, ShieldCheck, Briefcase, Building2, Users, Globe, CheckCircle2, TrendingUp, GraduationCap, AlertTriangle, BookMarked, Wrench } from 'lucide-react';
 import { facultyData } from '@/data/faculty';
 import { departmentsData } from '@/data/departments';
 import { LabAccordion } from '@/components/departments/lab-accordion';
@@ -12,21 +12,17 @@ export const metadata: Metadata = {
 };
 
 const DOC_FACULTY = [
-  { name: 'Dr. LIJI R F', designation: 'PROFESSOR & HOD ECE', qualification: 'ME, Ph.D' },
   { name: 'Dr. LIM J SEELAN', designation: 'PROFESSOR', qualification: 'ME, Ph.D' },
   { name: 'Mrs. TINI S RUSSEL', designation: 'ASSOCIATE PROFESSOR', qualification: 'ME' },
   { name: 'Mrs. SEENA M K', designation: 'ASSISTANT PROFESSOR', qualification: 'ME' },
   { name: 'Mrs. ARATHIRAJ B S', designation: 'ASSISTANT PROFESSOR', qualification: 'ME' },
-  { name: 'Mrs. ANOJA C M', designation: 'ASSISTANT PROFESSOR', qualification: 'ME' },
-  { name: 'Mr. ALWIN MOSES', designation: 'ASSISTANT PROFESSOR', qualification: 'M.Tech' },
-  { name: 'Mrs. AISWARYA N R', designation: 'ASSISTANT PROFESSOR', qualification: 'M.Tech' }
+  { name: 'Mrs. ANOJA C M', designation: 'ASSISTANT PROFESSOR', qualification: 'ME' }
 ];
 
 const TECHNICAL_STAFF = [
   { name: 'Mr. SANAL KUMAR T', designation: 'INSTRUCTOR GRADE 2' },
   { name: 'Mrs. LIJI V K', designation: 'INSTRUCTOR GRADE 2' },
-  { name: 'Mr. NOBLE REJI S S', designation: 'INSTRUCTOR GRADE 2' },
-  { name: 'Mr. VIMAL RAJ S R', designation: 'INSTRUCTOR GRADE 2' }
+  { name: 'Mr. NOBLE REJI S S', designation: 'INSTRUCTOR GRADE 2' }
 ];
 
 const LABS = [
@@ -320,7 +316,7 @@ export default function DiplomaECEPage() {
             <div className="bg-emerald-50 border border-emerald-100 p-8 rounded-3xl">
               <h3 className="text-2xl font-bold text-emerald-900 mb-6 flex items-center">
                 <CheckCircle2 className="w-8 h-8 text-emerald-600 mr-3" />
-                Laboratory Do's
+                Laboratory Do&apos;s
               </h3>
               <ul className="space-y-4 text-emerald-800 text-sm font-medium">
                 <li className="flex items-start">
@@ -354,7 +350,7 @@ export default function DiplomaECEPage() {
             <div className="bg-red-50 border border-red-100 p-8 rounded-3xl">
               <h3 className="text-2xl font-bold text-red-900 mb-6 flex items-center">
                 <AlertTriangle className="w-8 h-8 text-red-600 mr-3" />
-                Laboratory Dont's
+                Laboratory Don&apos;ts
               </h3>
               <ul className="space-y-4 text-red-800 text-sm font-medium">
                 <li className="flex items-start">

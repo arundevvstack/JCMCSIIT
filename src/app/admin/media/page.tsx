@@ -6,6 +6,7 @@ import {
     AdminPageHeader,
 } from "@/components/admin/admin-primitives";
 import { CmsCollectionManager } from "@/components/admin/cms-collection-manager";
+import { BASELINE_GALLERY_ITEMS } from "@/lib/cms/gallery";
 import {
     MediaLibraryManager,
     type MediaAssetRecord,
@@ -37,7 +38,11 @@ export default async function AdminMediaLibraryPage() {
             .limit(120),
     ]);
 
-    const galleryItems = galleryRes.data ?? [];
+    // Fallback to baseline gallery items if database table has not yet been seeded
+    const galleryItems =
+        galleryRes.data && galleryRes.data.length > 0
+            ? galleryRes.data
+            : BASELINE_GALLERY_ITEMS;
     const imageAssets = (mediaRes.data ?? []) as MediaAssetRecord[];
 
     const mediaRefreshKey = imageAssets
@@ -90,10 +95,10 @@ export default async function AdminMediaLibraryPage() {
                     items={galleryItems as Record<string, unknown>[]}
                     searchKeys={["title", "category", "album_name"]}
                     columns={[
+                        { key: "image_url", label: "Preview", isImage: true },
                         { key: "title", label: "Title" },
                         { key: "category", label: "Category" },
                         { key: "album_name", label: "Album" },
-                        { key: "image_url", label: "Image Path", isMono: true },
                         { key: "status", label: "Status", isStatus: true },
                     ]}
                     fields={[

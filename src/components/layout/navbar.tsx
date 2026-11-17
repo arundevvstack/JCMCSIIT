@@ -238,12 +238,12 @@ export function Navbar() {
         <div className="flex items-center justify-between gap-4">
           <div className="flex flex-col">
             <Link href="/" className="flex items-center gap-3 shrink-0">
-              <div className="relative w-[18rem] h-[4rem] md:w-[24rem] md:h-[5.5rem] lg:w-[28rem] lg:h-[6.5rem] shrink-0 -ml-2 lg:-ml-4 transition-all duration-300">
+              <div className="relative w-[13.5rem] sm:w-[18rem] h-[3.25rem] sm:h-[4rem] md:w-[24rem] md:h-[5.5rem] lg:w-[26rem] lg:h-[6rem] xl:w-[28rem] xl:h-[6.5rem] shrink-0 -ml-1 sm:-ml-2 lg:-ml-4 transition-all duration-300">
                 <Image
                   src="/logo.png"
                   alt="JCMCSIIT Logo"
                   fill
-                  sizes="(max-width: 768px) 18rem, (max-width: 1024px) 24rem, 28rem"
+                  sizes="(max-width: 640px) 13.5rem, (max-width: 768px) 18rem, (max-width: 1024px) 24rem, 28rem"
                   className="object-contain object-left"
                   priority
                 />
@@ -352,7 +352,9 @@ export function Navbar() {
           </nav>
 
           <button
-            className={`xl:hidden p-2 rounded-xl transition-colors ${isSolid ? 'text-slate-700 hover:bg-slate-100' : 'text-slate-800 hover:bg-slate-200'}`}
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileMenuOpen}
+            className={`xl:hidden p-2 rounded-xl transition-colors cursor-pointer ${isSolid ? 'text-slate-700 hover:bg-slate-100' : 'text-slate-800 hover:bg-slate-200'}`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}

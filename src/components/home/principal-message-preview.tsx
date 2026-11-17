@@ -66,9 +66,11 @@ export function PrincipalMessagePreview() {
                                         {content.designation},{" "}
                                         {content.institutionName}
                                     </p>
-                                    <p className="text-xs text-slate-500 mt-0.5">
-                                        {content.additionalRole}
-                                    </p>
+                                    {content.additionalRole ? (
+                                        <p className="text-xs text-slate-500 mt-0.5">
+                                            {content.additionalRole}
+                                        </p>
+                                    ) : null}
                                 </div>
 
                                 <Link

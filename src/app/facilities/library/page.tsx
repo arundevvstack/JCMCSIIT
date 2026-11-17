@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Search, Clock, Wifi, BookMarked, MonitorPlay, Library, Users, ArrowRight } from "lucide-react";
+import { ArrowLeft, BookOpen, Search, Clock, Wifi, BookMarked, MonitorPlay, Library, Users, ExternalLink, Database, BookOpenCheck } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Central Library | JCMCSIIT",
@@ -23,11 +23,43 @@ const physicalFeatures = [
 ];
 
 const digitalFeatures = [
-  "DELNET membership for inter-library borrowing",
-  "IEEE Xplore, Springer, and NPTEL course access",
-  "Question paper archives and previous year solutions",
-  "E-books repository with remote login facilities",
-  "Automated issue and return tracking system",
+  "Knimbus Digital Library Platform – mLibrary remote e-access to thousands of e-books, e-journals, and multimedia resources",
+  "DELNET (Developing Library Network) membership for inter-library borrowing and union catalogue discovery",
+  "National Digital Library of India (NDLI) institutional access",
+  "IEEE Xplore, Springer, and NPTEL online course and lecture access",
+  "Question paper archives and previous year solutions for all engineering branches",
+  "E-books repository with remote 24/7 institutional login facilities",
+  "Automated barcode issue and return tracking system",
+];
+
+const onlineAccessPortals = [
+  {
+    name: "Knimbus Digital Library Platform",
+    tag: "Remote e-Library Portal",
+    description: "Access college-subscribed e-books, international journals, curated course materials, and multimedia learning modules from anywhere via the Knimbus mLibrary web and mobile portal.",
+    features: ["Single sign-on access to all subscribed digital collections", "Dedicated mobile app support for iOS and Android", "Off-campus 24/7 research access for faculty and students", "AI-driven search across peer-reviewed publications"],
+    url: "https://www.knimbus.com",
+    badge: "Active Subscription",
+    color: "violet"
+  },
+  {
+    name: "DELNET (Developing Library Network)",
+    tag: "Inter-Library Network",
+    description: "Inter-library loans, union catalogues, document delivery services, and bibliographic databases connecting more than 7,500 member libraries across India and abroad.",
+    features: ["Union Catalogue of Books & Periodicals (over 3.5 crore records)", "Inter-Library Loan & Document Delivery Services", "Union List of Current Serials and CD-ROM Databases", "Direct article requests and full-text delivery"],
+    url: "https://www.delnet.in",
+    badge: "Institutional Member",
+    color: "emerald"
+  },
+  {
+    name: "National Digital Library of India (NDLI)",
+    tag: "National Repository",
+    description: "Virtual repository of learning resources with single-window search facility developed by IIT Kharagpur under MHRD / Ministry of Education, Government of India.",
+    features: ["Over 10+ crore educational assets in multiple languages", "School, undergraduate, postgraduate, and research levels", "Free access to thesis, video lectures, and simulation tools", "Institutional club activities and knowledge webinars"],
+    url: "https://ndl.iitkgp.ac.in",
+    badge: "Govt. of India",
+    color: "blue"
+  }
 ];
 
 export default function LibraryPage() {
@@ -135,6 +167,59 @@ export default function LibraryPage() {
             </ul>
           </div>
 
+        </div>
+
+        {/* Online Library Access Section - Knimbus, DELNET, NDLI */}
+        <div className="mb-16">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider mb-3">
+              <Database className="w-3.5 h-3.5" />
+              Online Library Access & e-Resources
+            </div>
+            <h2 className="text-3xl font-extrabold text-slate-900 mb-3">Digital Portals & Research Networks</h2>
+            <p className="text-slate-600 text-sm md:text-base">
+              Students and faculty members can seamlessly access e-journals, e-books, bibliographic databases, and national resource networks anytime, anywhere.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {onlineAccessPortals.map((portal, idx) => {
+              const borderStyles = portal.color === "violet" ? "hover:border-violet-300" : portal.color === "emerald" ? "hover:border-emerald-300" : "hover:border-blue-300";
+              const badgeStyles = portal.color === "violet" ? "bg-violet-50 text-violet-700 border-violet-200" : portal.color === "emerald" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-blue-50 text-blue-700 border-blue-200";
+              const btnStyles = portal.color === "violet" ? "bg-violet-600 hover:bg-violet-700 text-white" : portal.color === "emerald" ? "bg-emerald-600 hover:bg-emerald-700 text-white" : "bg-blue-600 hover:bg-blue-700 text-white";
+
+              return (
+                <div key={idx} className={`bg-white rounded-3xl p-6 md:p-8 border border-slate-200/80 shadow-sm flex flex-col justify-between transition-all duration-200 ${borderStyles}`}>
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-4">
+                      <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full border uppercase tracking-wider ${badgeStyles}`}>
+                        {portal.badge}
+                      </span>
+                      <span className="text-xs font-semibold text-slate-400">{portal.tag}</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-900 mb-2">{portal.name}</h3>
+                    <p className="text-slate-600 text-sm leading-relaxed mb-6">{portal.description}</p>
+                    <ul className="space-y-2.5 mb-6 text-xs text-slate-700">
+                      {portal.features.map((f, fi) => (
+                        <li key={fi} className="flex items-start gap-2">
+                          <BookOpenCheck className="w-3.5 h-3.5 text-slate-500 shrink-0 mt-0.5" />
+                          <span>{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <a
+                    href={portal.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-colors ${btnStyles}`}
+                  >
+                    Open Portal Access <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Timings Dark Banner */}

@@ -25,13 +25,13 @@ export function NewsTicker({ items }: NewsTickerProps) {
     <div className="fixed top-0 left-0 right-0 w-full bg-[#0B1F3A] text-white flex items-center overflow-hidden h-10 z-[60]">
       
       {/* Fixed Header/Label */}
-      <div className="absolute left-0 top-0 h-full bg-[#1c4762] text-white font-bold text-xs uppercase tracking-widest px-4 flex items-center z-10 shadow-[5px_0_15px_rgba(0,0,0,0.5)]">
-        <Megaphone className="w-4 h-4 mr-2" />
-        News & Events
+      <div className="absolute left-0 top-0 h-full bg-[#1c4762] text-white font-bold text-[11px] sm:text-xs uppercase tracking-wider sm:tracking-widest px-2.5 sm:px-4 flex items-center z-10 shadow-[5px_0_15px_rgba(0,0,0,0.5)] shrink-0">
+        <Megaphone className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 shrink-0" />
+        <span className="whitespace-nowrap">News & Events</span>
       </div>
 
       {/* Scrolling Content */}
-      <div className="flex-1 flex items-center overflow-hidden w-full whitespace-nowrap pl-[160px]">
+      <div className="flex-1 min-w-0 flex items-center overflow-hidden w-full whitespace-nowrap pl-28 sm:pl-[160px]">
         <motion.div
           animate={{ x: [0, -2000] }}
           transition={{

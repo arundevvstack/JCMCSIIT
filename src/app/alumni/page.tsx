@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Users, Mail, GraduationCap, ChevronRight, User, ExternalLink } from "lucide-react";
+import { Users, Mail, GraduationCap, ChevronRight, User, ExternalLink, Quote } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Alumni | JCMCSIIT",
@@ -8,14 +8,14 @@ export const metadata: Metadata = {
 };
 
 const committeeMembers = [
-  { role: "Patron", name: "Dr. Anshad A.S", desc: "Principal" },
-  { role: "Vice President", name: "Dr. J Sheeba Jeba Malar", desc: "Vice Principal" },
-  { role: "Convener", name: "Mrs. Nitya V Arnold", desc: "Secretary" },
-  { role: "Member", name: "Mrs. L.Sreelatha", desc: "HOD, CE" },
-  { role: "Member", name: "Mr. Sanjit.J", desc: "HOD, ME" },
-  { role: "Member", name: "Mrs. Tini S Russel", desc: "HOD, ECE" },
+  { role: "Patron", name: "Dr. Kim J. Seelan", desc: "Principal" },
+  { role: "Vice President", name: "Prof. Dr. J Sheeba Jeba Malar", desc: "Vice Principal & HOD, EEE" },
+  { role: "Convener & Secretary", name: "Mrs. Nitya V Arnold", desc: "Assistant Professor, CE" },
+  { role: "Member", name: "Prof. L. Sreeletha", desc: "HOD, CE" },
+  { role: "Member", name: "Mr. Sanjit J", desc: "HOD, ME" },
+  { role: "Member", name: "Mrs. Tini S Russel", desc: "Associate Professor, ECE" },
   { role: "Member", name: "Mr. Vishnukumar S", desc: "HOD, CSE" },
-  { role: "Member", name: "Mrs. Helen Shibija", desc: "HOD, Maths" },
+  { role: "Member", name: "Mrs. Helen Shibija C", desc: "HOD, Mathematics & Basic Sciences" },
 ];
 
 const coordinators = [
@@ -42,7 +42,7 @@ export default function AlumniPage() {
             Alumni <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Association</span>
           </h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto relative z-10 leading-relaxed">
-            The Alumni of the college were formed to provide a forum to bring together the former students of the college for the overall development of the College.
+            The Alumni of John Cox Memorial CSI Institute of Technology was formed to provide an enduring forum bringing together former students for fellowship, professional networking, and the overall development of the institution.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
@@ -63,8 +63,36 @@ export default function AlumniPage() {
           </div>
         </div>
 
+        {/* Alumni Testimony Section */}
+        <div className="mb-20">
+          <div className="text-center max-w-2xl mx-auto mb-8">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-blue-200 bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider mb-3">
+              <Quote className="w-3.5 h-3.5" /> Alumni Testimonials
+            </div>
+            <h2 className="text-3xl font-extrabold text-slate-900">Voices of Our Alumni</h2>
+            <p className="text-slate-600 text-sm md:text-base mt-2">
+              Alumni stories and testimonials are being compiled by the Alumni Association. Graduates are invited to share their experiences and career journeys.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-sm text-center max-w-2xl mx-auto">
+            <Quote className="w-10 h-10 text-blue-400 mx-auto mb-4 opacity-50" />
+            <p className="text-slate-600 text-sm leading-relaxed mb-6">
+              Official alumni testimonials and graduate stories will be featured here following verification by the Alumni Cell. JCMC SIIT graduates may submit their reflections through the alumni registration portal.
+            </p>
+            <Link
+              href="https://docs.google.com/forms/d/1bttuO4P62IULd_Rlg7MDceSyQnxWBZcub9Rx6N9Zd8c/viewform"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-bold text-xs transition-colors shadow-sm"
+            >
+              Submit Your Testimonial <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </div>
+
         {/* Two Column Layout for Committee & Coordinators */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 mt-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 mt-12">
           
           {/* Executive Committee */}
           <div className="bg-white rounded-3xl p-8 md:p-10 shadow-sm border border-slate-200/60 relative overflow-hidden">
@@ -74,7 +102,10 @@ export default function AlumniPage() {
               <div className="bg-indigo-100 text-indigo-600 p-3 rounded-2xl">
                 <GraduationCap className="w-6 h-6" />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900">Executive Committee</h2>
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900">Executive Committee</h2>
+                <p className="text-xs text-slate-500">Governing committee of the Alumni Association</p>
+              </div>
             </div>
             
             <div className="space-y-4">
@@ -104,7 +135,10 @@ export default function AlumniPage() {
               <div className="bg-blue-100 text-blue-600 p-3 rounded-2xl">
                 <Users className="w-6 h-6" />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900">Department Coordinators</h2>
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900">Department Coordinators</h2>
+                <p className="text-xs text-slate-500">Faculty coordinators liaising with department alumni</p>
+              </div>
             </div>
             
             <div className="space-y-4">
@@ -123,13 +157,13 @@ export default function AlumniPage() {
             <div className="mt-12 p-6 bg-slate-900 rounded-3xl text-center relative overflow-hidden">
                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
                <h3 className="text-xl font-bold text-white mb-2 relative z-10">Reconnect With JIT</h3>
-               <p className="text-slate-400 text-sm mb-6 relative z-10">We are proud of our alumni and their achievements. Stay connected!</p>
-               <Link 
-                  href="https://forms.gle/rRajcv1vd8Y5pMsz8" 
+               <p className="text-slate-400 text-sm mb-6 relative z-10">We are proud of our alumni and their achievements. Stay connected with your alma mater!</p>
+               <Link
+                  href="https://docs.google.com/forms/d/1bttuO4P62IULd_Rlg7MDceSyQnxWBZcub9Rx6N9Zd8c/viewform"
                   target="_blank"
                   className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold text-sm hover:bg-blue-500 transition-colors w-full justify-center relative z-10"
                 >
-                  Register Now <ExternalLink className="w-4 h-4" />
+                  Register in Alumni Directory <ExternalLink className="w-4 h-4" />
                 </Link>
             </div>
           </div>

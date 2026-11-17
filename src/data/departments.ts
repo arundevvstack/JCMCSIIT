@@ -81,7 +81,34 @@ export const departmentsData: Record<string, DepartmentData> = {
       message: "Innovating at the intersection of medicine and robotics.",
     },
     faculty: [],
-    labDetails: ["Biomedical Instrumentation Lab", "Robotics Lab", "Medical Imaging Center"],
+    labDetails: [
+      "Machine Drawing & Solid Modelling",
+      "Electronic Circuit and Logic Design Lab",
+      "Biomedical Electronics Lab",
+      "Microcontroller & Embedded Systems Lab",
+      "Robotic Process lab",
+      "Biomedical Signal Processing Lab",
+      "Robotics & Machine Vision Lab",
+      "Project Lab"
+    ],
+    labRules: {
+      dos: [
+        "Read and understand how to carry out an activity thoroughly before coming to the lab.",
+        "Turn off the equipments and computers accordingly after use.",
+        "Switch off all power supplies before leaving the lab.",
+        "Report any broken plugs or exposed electrical wires to the staff immediately.",
+        "Be responsible when using equipments, software and facilities.",
+        "Facilities are strictly for educational purpose only."
+      ],
+      donts: [
+        "Students are prohibited to enter the lab unless authorised by the staff.",
+        "Don’t attempt to repair with lab equipments.",
+        "Don’t move any equipment from its original position.",
+        "Don’t removes or load any software into the computer.",
+        "Don’t bring bag, food or drinks into the lab.",
+        "Don’t misbehave inside the lab."
+      ]
+    },
     research: ["Robotic Surgery", "Prosthetics", "Medical AI"],
     coreAreas: [
       "Biomedical Instrumentation",
@@ -94,20 +121,72 @@ export const departmentsData: Record<string, DepartmentData> = {
       "Automation"
     ],
     careerOpportunities: [
+      "Radiology Engineer",
+      "Artificial intelligence Engineer",
+      "Electronics Engineering",
       "Biomedical Engineer",
       "Clinical Engineer",
       "Robotics Engineer",
-      "Medical Equipment Specialist",
-      "Healthcare AI Engineer",
-      "Research Scientist"
+      "Medical Equipment Specialist"
     ],
-    studentClubs: ["Biomedical Society", "Robotics Club"],
-    association: "Biomedical & Robotics Association",
-    industryPartners: ["Siemens Healthineers", "GE Healthcare"],
-    achievements: ["National Robotics Championship"],
-    events: ["Robotics Expo", "Biomedical Summit"],
+    mous: [
+      {
+        partner: "Cyrix Health Care Private Limited",
+        date: "9 April 2025",
+        description: "MoU signed on 9 April 2025 for training and placement assistance, fostering student practical training, industry exposure and medical technology skill development.",
+        image: "/pdf_extracted_assets/cyrix_mou.jpg"
+      },
+      {
+        partner: "Atheena Pandiyan Private Limited",
+        date: "4 March 2026",
+        description: "MoU signed on 4 March 2026 for training and placement assistance, skill enhancement and biomedical instrumentation workshops.",
+        image: "/pdf_extracted_assets/atheena_pandiyan_mou.jpg"
+      }
+    ],
+    industryPartners: [
+      "Cyrix Health Care Private Limited",
+      "Atheena Pandiyan Private Limited"
+    ],
+    studentClubs: [],
+    association: "",
+    achievements: [],
+    events: [
+      "Seminar on “AI in Healthcare Technology” (25 April 2025)",
+      "Cervical Cancer Awareness Class (9 April 2025)"
+    ],
+    eventDetails: [
+      {
+        title: "Seminar on “AI in Healthcare Technology”",
+        date: "25 April 2025",
+        organizedBy: "Department of Biomedical and Robotic Engineering, John Cox Memorial CSI Institute of Technology, Kannammoola, Thiruvananthapuram",
+        description: "The Department of Biomedical and Robotic Engineering, John Cox Memorial CSI Institute of Technology, organized a seminar on “AI in Healthcare Technology” on 25 April 2025. The session was conducted by Cyrix Healthcare Private Limited, Ernakulam, providing students with valuable insights into the applications, emerging trends, and potential of Artificial Intelligence in healthcare technology. The seminar aimed to enhance students’ awareness of AI-driven healthcare solutions and its growing role in biomedical engineering.",
+        images: [
+          "/pdf_extracted_assets/ai_healthcare_seminar_1.jpg",
+          "/pdf_extracted_assets/ai_healthcare_seminar_2.jpg"
+        ]
+      },
+      {
+        title: "Cervical Cancer Awareness Class",
+        date: "9 April 2025",
+        organizedBy: "Department of Biomedical and Robotic Engineering, John Cox Memorial CSI Institute of Technology, Kannamoola, Thiruvananthapuram",
+        description: "The Department of Biomedical and Robotic Engineering, John Cox Memorial CSI Institute of Technology, Kannamoola, Thiruvananthapuram, conducted an Awareness Class on Cervical Cancer and its Prevention on 9 April 2025. The session was led by Arshitha Vinod, 3rd Year MBBS Student, Government Medical College, Thiruvananthapuram, who provided students with valuable insights into cervical cancer, its risk factors, prevention, early detection, and the importance of timely medical care. The programme aimed to enhance health awareness among students and encourage a proactive approach towards cancer prevention and early screening.",
+        images: [
+          "/pdf_extracted_assets/cervical_cancer_class_1.jpg",
+          "/pdf_extracted_assets/cervical_cancer_class_2.jpg"
+        ]
+      }
+    ],
     galleryImages: [],
-    downloads: ["Syllabus", "Academic Calendar"],
+    downloads: [
+      "KTU Syllabus",
+      "KTU Academic Calendar",
+      "Department Newsletters and Magazines"
+    ],
+    downloadLinks: [
+      { label: "KTU Syllabus", url: "https://ktu.edu.in/academics/syllabus" },
+      { label: "KTU Academic Calendar", url: "https://ktu.edu.in/academics/academic_calendar" },
+      { label: "Department Newsletters and Magazines", url: "/downloads/resources" }
+    ],
     contactDetails: {
       email: "bme@jcmcsiit.ac.in",
       phone: "+91-XXX-XXX-XXXX",
@@ -130,12 +209,44 @@ export const departmentsData: Record<string, DepartmentData> = {
     mission: "To impart quality education and promote research in civil engineering.",
     programme: "B.Tech in Civil Engineering",
     hod: {
-      name: "Head of Department",
-      message: "Building the foundations of tomorrow.",
+      name: "Prof. L. Sreeletha",
+      image: "/Faculty/Final/L.Sreeletha.jpg",
+      message: "Welcome to the Department of Civil Engineering! Joined the department on 12.09.2009 and currently working as Associate Professor and HOD. Completed B.Tech in Civil Engineering from CET and M.E in Structural Engineering (pursuing Ph.D). With 14 years of professional experience in the construction industry and presentations in international conferences on Seismic Behaviour and Retrofit, I lead our team in providing high-quality technical education and hands-on laboratory training.",
     },
     faculty: [],
-    labDetails: ["Structural Engineering Lab", "Geotechnical Lab", "Environmental Engineering Lab"],
-    research: ["Sustainable Materials", "Smart Cities"],
+    labDetails: [
+      "Environmental Engineering Lab",
+      "Geotechnical Engineering Lab",
+      "Surveying & Geomatics Lab",
+      "Strength of Materials Lab",
+      "Concrete Technology Lab",
+      "Transportation Engineering Lab",
+      "Computer Aided Design (CAD) Lab"
+    ],
+    labFacilitiesDetailed: [
+      {
+        name: "Environmental Engineering Lab",
+        image: "/pdf_extracted_assets/environmental_lab.jpg",
+        description: "State-of-the-art environmental testing and water quality analysis laboratory equipped with spectrophotometers, BOD incubators, turbidity meters, COD digesters, and precision analytical equipment for evaluating environmental parameters.",
+        equipment: [
+          "UV-Visible Spectrophotometer",
+          "BOD Incubator & COD Digester",
+          "Digital Nephelo Turbidity Meter",
+          "pH and Conductivity Meters",
+          "Jar Test Apparatus (Coagulation-Flocculation)",
+          "Muffle Furnace & Hot Air Oven"
+        ],
+        experiments: [
+          "Determination of pH, Turbidity, and Electrical Conductivity of water samples.",
+          "Determination of Total Dissolved Solids (TDS) and Suspended Solids.",
+          "Determination of Dissolved Oxygen (DO) and Biological Oxygen Demand (BOD).",
+          "Chemical Oxygen Demand (COD) test.",
+          "Optimum coagulant dosage determination using Jar Test apparatus.",
+          "Determination of Hardness, Chlorides, and Iron content in water."
+        ]
+      }
+    ],
+    research: ["Sustainable Materials", "Smart Cities", "Slope Stability & Landslide Analysis"],
     coreAreas: [
       "Structural Engineering",
       "Construction Technology",
@@ -155,11 +266,30 @@ export const departmentsData: Record<string, DepartmentData> = {
     ],
     studentClubs: ["Builders Club"],
     association: "Civil Engineering Association",
-    industryPartners: ["L&T Construction", "Tata Projects"],
-    achievements: ["Best Concrete Design Award"],
-    events: ["Civil Tech Fest", "Surveying Camp"],
-    galleryImages: [],
+    associationDetails: [
+      {
+        name: "Civil Engineering Association (CERA)",
+        title: "Department Technical Association",
+        description: "The Civil Engineering Students Association actively coordinates technical symposiums, structural design contests, surveying workshops, and industrial site visits to major infrastructure construction projects."
+      }
+    ],
+    toppers: [],
+    placementDetails: [
+      {
+        title: "Campus Placements & Recruiters",
+        image: "/pdf_extracted_assets/placement_poster.jpg"
+      }
+    ],
+    industryPartners: ["L&T Construction", "Tata Projects", "Habitat Technology Group", "KINFRA"],
+    achievements: ["Best Concrete Design Award", "National Landslide Mitigation Project Recognition"],
+    events: ["Civil Tech Fest", "Surveying Camp", "National Workshop on Sustainable Construction"],
+    galleryImages: ["/pdf_extracted_assets/environmental_lab.jpg"],
     downloads: ["Syllabus", "Academic Calendar"],
+    downloadLinks: [
+      { label: "KTU Syllabus (B.Tech Civil)", url: "https://ktu.edu.in/academics/syllabus" },
+      { label: "KTU Academic Calendar", url: "https://ktu.edu.in/academics/academic_calendar" },
+      { label: "Previous Question Papers & Question Bank", url: "/downloads/resources" }
+    ],
     contactDetails: {
       email: "civil@jcmcsiit.ac.in",
       phone: "+91-XXX-XXX-XXXX",
@@ -168,7 +298,7 @@ export const departmentsData: Record<string, DepartmentData> = {
     seo: {
       metaTitle: "Department of Civil Engineering | JCMCSIIT",
       metaDescription: "Study Civil Engineering at JCMCSIIT.",
-      keywords: ["Civil Engineering", "Construction", "Structural"],
+      keywords: ["Civil Engineering", "Construction", "Structural", "Environmental Engineering Lab"],
       ogImage: "/images/departments/civil-og.jpg",
     }
   },
@@ -266,9 +396,18 @@ export const departmentsData: Record<string, DepartmentData> = {
     events: ["Circuit Design Contest", "Tech Symposium"],
     galleryImages: [],
     downloads: ["Syllabus", "Academic Calendar"],
+    downloadLinks: [
+      { label: "KTU Syllabus (B.Tech ECE)", url: "https://ktu.edu.in/academics/syllabus" },
+      { label: "KTU Academic Calendar", url: "https://ktu.edu.in/academics/academic_calendar" },
+      { label: "Previous Question Papers & Question Bank", url: "/downloads/resources" }
+    ],
+    technicalStaff: [
+      { name: "Mr. SANAL KUMAR T", designation: "Instructor Grade 2" },
+      { name: "Mrs. LIJI V K", designation: "Instructor Grade 2" },
+      { name: "Mr. NOBLE REJI S S", designation: "Instructor Grade 2" }
+    ],
     contactDetails: {
       email: "ece@jcmcsiit.ac.in",
-      phone: "+91-XXX-XXX-XXXX",
       location: "Block B, 2nd Floor",
     },
     seo: {
@@ -292,12 +431,70 @@ export const departmentsData: Record<string, DepartmentData> = {
     ],
     programme: "B.Tech in Electrical & Electronics Engineering",
     hod: {
-      name: "Head of Department",
-      message: "Powering the future with innovation.",
+      name: "Prof. Dr. J. Sheeba Jeba Malar",
+      image: "/pdf_extracted_assets/sheeba_jeba_malar.jpg",
+      message: "Welcome to the Department of Electrical and Electronics Engineering! The Department offers a strong undergraduate programme, B.Tech. in Electrical and Electronics Engineering, with a focus on providing students with high-quality education and training in the latest developments in Electrical and Electronics Engineering. The Department has a dedicated and experienced team of faculty members who help students build a strong foundation in engineering fundamentals while developing their analytical and problem-solving skills. The faculty is ably supported by skilled technical staff who provide valuable assistance to students during laboratory sessions, practical training, and project work. The Department is equipped with well-established laboratories that provide students with extensive hands-on experience in various domains of electrical and electronic engineering, including circuits, electrical machines, power systems, control systems, power electronics, and simulation.",
     },
     faculty: [],
-    labDetails: ["Power Systems Lab", "Electrical Machines Lab", "Control Systems Lab"],
-    research: ["Smart Grids", "Renewable Energy Systems"],
+    labDetails: [
+      "Control System Lab",
+      "Electrical Machines Lab",
+      "Power Systems & High Voltage Lab",
+      "Power Electronics & Drives Lab",
+      "Electrical Measurements Lab",
+      "Digital Circuits & Embedded Systems Lab",
+      "Simulation & Computational Lab"
+    ],
+    labFacilitiesDetailed: [
+      {
+        name: "Control System Lab",
+        description: "Equipped with specialized training kits and precision instrumentation for studying transfer functions, dynamic stability, and servo motor control systems.",
+        equipment: [
+          "Synchro Transmitter and Receiver",
+          "Transfer Function of DC Servo Motor",
+          "Transfer Function of AC Servo Motor",
+          "DC Position Control System",
+          "AC Position Control System",
+          "Digital Simulation Software (MATLAB / SCILAB)"
+        ],
+        experiments: [
+          "Determination of transfer function of DC servomotor.",
+          "Determination of transfer function of AC servomotor.",
+          "Determination of transfer function of Synchro transmitter and receiver.",
+          "Stepper motor position control system.",
+          "DC motor position control system.",
+          "Digital simulation of linear systems using MATLAB / SCILAB.",
+          "Stability analysis of linear time invariant systems using Bode plot and Nyquist plot.",
+          "Root locus analysis of linear systems.",
+          "Design of lead, lag and lead-lag compensators.",
+          "State feedback controller design and simulation."
+        ]
+      },
+      {
+        name: "Electrical Machines Lab",
+        description: "Comprehensive machinery testing facility housing motor-generator test benches, coupled dynamos, and industrial transformers.",
+        equipment: [
+          "DC Shunt Motors",
+          "DC Series Motors",
+          "DC Compound Motors",
+          "Single Phase Transformers",
+          "Three Phase Transformers",
+          "Three Phase Induction Motors",
+          "Alternators & Synchronous Motors",
+          "Loading Inductors & Resistive / Inductive Load Banks"
+        ],
+        experiments: [
+          "Open circuit and load characteristics of DC shunt generator.",
+          "Load test on DC series motor and DC compound motor.",
+          "OC and SC tests on single-phase transformer with predetermination of efficiency and regulation.",
+          "Separation of losses in a single-phase transformer.",
+          "Brake test on three-phase squirrel cage and slip ring induction motors.",
+          "Regulation of three-phase alternator by EMF and MMF methods.",
+          "V and inverted V curves of synchronous motor."
+        ]
+      }
+    ],
+    research: ["Smart Grids", "Renewable Energy Systems", "Microgrid Dynamic Control"],
     coreAreas: [
       "Power Systems",
       "Electrical Machines",
@@ -311,15 +508,55 @@ export const departmentsData: Record<string, DepartmentData> = {
       "Automation Engineer",
       "Electrical Design Engineer",
       "Industrial Engineer",
-      "Renewable Energy Engineer"
+      "Renewable Energy Engineer",
+      "Control Systems Specialist"
     ],
     studentClubs: ["Energy Club"],
-    association: "EEE Students Association",
-    industryPartners: ["ABB", "Siemens"],
-    achievements: ["Green Energy Award"],
-    events: ["Power Tech Symposium", "Energy Audit Workshop"],
+    association: "EEETA",
+    associationDetails: [
+      {
+        name: "EEETA – Electrical and Electronics Technical Association",
+        title: "Student Technical Association",
+        logo: "/pdf_extracted_assets/eeeta_logo.jpg",
+        description: "The Electrical and Electronics Engineers Technical Association (EEETA) is a dynamic student-led body dedicated to fostering technical excellence, professional development, and innovative thinking among engineering students. EEETA provides a collaborative platform for students to enhance their academic knowledge through interactive workshops, expert lectures, technical seminars, industrial visits, and hands-on training sessions. Through various technical competitions, project exhibitions, quizzes, and skill-building initiatives, the association encourages students to bridge the gap between theoretical concepts and practical applications. With an emphasis on modern trends in electrical power systems, renewable energy, automation, and smart grid technologies, EEETA aims to nurture technically competent, innovative, socially responsible, and industry-ready engineers who are prepared to contribute meaningfully to the rapidly evolving fields of electrical and electronic engineering."
+      }
+    ],
+    festivals: [
+      {
+        name: "URJA – The Tech Fest of Department of EEE",
+        title: "Annual Technical Fest",
+        logo: "/pdf_extracted_assets/urja_poster.jpg",
+        description: "URJA is the annual technical fest organized by the Department of Electrical and Electronics Engineering (EEE), bringing together innovation, technology, creativity, and engineering excellence under one platform. The fest provides students with an exciting opportunity to explore emerging technologies, showcase their technical skills, and transform innovative ideas into practical solutions. Featuring a diverse range of technical competitions, workshops, project exhibitions, quizzes, paper presentations, and hands-on activities, URJA encourages participants to think beyond conventional boundaries and develop their problem-solving, teamwork, and technical abilities. With a vibrant blend of learning and competition, URJA creates an engaging environment where students from different disciplines can interact, collaborate, and share their ideas."
+      }
+    ],
+    technicalStaff: [
+      {
+        name: "Shiju R",
+        designation: "Lab Instructor",
+        image: "/pdf_extracted_assets/shiju_r.jpg",
+        qualification: "Diploma in Electrical & Electronics Engineering"
+      },
+      {
+        name: "Mr. Jayaraj S",
+        designation: "Lab Instructor",
+        image: "/pdf_extracted_assets/jayaraj_s.jpg",
+        qualification: "Diploma in Electrical Engineering"
+      }
+    ],
+    industryPartners: ["ABB", "Siemens", "KSEB", "Schneider Electric"],
+    achievements: ["Green Energy Award", "Best Department Technical Association Award"],
+    events: ["URJA Annual Tech Fest", "Workshop on Renewable Energy Integration"],
     galleryImages: [],
-    downloads: ["Syllabus", "Academic Calendar"],
+    downloads: [
+      "KTU Syllabus (B.Tech EEE)",
+      "Previous University Question Papers",
+      "KTU Academic Calendar"
+    ],
+    downloadLinks: [
+      { label: "KTU Syllabus (B.Tech EEE)", url: "https://ktu.edu.in/academics/syllabus" },
+      { label: "KTU Academic Calendar", url: "https://ktu.edu.in/academics/academic_calendar" },
+      { label: "Previous Question Papers & Question Bank", url: "/downloads/resources" }
+    ],
     contactDetails: {
       email: "eee@jcmcsiit.ac.in",
       phone: "+91-XXX-XXX-XXXX",
@@ -327,8 +564,8 @@ export const departmentsData: Record<string, DepartmentData> = {
     },
     seo: {
       metaTitle: "Department of Electrical & Electronics Engineering | JCMCSIIT",
-      metaDescription: "Study EEE at JCMCSIIT.",
-      keywords: ["EEE", "Electrical", "Electronics", "Power Systems"],
+      metaDescription: "Study EEE at JCMCSIIT with advanced Control Systems and Electrical Machines labs.",
+      keywords: ["EEE", "Electrical", "Electronics", "Power Systems", "Control System Lab", "Electrical Machines Lab"],
       ogImage: "/images/departments/eee-og.jpg",
     }
   },

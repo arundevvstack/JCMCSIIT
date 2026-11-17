@@ -93,10 +93,16 @@ export const getPublicSiteSettings = cache(
 
         try {
             const supabase = await createClient();
-            const { data, error } = await supabase
+            const fetchPromise = supabase
                 .from("site_settings")
                 .select("key, value_json")
                 .eq("is_public", true);
+
+            const timeoutPromise = new Promise<{ data: null; error: Error }>((resolve) =>
+                setTimeout(() => resolve({ data: null, error: new Error("Site settings query timeout") }), 2000)
+            );
+
+            const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
 
             if (error || !Array.isArray(data)) {
                 return DEFAULT_PUBLIC_SITE_SETTINGS;

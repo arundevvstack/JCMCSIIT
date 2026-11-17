@@ -25,8 +25,14 @@ import { alandonbennyData } from "./alan-don-benny";
 import { neethussData } from "./neethu-s-s";
 import { anojacmData } from "./anoja-c-m";
 import { nibinsabuData } from "./nibin-sabu";
+import { sheebaJebaMalarData } from "./sheeba-jeba-malar";
+import { athulyaJustinData } from "./athulya-justin";
+import { sreelethaData } from "./sreeletha";
 
 export const facultyData: Faculty[] = [
+  sreelethaData,
+  sheebaJebaMalarData,
+  athulyaJustinData,
   abisharajdsData,
   akhilwvData,
   anjanaspData,

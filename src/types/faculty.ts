@@ -2,7 +2,7 @@ export interface AcademicQualification {
   degree: string;
   institution: string;
   university?: string;
-  year: string;
+  year?: string;
   grade?: string;
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
     Check,
@@ -153,6 +153,9 @@ export function MediaLibraryManager({
     const [targetBucket, setTargetBucket] =
         useState<ImageBucketId>("cms-media");
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [selectedFilePreview, setSelectedFilePreview] = useState<
+        string | null
+    >(null);
     const [uploadAltText, setUploadAltText] = useState("");
     const [uploadCaption, setUploadCaption] = useState("");
     const [isUploading, setIsUploading] = useState(false);
@@ -196,6 +199,10 @@ export function MediaLibraryManager({
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUploadFeedback(null);
+        if (selectedFilePreview) {
+            URL.revokeObjectURL(selectedFilePreview);
+            setSelectedFilePreview(null);
+        }
         const file = e.target.files?.[0] ?? null;
         if (!file) {
             setSelectedFile(null);
@@ -234,6 +241,7 @@ export function MediaLibraryManager({
         }
 
         setSelectedFile(file);
+        setSelectedFilePreview(URL.createObjectURL(file));
     };
 
     const handleUploadSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -303,6 +311,10 @@ export function MediaLibraryManager({
                 });
 
                 setSelectedFile(null);
+                if (selectedFilePreview) {
+                    URL.revokeObjectURL(selectedFilePreview);
+                    setSelectedFilePreview(null);
+                }
                 setUploadAltText("");
                 setUploadCaption("");
                 if (fileInputRef.current) {
@@ -354,6 +366,17 @@ export function MediaLibraryManager({
         setSelectedAsset(null);
         setMetaFeedback(null);
     };
+
+    useEffect(() => {
+        if (!selectedAsset) return;
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                closeInspector();
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [selectedAsset]);
 
     const handleCopyUrl = async (id: string, url: string) => {
         try {
@@ -504,6 +527,53 @@ export function MediaLibraryManager({
                                 onChange={handleFileSelect}
                                 className="w-full h-10 px-3 py-1.5 rounded-xl bg-[#0B0D12] border border-white/[0.1] focus:border-[#D4AF37] text-xs text-zinc-200 file:mr-3 file:rounded-lg file:border-0 file:bg-[#D4AF37]/20 file:px-3 file:py-1 file:text-xs file:font-semibold file:text-[#E5C158] hover:file:bg-[#D4AF37]/30 outline-none disabled:opacity-60 cursor-pointer"
                             />
+
+                            {selectedFilePreview ? (
+                                <div className="mt-2.5 flex items-center justify-between gap-3 p-2 rounded-xl bg-[#0B0D12] border border-white/[0.08]">
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <div className="relative w-[70px] h-[55px] rounded-lg bg-black/50 border border-white/10 overflow-hidden shrink-0">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={selectedFilePreview}
+                                                alt="Selected file preview"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <span className="font-semibold text-zinc-200 block text-xs truncate">
+                                                {selectedFile?.name}
+                                            </span>
+                                            <span className="font-mono text-[11px] text-zinc-400 block">
+                                                {selectedFile
+                                                    ? formatMediaBytes(
+                                                          selectedFile.size
+                                                      )
+                                                    : ""}{" "}
+                                                · Target: {targetBucket}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setSelectedFile(null);
+                                            if (selectedFilePreview) {
+                                                URL.revokeObjectURL(
+                                                    selectedFilePreview
+                                                );
+                                                setSelectedFilePreview(null);
+                                            }
+                                            if (fileInputRef.current) {
+                                                fileInputRef.current.value = "";
+                                            }
+                                        }}
+                                        className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-400 hover:bg-white/[0.05] transition-colors cursor-pointer"
+                                        title="Clear selected file"
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </button>
+                                </div>
+                            ) : null}
                         </div>
 
                         <div className="md:col-span-6">
@@ -786,7 +856,15 @@ export function MediaLibraryManager({
 
             {/* Image Preview & Metadata Editor Modal */}
             {selectedAsset ? (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs">
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xs animate-in fade-in duration-200"
+                    onClick={(e) => {
+                        if (e.target === e.currentTarget) closeInspector();
+                    }}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={`Preview of ${selectedAsset.original_filename}`}
+                >
                     <div className="w-full max-w-3xl max-h-[90vh] bg-[#12141C] border border-[#D4AF37]/30 rounded-3xl shadow-2xl flex flex-col overflow-hidden">
                         <div className="px-6 py-4 border-b border-white/[0.08] bg-[#0E1017] flex items-center justify-between gap-4">
                             <div className="min-w-0">

@@ -49,6 +49,12 @@ export async function proxy(request: NextRequest) {
         request,
     });
 
+    // Public routes do not require admin session validation in middleware.
+    // Early return eliminates unnecessary Supabase Auth network latency for public visitors.
+    if (!adminRoute) {
+        return supabaseResponse;
+    }
+
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -87,10 +93,6 @@ export async function proxy(request: NextRequest) {
             data: { user },
             error: authError,
         } = await supabase.auth.getUser();
-
-        if (!adminRoute) {
-            return supabaseResponse;
-        }
 
         // Unauthenticated visitor on /admin/*
         if (authError || !user?.id) {

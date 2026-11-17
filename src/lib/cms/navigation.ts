@@ -42,7 +42,7 @@ export const getNavigationItems = cache(
 
         try {
             const supabase = await createClient();
-            const { data, error } = await supabase
+            const fetchPromise = supabase
                 .from("navigation_items")
                 .select(
                     "id, label, href, parent_id, menu_location, sort_order, open_in_new_tab, badge_text"
@@ -52,6 +52,12 @@ export const getNavigationItems = cache(
                 .eq("is_visible", true)
                 .order("sort_order", { ascending: true })
                 .order("created_at", { ascending: true });
+
+            const timeoutPromise = new Promise<{ data: null; error: Error }>((resolve) =>
+                setTimeout(() => resolve({ data: null, error: new Error("Navigation query timeout") }), 2000)
+            );
+
+            const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
 
             if (error || !Array.isArray(data)) {
                 return [];

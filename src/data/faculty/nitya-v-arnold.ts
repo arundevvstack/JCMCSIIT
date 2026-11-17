@@ -3,73 +3,36 @@ import { Faculty } from "@/types/faculty";
 export const nityavarnoldData: Faculty = {
   "id": "nitya-v-arnold",
   "slug": "nitya-v-arnold",
-  "name": "Mrs.Nitya V Arnold",
+  "name": "Mrs. Nitya V Arnold",
   "designation": "Assistant Professor",
-  "department_id": "ce",
-  "image_url": "/Faculty/Final/Mrs.Nitya V Arnold.jpg",
+  "department_id": "civil",
+  "image_url": "/pdf_extracted_assets/nitya_v_arnold.jpg",
   "departments": {
     "name": "Civil Engineering",
-    "slug": "ce"
+    "slug": "civil"
   },
   "profile_data": {
+    "highestQualification": "M.Tech in Construction Engineering and Management (Pursuing Ph.D)",
     "academicQualifications": [
       {
-        "degree": "M.Tech in Civil Engineering",
-        "institution": "",
-        "year": ""
+        "degree": "Ph.D. in Civil Engineering (Pursuing)",
+        "institution": "APJ Abdul Kalam Technological University / Kerala"
+      },
+      {
+        "degree": "M.Tech in Construction Engineering and Management",
+        "institution": "Mahatma Gandhi University / Reputed University"
+      },
+      {
+        "degree": "B.Tech in Civil Engineering",
+        "institution": "University of Kerala"
       }
     ],
     "areasOfExpertise": [
-      "Construction Management and Engineering"
+      "Construction Engineering & Management",
+      "Building Cost Estimation and Analysis",
+      "Water Resources & Environmental Engineering",
+      "Structural Engineering"
     ],
-    "academicProjects": {
-      "btechProjects": [
-        "Design and Analysis of a Steel Dome Auditorium"
-      ],
-      "mtechThesis": [
-        "Cost Analysis of a Building Using MATLAB"
-      ]
-    },
-    "researchInterests": [
-      "Water Resources Engineering",
-      "Environmental Engineering"
-    ],
-    "certifications": [
-      "Participated in various Faculty Development Programmes (FDPs), workshops, and technical training programmes related to Civil Engineering and higher education."
-    ],
-    "technicalSkills": {
-      "skills": [
-        "Construction Planning and Management",
-        "Building Cost Estimation and Analysis",
-        "MATLAB Applications in Civil Engineering",
-        "Structural Analysis and Design",
-        "Water Resources and Environmental Engineering",
-        "Engineering Drawing and Civil Engineering Software Applications"
-      ]
-    },
-    "teachingExperience": [
-      {
-        "designation": "Teaching Experience",
-        "institution": "Civil Engineering",
-        "duration": "15 Years"
-      }
-    ],
-    "industryExperience": [
-      {
-        "designation": "Industrial Experience",
-        "institution": "KINFRA",
-        "duration": "6 Months"
-      }
-    ],
-    "administrativeResponsibilities": {
-      "roles": [
-        "Actively involved in academic and departmental activities.",
-        "Assistant Camp officer of KTU valuation camp.",
-        "Faculty Convenor of Alumni association of JIT.",
-        "Contributed to curriculum delivery, student mentoring, and project guidance.",
-        "Participated in institutional development initiatives and quality enhancement",
-        "Contributed to organizing technical events, workshops, seminars, and outreach programmes."
-      ]
-    }
+    "teachingExperience": "15.5 years of total teaching experience:\n• Working as Assistant Professor in Department of Civil Engineering in John Cox Memorial CSI Institute of Technology from 02/09/2013 till date.\n• Worked as Lecturer in Civil Department at Mar Baselios Catholic College of Engineering, Peermade from 10/09/2008 to 03/04/2011."
   }
 };

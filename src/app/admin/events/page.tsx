@@ -6,6 +6,7 @@ import {
     AdminPageHeader,
 } from "@/components/admin/admin-primitives";
 import { CmsCollectionManager } from "@/components/admin/cms-collection-manager";
+import { BASELINE_EVENTS_MAP } from "@/lib/cms/events";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,12 @@ export default async function AdminEventsPage() {
             "id, title, slug, category, display_date_text, location, description, poster_url, registration_url, event_state, is_featured, status, updated_at"
         )
         .order("updated_at", { ascending: false });
+
+    // Fallback to baseline events if database table is not yet seeded
+    const sourceEvents =
+        events && events.length > 0
+            ? events
+            : Object.values(BASELINE_EVENTS_MAP);
 
     return (
         <div className="space-y-6">
@@ -43,9 +50,10 @@ export default async function AdminEventsPage() {
             <CmsCollectionManager
                 entityLabel="Event"
                 role={admin.role}
-                items={(events ?? []) as Record<string, unknown>[]}
+                items={sourceEvents as Record<string, unknown>[]}
                 searchKeys={["title", "slug", "category", "location"]}
                 columns={[
+                    { key: "poster_url", label: "Poster", isImage: true },
                     { key: "title", label: "Event Title" },
                     { key: "category", label: "Category" },
                     { key: "display_date_text", label: "Schedule" },

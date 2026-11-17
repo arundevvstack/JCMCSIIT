@@ -6,6 +6,7 @@ import {
     AdminPageHeader,
 } from "@/components/admin/admin-primitives";
 import { CmsCollectionManager } from "@/components/admin/cms-collection-manager";
+import { facultyData } from "@/data/faculty";
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +41,29 @@ export default async function AdminFacultyPage() {
             : "Unassigned",
     }));
 
+    // Fallback to baseline faculty profiles if database table is not yet seeded
+    const baselineFacultyRows = facultyData.map((f) => ({
+        id: f.id,
+        name: f.name,
+        slug: f.slug,
+        designation: f.designation,
+        department_id: f.department_id,
+        department_name:
+            f.departments?.name ?? "Computer Science & Engineering",
+        qualifications: f.profile_data?.highestQualification ?? "",
+        email: f.email ?? "",
+        image_url: f.image_url ?? "",
+        bio: f.bio ?? "",
+        is_visible: true,
+        status: "published",
+        updated_at: new Date().toISOString(),
+    }));
+
+    const sourceFaculty =
+        facultyRows && facultyRows.length > 0
+            ? enrichedFaculty
+            : baselineFacultyRows;
+
     const departmentOptions = [
         { label: "— Unassigned —", value: "" },
         ...(departments ?? []).map((d) => ({
@@ -71,7 +95,7 @@ export default async function AdminFacultyPage() {
             <CmsCollectionManager
                 entityLabel="Faculty Member"
                 role={admin.role}
-                items={enrichedFaculty as Record<string, unknown>[]}
+                items={sourceFaculty as Record<string, unknown>[]}
                 searchKeys={[
                     "name",
                     "designation",
@@ -79,6 +103,7 @@ export default async function AdminFacultyPage() {
                     "email",
                 ]}
                 columns={[
+                    { key: "image_url", label: "Photo", isImage: true },
                     { key: "name", label: "Faculty Name" },
                     { key: "designation", label: "Designation" },
                     { key: "department_name", label: "Department" },
@@ -160,6 +185,8 @@ export default async function AdminFacultyPage() {
                 ]}
                 saveAction={saveFacultyItem}
                 deleteAction={deleteFacultyItem}
+                layoutMode="grid"
+                defaultPageSize={12}
             />
         </div>
     );
