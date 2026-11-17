@@ -1,11 +1,11 @@
-import { Metadata } from 'next';
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { Metadata } from "next";
+import { ComingSoon } from "@/components/layout/coming-soon";
 
 export const metadata: Metadata = {
-  title: 'Statistics | JCMC SIIT',
-  description: 'Learn more about Statistics at JCMC SIIT.',
+    title: "Placement Statistics | JCMC SIIT",
+    description: "Learn more about Placement Statistics at JCMC SIIT.",
 };
 
 export default function Page() {
-  return <ComingSoon title="Statistics" />;
+    return <ComingSoon title="Placement Statistics" routePath="/placements/statistics" />;
 }

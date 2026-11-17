@@ -4,16 +4,22 @@ import { motion } from "framer-motion";
 import { Megaphone } from "lucide-react";
 import Link from "next/link";
 
-export function NewsTicker() {
-  const newsItems = [
-    { title: "ADMISSION COMMENCED FOR 2026 - B.Tech & Diploma in Engineering", href: "/news/admission-2026" },
-    { title: "CONGRATULATIONS, PLACED STUDENTS", href: "/news/placed-students" },
-    { title: "JOB FAIR'26 on 24th Jan 2026", href: "/news/job-fair-26" },
-    { title: "We're NBA accredited. Thank you, students, staff, parents, management, and well-wishers for your support", href: "/news/nba-accredited" },
-    { title: "Congratulations! POWER QUIZ WINNERS!", href: "/news/power-quiz-winners" },
-    { title: "Proceedings of NCRIESR'25 has been published", href: "/news/ncriesr-25" },
-    { title: "College Profile Video", href: "/about/college/profile" }
-  ];
+interface NewsTickerProps {
+  items?: { title: string; href: string }[];
+}
+
+const fallbackItems = [
+  { title: "ADMISSION COMMENCED FOR 2026 - B.Tech & Diploma in Engineering", href: "/news/admission-2026" },
+  { title: "CONGRATULATIONS, PLACED STUDENTS", href: "/news/placed-students" },
+  { title: "JOB FAIR'26 on 24th Jan 2026", href: "/news/job-fair-26" },
+  { title: "We're NBA accredited. Thank you, students, staff, parents, management, and well-wishers for your support", href: "/news/nba-accredited" },
+  { title: "Congratulations! POWER QUIZ WINNERS!", href: "/news/power-quiz-winners" },
+  { title: "Proceedings of NCRIESR'25 has been published", href: "/news/ncriesr-25" },
+  { title: "College Profile Video", href: "/about/college/profile" }
+];
+
+export function NewsTicker({ items }: NewsTickerProps) {
+  const newsItems = items && items.length > 0 ? items : fallbackItems;
 
   return (
     <div className="fixed top-0 left-0 right-0 w-full bg-[#0B1F3A] text-white flex items-center overflow-hidden h-10 z-[60]">

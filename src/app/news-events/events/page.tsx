@@ -1,76 +1,19 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Calendar as CalendarIcon, MapPin, Clock, ArrowRight, Hourglass } from "lucide-react";
-import { GRADUATION_EVENT, GRADUATION_EVENT_PATH } from "@/lib/graduation-event";
+import Image from "next/image";
+import { Calendar as CalendarIcon, MapPin, Clock, ArrowRight } from "lucide-react";
+import { getPublicEventsList } from "@/lib/cms/events";
 
 export const metadata: Metadata = {
   title: "Events & Workshops | JCMCSIIT",
   description: "Discover upcoming tech symposiums, hackathons, and cultural events at JCMCSIIT.",
 };
 
-type EventItem = {
-  id: string;
-  title: string;
-  date: string;
-  time: string;
-  location: string;
-  category: string;
-  description: string;
-  registerLink?: string;
-  detailsLink?: string;
-  detailsText?: string;
-  image?: string;
-  deadline?: string;
-};
+export const dynamic = "force-dynamic";
 
-const events: EventItem[] = [
-  {
-    id: GRADUATION_EVENT.slug,
-    title: GRADUATION_EVENT.title,
-    date: GRADUATION_EVENT.date,
-    time: GRADUATION_EVENT.time,
-    location: GRADUATION_EVENT.location,
-    category: GRADUATION_EVENT.category,
-    description: GRADUATION_EVENT.description,
-    registerLink: GRADUATION_EVENT.registerLink,
-    detailsLink: GRADUATION_EVENT_PATH,
-    detailsText: "Event Details",
-    image: GRADUATION_EVENT.poster,
-    deadline: GRADUATION_EVENT.registrationDeadline,
-  },
-  {
-    id: "poster-design-2026",
-    title: "Poster Design Competition: Future Powered by Signal Processing",
-    date: "August 07, 2026",
-    time: "Deadline: 11:59 PM",
-    location: "Online Submission",
-    category: "COMPETITION",
-    description: "The IEEE SPS SBC JCMCSIIT proudly presents a Poster Design Competition, inviting students to showcase their creativity by designing a poster based on the theme 'Future Powered by Signal Processing'.",
-    registerLink: "https://forms.gle/5HC4uC6KjMNHRrXq5",
-    detailsLink: "https://drive.google.com/file/d/1kukx4zKKA3bGCxca4L-YifMhsbAWdAA4/view?usp=sharing",
-    detailsText: "Rules & Regulations"
-  },
-  {
-    id: "green-energy-2026",
-    title: "Green Energy Solutions: Building a Sustainable World",
-    date: "TBA",
-    time: "TBA",
-    location: "Seminar Hall",
-    category: "SEMINAR",
-    description: "Join us for an insightful seminar on building a sustainable, carbon-neutral world.",
-  },
-  {
-    id: "btech-admissions-2026",
-    title: "B.Tech Admissions Open 2026",
-    date: "August 01, 2026",
-    time: "Apply Now",
-    location: "Admission Office",
-    category: "ADMISSION",
-    description: "B.Tech Admissions for the 2026 academic year are now open. Secure your seat today."
-  }
-];
+export default async function EventsPage() {
+  const events = await getPublicEventsList();
 
-export default function EventsPage() {
   return (
     <main className="min-h-screen pt-32 pb-24 bg-white relative">
       <div className="container px-4 md:px-6 relative z-10 mx-auto">
@@ -80,81 +23,85 @@ export default function EventsPage() {
             Campus Events.
           </h1>
           <p className="text-slate-500 max-w-2xl text-xl leading-relaxed">
-            Explore what's happening at JCMCSIIT.
+            Experience our vibrant academic culture through national conferences, hackathons, cultural festivals, and research workshops.
           </p>
         </div>
 
-        <div className="max-w-5xl mx-auto space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {events.map((event) => (
-            <div key={event.id} className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col md:flex-row gap-8 items-start md:items-center">
-              
-              {event.image && (
-                <a
-                  href={event.registerLink ?? event.image}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full md:w-44 shrink-0 rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 block"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={event.image}
-                    alt={`${event.title} poster`}
-                    width={1054}
-                    height={1492}
-                    loading="lazy"
-                    className="w-full h-auto object-contain"
+            <div key={event.id} className="bg-white rounded-3xl overflow-hidden border border-slate-200 hover:border-slate-300 hover:shadow-xl transition-all duration-300 flex flex-col h-full group">
+              {event.poster_url ? (
+                <div className="relative h-48 w-full bg-slate-100 overflow-hidden">
+                  <Image
+                    src={event.poster_url}
+                    alt={event.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                </a>
+                  <div className="absolute top-4 left-4 z-10">
+                    <span className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-xs font-bold text-primary uppercase tracking-wider shadow-sm">
+                      {event.category}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-6 pb-0">
+                  <span className="inline-block px-3 py-1 rounded-full bg-slate-100 text-xs font-semibold text-primary uppercase tracking-wider">
+                    {event.category}
+                  </span>
+                </div>
               )}
 
-              <div className="flex-1">
-                <span className="inline-block px-3 py-1 rounded-full bg-slate-50 border border-slate-100 text-xs font-semibold text-primary mb-4 uppercase tracking-wider">
-                  {event.category}
-                </span>
-                <h2 className="text-2xl font-bold text-foreground mb-3">{event.title}</h2>
-                <p className="text-slate-600 mb-6">{event.description}</p>
-                
-                <div className="flex flex-wrap gap-4 text-sm font-medium text-slate-500">
-                  <div className="flex items-center gap-2">
-                    <CalendarIcon className="h-4 w-4 text-slate-400" /> {event.date}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-slate-400" /> {event.time}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-slate-400" /> {event.location}
-                  </div>
-                  {event.deadline && (
+              <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors leading-snug">
+                    {event.title}
+                  </h2>
+                  <p className="text-slate-500 text-sm mb-6 leading-relaxed line-clamp-3">
+                    {event.description}
+                  </p>
+                </div>
+
+                <div className="space-y-4 pt-6 border-t border-slate-100 mt-auto">
+                  <div className="flex flex-col gap-2 text-xs font-medium text-slate-500">
                     <div className="flex items-center gap-2">
-                      <Hourglass className="h-4 w-4 text-slate-400" /> Register by {event.deadline}
+                      <CalendarIcon className="h-4 w-4 text-primary shrink-0" />
+                      <span>{event.display_date_text}</span>
                     </div>
-                  )}
+                    {event.display_time_text ? (
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-primary shrink-0" />
+                        <span>{event.display_time_text}</span>
+                      </div>
+                    ) : null}
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-primary shrink-0" />
+                      <span className="truncate">{event.location}</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-between">
+                    <Link
+                      href={`/news-events/events/${event.slug}`}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline"
+                    >
+                      <span>Event Details</span>
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+
+                    {event.registration_url ? (
+                      <Link
+                        href={event.registration_url}
+                        target={event.registration_url.startsWith("http") ? "_blank" : undefined}
+                        rel={event.registration_url.startsWith("http") ? "noopener noreferrer" : undefined}
+                        className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors shadow-sm"
+                      >
+                        Register
+                      </Link>
+                    ) : null}
+                  </div>
                 </div>
               </div>
-              
-              <div className="md:w-48 shrink-0 flex flex-col gap-3 w-full">
-                {event.registerLink && (
-                  <Link 
-                    href={event.registerLink} 
-                    target={event.registerLink.startsWith("http") ? "_blank" : undefined}
-                    rel={event.registerLink.startsWith("http") ? "noopener noreferrer" : undefined}
-                    className="w-full py-3 rounded-xl bg-foreground text-white font-semibold hover:bg-foreground/90 transition-colors shadow-sm flex items-center justify-center text-center text-sm"
-                  >
-                    Register Now
-                  </Link>
-                )}
-                {event.detailsLink && (
-                  <Link 
-                    href={event.detailsLink}
-                    target={event.detailsLink.startsWith("http") ? "_blank" : undefined}
-                    rel={event.detailsLink.startsWith("http") ? "noopener noreferrer" : undefined}
-                    className="w-full py-3 rounded-xl bg-white border border-slate-200 text-foreground font-semibold hover:bg-slate-50 transition-colors shadow-sm flex items-center justify-center gap-2 text-sm text-center"
-                  >
-                    {event.detailsText || "Details"} <ArrowRight className="h-4 w-4" />
-                  </Link>
-                )}
-              </div>
-
             </div>
           ))}
         </div>

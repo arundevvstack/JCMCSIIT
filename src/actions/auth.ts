@@ -114,6 +114,26 @@ export async function signInAdmin(
             };
         }
 
+        // Record `last_login_at` on `public.admin_users` using the authenticated SSR session.
+        // Handled non-fatally so sign-in succeeds cleanly even when non-SUPER_ADMIN roles
+        // have SELECT-only RLS access on `public.admin_users`.
+        try {
+            const loginTimestamp = new Date().toISOString();
+            const { error: lastLoginError } = await supabase
+                .from("admin_users")
+                .update({ last_login_at: loginTimestamp })
+                .eq("id", authData.user.id);
+
+            if (lastLoginError) {
+                console.error(
+                    "Admin last_login_at update failed:",
+                    lastLoginError.code
+                );
+            }
+        } catch {
+            // Non-fatal: preserve sign-in flow if timestamp update encounters a transient or RLS error.
+        }
+
         // Verified against `public.audit_logs` schema (00005) and
         // `audit_logs_cms_insert` RLS policy (`is_cms_member() AND actor_id = auth.uid()`).
         // Do NOT chain `.select()` because EDITOR/PUBLISHER have INSERT-only access on audit_logs.

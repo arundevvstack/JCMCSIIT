@@ -129,6 +129,14 @@ export default async function AdminFacultyPage() {
                         label: "Photo URL / Asset Path",
                         type: "url",
                         placeholder: "/faculty/cse/member.jpg",
+                        mediaPicker: {
+                            category: "image",
+                            allowedBuckets: [
+                                "faculty-profiles",
+                                "cms-media",
+                            ],
+                            modalTitle: "Select Faculty Portrait Photo",
+                        },
                     },
                     {
                         name: "status",

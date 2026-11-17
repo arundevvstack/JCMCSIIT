@@ -4,9 +4,12 @@ import { saveGalleryItem, deleteGalleryItem } from "@/actions/cms";
 import {
     AdminHonestNotice,
     AdminPageHeader,
-    AdminStatusBadge,
 } from "@/components/admin/admin-primitives";
 import { CmsCollectionManager } from "@/components/admin/cms-collection-manager";
+import {
+    MediaLibraryManager,
+    type MediaAssetRecord,
+} from "./media-library-manager";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +19,7 @@ export default async function AdminMediaLibraryPage() {
     });
 
     const supabase = await createClient();
-    const [{ data: galleryItems }, { data: imageAssets }] = await Promise.all([
+    const [galleryRes, mediaRes] = await Promise.all([
         supabase
             .from("gallery_items")
             .select(
@@ -27,33 +30,55 @@ export default async function AdminMediaLibraryPage() {
         supabase
             .from("media")
             .select(
-                "id, bucket_id, original_filename, public_url, mime_type, size_bytes, is_archived, created_at"
+                "id, bucket_id, storage_path, original_filename, public_url, mime_type, size_bytes, width, height, alt_text, caption, uploaded_by, is_archived, created_at, updated_at"
             )
             .in("bucket_id", ["cms-media", "galleries", "faculty-profiles"])
             .order("created_at", { ascending: false })
-            .limit(30),
+            .limit(120),
     ]);
 
+    const galleryItems = galleryRes.data ?? [];
+    const imageAssets = (mediaRes.data ?? []) as MediaAssetRecord[];
+
+    const mediaRefreshKey = imageAssets
+        .map((a) => `${a.id}:${a.updated_at ?? a.created_at}`)
+        .join("|");
+
     return (
-        <div className="space-y-8">
+        <div className="space-y-10">
             <AdminPageHeader
                 eyebrow="Gallery & Media Library"
                 title="Campus Gallery & Image Assets"
-                description="Manage curated campus gallery items in public.gallery_items and inspect registered Storage assets in public.media."
+                description="Upload verified images directly to Supabase Storage, manage accessibility metadata in public.media, and curate campus gallery items."
             />
 
             <AdminHonestNotice
-                title="Direct Binary Image Upload & WebP Compression Pipeline — Coming Soon"
-                variant="pending"
+                title="Connected to Supabase Storage & public.media (Authenticated SSR)"
+                variant="info"
             >
-                Gallery entries below save directly to{" "}
-                <code className="text-[#E5C158]">public.gallery_items</code>{" "}
-                using Storage or static asset URLs. Drag-and-drop browser binary
-                uploads with client-side WebP compression to the{" "}
-                <code className="text-zinc-200">cms-media</code> and{" "}
-                <code className="text-zinc-200">galleries</code> buckets are
-                not implemented yet.
+                Images uploaded below are verified by binary signature, checked
+                for SHA-256 duplicates, stored in{" "}
+                <code className="text-[#E5C158]">cms-media</code>,{" "}
+                <code className="text-[#E5C158]">galleries</code>, or{" "}
+                <code className="text-[#E5C158]">faculty-profiles</code> without
+                overwriting existing files, and registered in{" "}
+                <code className="text-[#E5C158]">public.media</code>. All
+                existing static images in{" "}
+                <code className="text-zinc-200">/public</code> remain untouched.
             </AdminHonestNotice>
+
+            <section className="space-y-3">
+                <h2 className="text-base font-bold text-zinc-100">
+                    Storage Image Library (public.media)
+                </h2>
+                <MediaLibraryManager
+                    key={mediaRefreshKey}
+                    initialAssets={imageAssets}
+                    role={admin.role}
+                    currentAdminId={admin.id}
+                    loadError={mediaRes.error?.message ?? null}
+                />
+            </section>
 
             <section className="space-y-3">
                 <h2 className="text-base font-bold text-zinc-100">
@@ -62,7 +87,7 @@ export default async function AdminMediaLibraryPage() {
                 <CmsCollectionManager
                     entityLabel="Gallery Item"
                     role={admin.role}
-                    items={(galleryItems ?? []) as Record<string, unknown>[]}
+                    items={galleryItems as Record<string, unknown>[]}
                     searchKeys={["title", "category", "album_name"]}
                     columns={[
                         { key: "title", label: "Title" },
@@ -105,6 +130,11 @@ export default async function AdminMediaLibraryPage() {
                             required: true,
                             placeholder: "/campus/aerial-main.jpg",
                             colSpan: 2,
+                            mediaPicker: {
+                                category: "image",
+                                allowedBuckets: ["galleries", "cms-media"],
+                                modalTitle: "Select Campus Gallery Photo",
+                            },
                         },
                         {
                             name: "caption",
@@ -116,57 +146,6 @@ export default async function AdminMediaLibraryPage() {
                     saveAction={saveGalleryItem}
                     deleteAction={deleteGalleryItem}
                 />
-            </section>
-
-            <section className="rounded-2xl border border-white/[0.07] bg-[#12141C] overflow-hidden">
-                <div className="px-6 py-4 border-b border-white/[0.07] bg-[#0E1017] flex items-center justify-between">
-                    <h2 className="text-sm font-bold text-zinc-100">
-                        Registered Storage Image Assets (public.media)
-                    </h2>
-                    <span className="text-xs text-zinc-400">
-                        {(imageAssets ?? []).length} asset
-                        {(imageAssets ?? []).length === 1 ? "" : "s"}
-                    </span>
-                </div>
-                {(imageAssets ?? []).length === 0 ? (
-                    <div className="p-8 text-center text-xs text-zinc-500">
-                        No uploaded image records in{" "}
-                        <code className="text-zinc-300">public.media</code> yet.
-                        All existing static images in{" "}
-                        <code className="text-zinc-300">/public</code> remain
-                        preserved.
-                    </div>
-                ) : (
-                    <div className="divide-y divide-white/[0.05] text-xs">
-                        {(imageAssets ?? []).map((asset) => (
-                            <div
-                                key={asset.id}
-                                className="px-6 py-3 flex items-center justify-between gap-4"
-                            >
-                                <div className="min-w-0">
-                                    <div className="font-semibold text-zinc-200 truncate">
-                                        {asset.original_filename}
-                                    </div>
-                                    <div className="font-mono text-[11px] text-zinc-500 truncate">
-                                        {asset.public_url}
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3 shrink-0">
-                                    <span className="font-mono text-[11px] text-[#E5C158]">
-                                        {asset.bucket_id}
-                                    </span>
-                                    <AdminStatusBadge
-                                        status={
-                                            asset.is_archived
-                                                ? "archived"
-                                                : "active"
-                                        }
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
             </section>
         </div>
     );

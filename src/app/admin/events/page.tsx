@@ -106,6 +106,11 @@ export default async function AdminEventsPage() {
                         label: "Event Poster URL",
                         type: "url",
                         placeholder: "/events/poster.jpg",
+                        mediaPicker: {
+                            category: "image",
+                            allowedBuckets: ["cms-media", "galleries"],
+                            modalTitle: "Select Event Poster Image",
+                        },
                     },
                     {
                         name: "registration_url",

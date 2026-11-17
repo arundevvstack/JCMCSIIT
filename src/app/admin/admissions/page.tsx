@@ -23,6 +23,7 @@ export default async function AdminAdmissionsPage() {
         .select(
             "id, name, email, phone, course_interest, message, status, notes, created_at"
         )
+        .not("course_interest", "is", null)
         .order("created_at", { ascending: false });
 
     return (

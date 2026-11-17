@@ -2,10 +2,21 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Search, Pencil, Trash2, Save, X } from "lucide-react";
+import {
+    ExternalLink,
+    FileText,
+    Images,
+    Pencil,
+    Plus,
+    Save,
+    Search,
+    Trash2,
+    X,
+} from "lucide-react";
 import type { CmsActionResult } from "@/actions/cms";
 import type { AdminRole } from "@/lib/auth/rbac";
 import { AdminStatusBadge } from "./admin-primitives";
+import { MediaPickerModal } from "./media-picker-modal";
 
 export interface CmsFieldConfig {
     name: string;
@@ -23,6 +34,11 @@ export interface CmsFieldConfig {
     options?: readonly { label: string; value: string }[];
     defaultValue?: string | boolean;
     colSpan?: 1 | 2;
+    mediaPicker?: {
+        category: "image" | "document";
+        allowedBuckets?: readonly string[];
+        modalTitle?: string;
+    };
 }
 
 export interface CmsColumnConfig {
@@ -74,6 +90,12 @@ export function CmsCollectionManager({
     const [feedback, setFeedback] = useState<{
         type: "success" | "error";
         text: string;
+    } | null>(null);
+    const [activePickerField, setActivePickerField] = useState<{
+        fieldName: string;
+        category: "image" | "document";
+        allowedBuckets?: readonly string[];
+        modalTitle?: string;
     } | null>(null);
 
     const canCreate =
@@ -434,11 +456,23 @@ export function CmsCollectionManager({
                                                     name={field.name}
                                                     required={field.required}
                                                     rows={4}
-                                                    defaultValue={String(
-                                                        currentVal ??
+                                                    value={String(
+                                                        editingItem[field.name] ??
                                                             field.defaultValue ??
                                                             ""
                                                     )}
+                                                    onChange={(e) => {
+                                                        const v = e.target.value;
+                                                        setEditingItem((prev) =>
+                                                            prev
+                                                                ? {
+                                                                      ...prev,
+                                                                      [field.name]:
+                                                                          v,
+                                                                  }
+                                                                : null
+                                                        );
+                                                    }}
                                                     placeholder={
                                                         field.placeholder
                                                     }
@@ -447,11 +481,23 @@ export function CmsCollectionManager({
                                             ) : field.type === "select" ? (
                                                 <select
                                                     name={field.name}
-                                                    defaultValue={String(
-                                                        currentVal ??
+                                                    value={String(
+                                                        editingItem[field.name] ??
                                                             field.defaultValue ??
                                                             ""
                                                     )}
+                                                    onChange={(e) => {
+                                                        const v = e.target.value;
+                                                        setEditingItem((prev) =>
+                                                            prev
+                                                                ? {
+                                                                      ...prev,
+                                                                      [field.name]:
+                                                                          v,
+                                                                  }
+                                                                : null
+                                                        );
+                                                    }}
                                                     className="w-full h-10 px-3.5 rounded-xl bg-[#0B0D12] border border-white/[0.1] focus:border-[#D4AF37] text-xs text-zinc-100 outline-none"
                                                 >
                                                     {selectOptions.map(
@@ -467,6 +513,117 @@ export function CmsCollectionManager({
                                                         )
                                                     )}
                                                 </select>
+                                            ) : field.mediaPicker ? (
+                                                <div className="space-y-2">
+                                                    <div className="flex gap-2">
+                                                        <input
+                                                            type={
+                                                                field.type === "url"
+                                                                    ? "text"
+                                                                    : field.type
+                                                            }
+                                                            name={field.name}
+                                                            required={field.required}
+                                                            value={String(
+                                                                editingItem[field.name] ??
+                                                                    ""
+                                                            )}
+                                                            onChange={(e) => {
+                                                                const v = e.target.value;
+                                                                setEditingItem((prev) =>
+                                                                    prev
+                                                                        ? {
+                                                                              ...prev,
+                                                                              [field.name]:
+                                                                                  v,
+                                                                          }
+                                                                        : null
+                                                                );
+                                                            }}
+                                                            placeholder={
+                                                                field.placeholder
+                                                            }
+                                                            className="w-full h-10 px-3.5 rounded-xl bg-[#0B0D12] border border-white/[0.1] focus:border-[#D4AF37] text-xs text-zinc-100 placeholder:text-zinc-600 outline-none"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                setActivePickerField({
+                                                                    fieldName: field.name,
+                                                                    category: field.mediaPicker!.category,
+                                                                    allowedBuckets: field.mediaPicker!.allowedBuckets,
+                                                                    modalTitle: field.mediaPicker!.modalTitle,
+                                                                })
+                                                            }
+                                                            className="inline-flex items-center gap-1.5 px-3 rounded-xl border border-[#D4AF37]/35 bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 text-[#E5C158] text-xs font-semibold shrink-0 transition-colors cursor-pointer"
+                                                            title={
+                                                                field.mediaPicker.category === "image"
+                                                                    ? "Choose Image from Media Library"
+                                                                    : "Choose PDF from Document Repository"
+                                                            }
+                                                        >
+                                                            {field.mediaPicker.category === "image" ? (
+                                                                <Images className="h-3.5 w-3.5" />
+                                                            ) : (
+                                                                <FileText className="h-3.5 w-3.5" />
+                                                            )}
+                                                            <span>Browse</span>
+                                                        </button>
+                                                    </div>
+
+                                                    {editingItem[field.name] ? (
+                                                        <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs">
+                                                            <div className="flex items-center gap-2 min-w-0">
+                                                                {field.mediaPicker.category === "image" ? (
+                                                                    <div className="relative h-8 w-12 rounded bg-black/60 overflow-hidden shrink-0 border border-white/10">
+                                                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                                        <img
+                                                                            src={String(editingItem[field.name])}
+                                                                            alt="Preview"
+                                                                            className="h-full w-full object-cover"
+                                                                        />
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="h-7 w-7 rounded bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 shrink-0">
+                                                                        <FileText className="h-3.5 w-3.5" />
+                                                                    </div>
+                                                                )}
+                                                                <span className="font-mono text-[11px] text-zinc-300 truncate">
+                                                                    {String(editingItem[field.name])}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5 shrink-0">
+                                                                <a
+                                                                    href={String(editingItem[field.name])}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="p-1 rounded text-zinc-400 hover:text-[#E5C158] transition-colors"
+                                                                    title="Open link in new tab"
+                                                                >
+                                                                    <ExternalLink className="h-3.5 w-3.5" />
+                                                                </a>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() =>
+                                                                        setEditingItem((prev) =>
+                                                                            prev
+                                                                                ? {
+                                                                                      ...prev,
+                                                                                      [field.name]:
+                                                                                          "",
+                                                                                  }
+                                                                                : null
+                                                                        )
+                                                                    }
+                                                                    className="p-1 rounded text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
+                                                                    title="Clear value"
+                                                                >
+                                                                    <X className="h-3.5 w-3.5" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ) : null}
+                                                </div>
                                             ) : (
                                                 <input
                                                     type={
@@ -476,11 +633,23 @@ export function CmsCollectionManager({
                                                     }
                                                     name={field.name}
                                                     required={field.required}
-                                                    defaultValue={String(
-                                                        currentVal ??
+                                                    value={String(
+                                                        editingItem[field.name] ??
                                                             field.defaultValue ??
                                                             ""
                                                     )}
+                                                    onChange={(e) => {
+                                                        const v = e.target.value;
+                                                        setEditingItem((prev) =>
+                                                            prev
+                                                                ? {
+                                                                      ...prev,
+                                                                      [field.name]:
+                                                                          v,
+                                                                  }
+                                                                : null
+                                                        );
+                                                    }}
                                                     placeholder={
                                                         field.placeholder
                                                     }
@@ -512,6 +681,33 @@ export function CmsCollectionManager({
                         </form>
                     </div>
                 </div>
+            ) : null}
+
+            {activePickerField ? (
+                <MediaPickerModal
+                    key={activePickerField.fieldName}
+                    isOpen={Boolean(activePickerField)}
+                    onClose={() => setActivePickerField(null)}
+                    category={activePickerField.category}
+                    allowedBuckets={activePickerField.allowedBuckets}
+                    title={activePickerField.modalTitle}
+                    currentValue={String(
+                        editingItem?.[activePickerField.fieldName] ?? ""
+                    )}
+                    onSelect={(chosenUrl) => {
+                        if (activePickerField) {
+                            setEditingItem((prev) =>
+                                prev
+                                    ? {
+                                          ...prev,
+                                          [activePickerField.fieldName]:
+                                              chosenUrl,
+                                      }
+                                    : null
+                            );
+                        }
+                    }}
+                />
             ) : null}
         </div>
     );

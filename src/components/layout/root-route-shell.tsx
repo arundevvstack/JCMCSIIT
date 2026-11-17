@@ -8,6 +8,7 @@ import { GraduationPopup } from "@/components/layout/graduation-popup";
 interface RootRouteShellProps {
     children: React.ReactNode;
     footer: React.ReactNode;
+    tickerItems?: { title: string; href: string }[];
 }
 
 /**
@@ -15,7 +16,7 @@ interface RootRouteShellProps {
  * (`NewsTicker`, `Navbar`, `SmartFooter`, `GraduationPopup`, and `pt-20`)
  * without moving or renaming any existing public route files.
  */
-export function RootRouteShell({ children, footer }: RootRouteShellProps) {
+export function RootRouteShell({ children, footer, tickerItems }: RootRouteShellProps) {
     const segment = useSelectedLayoutSegment();
 
     if (segment === "admin") {
@@ -28,7 +29,7 @@ export function RootRouteShell({ children, footer }: RootRouteShellProps) {
 
     return (
         <div className="flex-1 flex flex-col pt-20">
-            <NewsTicker />
+            <NewsTicker items={tickerItems} />
             <Navbar />
             <div className="flex-1">{children}</div>
             {footer}

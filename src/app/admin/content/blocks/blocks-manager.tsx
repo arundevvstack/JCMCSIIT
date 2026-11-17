@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Save, Trash2, Blocks, Search } from "lucide-react";
+import { Plus, Save, Trash2, Blocks, Search, Lock } from "lucide-react";
 import { saveContentBlock, deleteContentBlock } from "@/actions/cms";
 import type { AdminRole } from "@/lib/auth/rbac";
 import { AdminStatusBadge } from "@/components/admin/admin-primitives";
@@ -42,6 +42,12 @@ export default function BlocksManager({
     const isEditor = role === "EDITOR";
 
     const activeBlock = blocks.find((b) => b.id === activeBlockId) || null;
+    const activeEffectiveStatus = activeBlock?.status || "draft";
+    const isEditorLocked =
+        Boolean(activeBlock) &&
+        isEditor &&
+        !activeBlock!.id.startsWith("new-") &&
+        activeEffectiveStatus !== "draft";
 
     const handleAddNew = () => {
         const newBlock: BlockData = {
@@ -59,6 +65,7 @@ export default function BlocksManager({
     };
 
     const handleChange = (field: keyof BlockData, value: string) => {
+        if (isEditorLocked) return;
         setBlocks((prev) =>
             prev.map((b) =>
                 b.id === activeBlockId ? { ...b, [field]: value } : b
@@ -67,7 +74,7 @@ export default function BlocksManager({
     };
 
     const handleSave = () => {
-        if (!activeBlock) return;
+        if (!activeBlock || isEditorLocked) return;
         setFeedback(null);
 
         startTransition(async () => {
@@ -84,7 +91,7 @@ export default function BlocksManager({
             formData.append("content", activeBlock.content);
             formData.append(
                 "status",
-                isEditor ? "draft" : activeBlock.status || "draft"
+                isEditor ? "draft" : activeEffectiveStatus
             );
 
             const res = await saveContentBlock(formData);
@@ -232,9 +239,9 @@ export default function BlocksManager({
                                 <div className="flex items-center gap-3">
                                     <select
                                         value={
-                                            isEditor
+                                            isEditor && !isEditorLocked
                                                 ? "draft"
-                                                : activeBlock.status || "draft"
+                                                : activeEffectiveStatus
                                         }
                                         disabled={isEditor}
                                         onChange={(e) =>
@@ -246,7 +253,7 @@ export default function BlocksManager({
                                         className="h-9 px-3 rounded-xl bg-[#0B0D12] border border-white/[0.1] text-xs font-semibold text-zinc-200 focus:border-[#D4AF37] outline-none disabled:opacity-60"
                                     >
                                         <option value="draft">Draft</option>
-                                        {!isEditor ? (
+                                        {!isEditor || isEditorLocked ? (
                                             <>
                                                 <option value="published">
                                                     Published
@@ -273,16 +280,35 @@ export default function BlocksManager({
                                     <button
                                         type="button"
                                         onClick={handleSave}
-                                        disabled={isPending}
-                                        className="flex items-center gap-2 px-5 py-2 bg-[#D4AF37] hover:bg-[#E5C158] text-[#090A0D] rounded-xl text-xs font-bold transition-colors disabled:opacity-60 cursor-pointer"
+                                        disabled={isPending || isEditorLocked}
+                                        title={
+                                            isEditorLocked
+                                                ? "Editors cannot modify published or archived blocks"
+                                                : "Save content block"
+                                        }
+                                        className="flex items-center gap-2 px-5 py-2 bg-[#D4AF37] hover:bg-[#E5C158] text-[#090A0D] rounded-xl text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                     >
                                         <Save className="w-3.5 h-3.5" />{" "}
                                         {isPending
                                             ? "Saving..."
-                                            : "Save Block"}
+                                            : isEditorLocked
+                                              ? "Locked"
+                                              : "Save Block"}
                                     </button>
                                 </div>
                             </div>
+
+                            {isEditorLocked ? (
+                                <div className="mx-6 mt-5 rounded-xl bg-amber-950/35 border border-[#D4AF37]/30 px-4 py-3 flex items-center gap-2.5 text-xs text-[#E5C158]">
+                                    <Lock className="h-4 w-4 shrink-0" />
+                                    <span>
+                                        Read-only: Editor accounts may only edit
+                                        blocks in <strong>Draft</strong> status.
+                                        Contact a Publisher or Admin to modify
+                                        published or archived content blocks.
+                                    </span>
+                                </div>
+                            ) : null}
 
                             <div className="flex-1 p-6 space-y-5 overflow-y-auto">
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -293,13 +319,14 @@ export default function BlocksManager({
                                         <input
                                             type="text"
                                             value={activeBlock.title}
+                                            readOnly={isEditorLocked}
                                             onChange={(e) =>
                                                 handleChange(
                                                     "title",
                                                     e.target.value
                                                 )
                                             }
-                                            className="w-full h-10 px-3.5 bg-[#0B0D12] border border-white/[0.1] rounded-xl focus:outline-none focus:border-[#D4AF37] text-xs text-zinc-100"
+                                            className="w-full h-10 px-3.5 bg-[#0B0D12] border border-white/[0.1] rounded-xl focus:outline-none focus:border-[#D4AF37] text-xs text-zinc-100 read-only:opacity-60"
                                         />
                                     </div>
                                     <div>
@@ -309,6 +336,7 @@ export default function BlocksManager({
                                         <input
                                             type="text"
                                             value={activeBlock.key}
+                                            readOnly={isEditorLocked}
                                             onChange={(e) =>
                                                 handleChange(
                                                     "key",
@@ -320,7 +348,7 @@ export default function BlocksManager({
                                                         )
                                                 )
                                             }
-                                            className="w-full h-10 px-3.5 bg-[#0B0D12] border border-white/[0.1] rounded-xl focus:outline-none focus:border-[#D4AF37] font-mono text-xs text-zinc-100"
+                                            className="w-full h-10 px-3.5 bg-[#0B0D12] border border-white/[0.1] rounded-xl focus:outline-none focus:border-[#D4AF37] font-mono text-xs text-zinc-100 read-only:opacity-60"
                                         />
                                     </div>
                                     <div>
@@ -332,13 +360,14 @@ export default function BlocksManager({
                                                 activeBlock.block_type ||
                                                 "markdown"
                                             }
+                                            disabled={isEditorLocked}
                                             onChange={(e) =>
                                                 handleChange(
                                                     "block_type",
                                                     e.target.value
                                                 )
                                             }
-                                            className="w-full h-10 px-3.5 bg-[#0B0D12] border border-white/[0.1] rounded-xl focus:outline-none focus:border-[#D4AF37] text-xs text-zinc-100"
+                                            className="w-full h-10 px-3.5 bg-[#0B0D12] border border-white/[0.1] rounded-xl focus:outline-none focus:border-[#D4AF37] text-xs text-zinc-100 disabled:opacity-60"
                                         >
                                             <option value="markdown">
                                                 markdown
@@ -365,13 +394,14 @@ export default function BlocksManager({
                                     <textarea
                                         rows={14}
                                         value={activeBlock.content}
+                                        readOnly={isEditorLocked}
                                         onChange={(e) =>
                                             handleChange(
                                                 "content",
                                                 e.target.value
                                             )
                                         }
-                                        className="w-full bg-[#0B0D12] border border-white/[0.1] rounded-xl p-4 font-mono text-xs focus:outline-none focus:border-[#D4AF37] text-zinc-100"
+                                        className="w-full bg-[#0B0D12] border border-white/[0.1] rounded-xl p-4 font-mono text-xs focus:outline-none focus:border-[#D4AF37] text-zinc-100 read-only:opacity-60"
                                     />
                                 </div>
                             </div>

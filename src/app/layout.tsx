@@ -4,6 +4,7 @@ import "./globals.css";
 import { SmartFooter } from "@/components/layout/smart-footer";
 import { SchemaOrg } from "@/components/schema-org";
 import { RootRouteShell } from "@/components/layout/root-route-shell";
+import { getTickerItems } from "@/lib/cms/navigation";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -31,11 +32,13 @@ export const metadata: Metadata = {
   description: "John Cox Memorial CSI Institute of Technology. A premium futuristic technology university platform.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const tickerItems = await getTickerItems();
+
   return (
     <html
       lang="en"
@@ -48,7 +51,7 @@ export default function RootLayout({
         <SchemaOrg />
       </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col font-sans">
-        <RootRouteShell footer={<SmartFooter />}>
+        <RootRouteShell tickerItems={tickerItems} footer={<SmartFooter />}>
           {children}
         </RootRouteShell>
       </body>

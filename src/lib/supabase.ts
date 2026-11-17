@@ -1,11 +1,21 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mock.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'mock';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co";
+const supabaseAnonKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "public-anon-placeholder";
 
-// For client components / public access
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-// For server-only operations that need to bypass RLS (like ingestion, metadata fetching if protected)
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey || supabaseAnonKey);
+/**
+ * Legacy public anonymous Supabase client preserved strictly for backwards
+ * compatibility with non-SSR public read callers.
+ *
+ * Privileged `supabaseAdmin` and service-role keys have been intentionally
+ * removed from this shared module; server-only privileged tasks must explicitly
+ * import `createAdminClient` from `@/lib/supabase/admin`.
+ */
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+    },
+});

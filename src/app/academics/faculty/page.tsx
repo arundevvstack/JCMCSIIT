@@ -1,19 +1,20 @@
 import { Metadata } from "next";
 import { FacultyListing } from "@/components/faculty/faculty-listing";
-import { facultyData } from "@/data/faculty";
+import { getPublicFacultyList } from "@/lib/cms/faculty";
 
 export const metadata: Metadata = {
   title: "Faculty Directory | JCMCSIIT",
   description: "Meet the distinguished faculty members of John Cox Memorial C.S.I Institute of Technology.",
 };
 
-// Remove revalidate since this is purely static now
-// export const revalidate = 3600; 
+export const dynamic = "force-dynamic";
 
-export default function FacultyPage() {
-  // Extract unique departments from the static faculty data
+export default async function FacultyPage() {
+  const facultyMembers = await getPublicFacultyList();
+
+  // Extract unique departments from the dynamic faculty data
   const departmentsMap = new Map();
-  facultyData.forEach(f => {
+  facultyMembers.forEach(f => {
     if (f.departments) {
       departmentsMap.set(f.departments.slug, {
         id: f.departments.slug,
@@ -46,7 +47,7 @@ export default function FacultyPage() {
       {/* Listing Content */}
       <section className="container mx-auto px-4 py-12">
         <FacultyListing 
-          initialFaculty={facultyData} 
+          initialFaculty={facultyMembers} 
           departments={departments} 
         />
       </section>

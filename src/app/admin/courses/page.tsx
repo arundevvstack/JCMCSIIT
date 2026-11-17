@@ -120,6 +120,11 @@ export default async function AdminCoursesPage() {
                         type: "url",
                         placeholder: "/pdfs/ktu-cse-syllabus.pdf",
                         colSpan: 2,
+                        mediaPicker: {
+                            category: "document",
+                            allowedBuckets: ["pdfs", "cms-documents"],
+                            modalTitle: "Select Course Syllabus PDF",
+                        },
                     },
                     {
                         name: "eligibility",

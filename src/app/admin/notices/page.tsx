@@ -103,6 +103,11 @@ export default async function AdminNoticesPage() {
                         type: "url",
                         placeholder: "/pdfs/circular.pdf",
                         colSpan: 2,
+                        mediaPicker: {
+                            category: "document",
+                            allowedBuckets: ["cms-documents", "pdfs"],
+                            modalTitle: "Select Official Notice / Circular PDF",
+                        },
                     },
                     {
                         name: "is_pinned",

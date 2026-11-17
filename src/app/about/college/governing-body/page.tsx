@@ -1,14 +1,15 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Building2, CheckCircle2, Crown, Shield, BookOpen, Users } from 'lucide-react';
+import { ArrowLeft, Building2, CheckCircle2, Crown, Shield, BookOpen } from 'lucide-react';
+import { getPublicContentBlocks } from '@/lib/cms/content-blocks';
 
 export const metadata: Metadata = {
   title: 'Governing Body | JCMCSIIT',
   description: 'Governing Body members and functions of John Cox Memorial C.S.I Institute of Technology.',
 };
 
-const members = [
+const defaultMembers = [
   { sl: 1,  name: 'Bishop, South Kerala Diocese',    designation: 'Chairman',        role: 'Society of Technical Training (STT)',          badge: 'Chairman',   badgeColor: 'amber',   image: '/img/bishop_1.png' },
   { sl: 2,  name: 'Er. T. B Sanal Kumar',            designation: 'Secretary',       role: 'Member nominated by STT',                      badge: 'STT Member', badgeColor: 'blue'    },
   { sl: 3,  name: 'Mr. Mohan Kumar',                 designation: 'Manager of STT',  role: 'Member nominated by STT',                      badge: 'STT Member', badgeColor: 'blue'    },
@@ -24,7 +25,7 @@ const members = [
   { sl: 13, name: 'Dr. Anshad A.S',                  designation: 'Principal',       role: 'JCMCSIIT · Member Secretary',                  badge: 'Secretary',  badgeColor: 'rose',    image: '/Faculty/Others/Dr.Anshad.A.S.jpg' },
 ];
 
-const functions = [
+const defaultFunctions = [
   'To monitor the academic and other related activities of the college.',
   'To consider the recommendations of the Staff Selection Committee.',
   'To consider the important communications, policy decisions received from the University, Government, AICTE etc.',
@@ -50,14 +51,32 @@ const avatarColors = [
   'bg-teal-600', 'bg-pink-600', 'bg-blue-700', 'bg-emerald-700', 'bg-violet-700',
 ];
 
-export default function GoverningBodyPage() {
+export default async function GoverningBodyPage() {
+  const blocks = await getPublicContentBlocks([
+    'governing_body_functions',
+    'governing_body_intro',
+  ]);
+
+  const functions = blocks.governing_body_functions?.content
+    ? blocks.governing_body_functions.content
+        .split('\n')
+        .map((s) => s.trim().replace(/^[-*•]\s*/, ''))
+        .filter(Boolean)
+    : defaultFunctions;
+
+  const introText =
+    blocks.governing_body_intro?.content ||
+    'The Governing Body ensures effective management of the institution and plans its future development, overseeing academic excellence and institutional growth.';
+
   return (
     <main className="min-h-screen pt-32 pb-24 bg-slate-50">
       <div className="w-full max-w-screen-xl mx-auto px-4 md:px-8">
-
         {/* Back */}
         <div className="mb-8">
-          <Link href="/about" className="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-primary transition-colors">
+          <Link
+            href="/about"
+            className="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-primary transition-colors"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to About
           </Link>
         </div>
@@ -66,24 +85,39 @@ export default function GoverningBodyPage() {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-200 bg-blue-50 mb-6">
             <Building2 className="w-4 h-4 text-blue-600" />
-            <span className="text-sm font-bold text-blue-700 uppercase tracking-widest">Administration</span>
+            <span className="text-sm font-bold text-blue-700 uppercase tracking-widest">
+              Administration
+            </span>
           </div>
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 mb-5">
             Governing <span className="text-blue-600">Body</span>
           </h1>
-          <p className="text-slate-500 text-lg leading-relaxed">
-            The Governing Body ensures effective management of the institution and plans its future development, overseeing academic excellence and institutional growth.
-          </p>
+          <p className="text-slate-500 text-lg leading-relaxed">{introText}</p>
         </div>
 
         {/* About Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14">
           {[
-            { icon: Crown,    title: 'Supreme Authority',  desc: 'The Board of Governors is the supreme administrative authority of the college.'         },
-            { icon: BookOpen, title: 'Academic Oversight', desc: 'The Council meets annually to review academic performance, activities and achievements.'  },
-            { icon: Shield,   title: 'Policy & Governance', desc: 'Reviews policy decisions from the University, Government, AICTE and affiliated bodies.'  },
+            {
+              icon: Crown,
+              title: 'Supreme Authority',
+              desc: 'The Board of Governors is the supreme administrative authority of the college.',
+            },
+            {
+              icon: BookOpen,
+              title: 'Academic Oversight',
+              desc: 'The Council meets annually to review academic performance, activities and achievements.',
+            },
+            {
+              icon: Shield,
+              title: 'Policy & Governance',
+              desc: 'Reviews policy decisions from the University, Government, AICTE and affiliated bodies.',
+            },
           ].map((item, i) => (
-            <div key={i} className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex gap-4 hover:shadow-md transition-shadow">
+            <div
+              key={i}
+              className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex gap-4 hover:shadow-md transition-shadow"
+            >
               <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
                 <item.icon className="w-5 h-5 text-blue-600" />
               </div>
@@ -103,7 +137,10 @@ export default function GoverningBodyPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {functions.map((fn, i) => (
-              <div key={i} className="flex items-start gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-all">
+              <div
+                key={i}
+                className="flex items-start gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-all"
+              >
                 <CheckCircle2 className="w-5 h-5 text-emerald-500 mt-0.5 shrink-0" />
                 <p className="text-slate-700 text-sm font-medium leading-relaxed">{fn}</p>
               </div>
@@ -116,24 +153,43 @@ export default function GoverningBodyPage() {
           <div className="flex items-center gap-3 mb-8">
             <div className="w-1.5 h-6 bg-blue-600 rounded-full shrink-0"></div>
             <h2 className="text-2xl font-bold text-slate-900">Governing Body Members</h2>
-            <span className="ml-auto text-sm font-semibold text-slate-400">{members.length} Members</span>
+            <span className="ml-auto text-sm font-semibold text-slate-400">
+              {defaultMembers.length} Members
+            </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {members.map((m, i) => (
-              <div key={m.sl} className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-lg hover:border-blue-200 transition-all duration-300 flex items-start gap-4">
-                {/* Avatar */}
-                <div className={`w-12 h-12 rounded-2xl ${avatarColors[i % avatarColors.length]} flex items-center justify-center shrink-0 text-white font-black text-lg overflow-hidden relative`}>
+            {defaultMembers.map((m, i) => (
+              <div
+                key={m.sl}
+                className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-lg hover:border-blue-200 transition-all duration-300 flex items-start gap-4"
+              >
+                <div
+                  className={`w-12 h-12 rounded-2xl ${
+                    avatarColors[i % avatarColors.length]
+                  } flex items-center justify-center shrink-0 text-white font-black text-lg overflow-hidden relative`}
+                >
                   {m.image ? (
-                    <Image src={m.image} alt={m.name} fill className="object-cover" sizes="48px" />
+                    <Image
+                      src={m.image}
+                      alt={m.name}
+                      fill
+                      className="object-cover"
+                      sizes="48px"
+                      unoptimized
+                    />
                   ) : (
-                    m.name.split(' ').find(w => /[A-Z]/.test(w[0]))?.charAt(0) ?? m.sl
+                    m.name.split(' ').find((w) => /[A-Z]/.test(w[0]))?.charAt(0) ?? m.sl
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <p className="font-bold text-slate-900 text-sm leading-tight">{m.name}</p>
-                    <span className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeStyles[m.badgeColor]}`}>
+                    <span
+                      className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        badgeStyles[m.badgeColor]
+                      }`}
+                    >
                       {m.badge}
                     </span>
                   </div>
@@ -148,20 +204,26 @@ export default function GoverningBodyPage() {
         {/* Footer Banner */}
         <div className="relative bg-[#0B1F3A] rounded-3xl p-10 md:p-12 overflow-hidden mt-14">
           <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-blue-600/10 pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-48 h-48 rounded-full bg-white/5 pointer-events-none" />
-          <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-            <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
-              <Users className="w-8 h-8 text-white" />
-            </div>
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-              <h3 className="text-2xl font-black text-white mb-2">Governing Council Meetings</h3>
-              <p className="text-white/60 text-sm leading-relaxed max-w-2xl">
-                The Governing Council convenes once a year. During this meeting, the Principal presents detailed information on academic performance, institutional activities, and the achievements of faculty and students from the previous semester.
+              <p className="text-blue-400 text-xs font-bold uppercase tracking-widest mb-2">
+                Statutory Governance
+              </p>
+              <h3 className="text-2xl font-bold text-white mb-2">
+                Need more information on institutional policies?
+              </h3>
+              <p className="text-slate-300 text-sm">
+                Explore mandatory disclosures, affiliation approvals, and official university orders.
               </p>
             </div>
+            <Link
+              href="/about/college/mandatory-disclosure"
+              className="shrink-0 px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-colors shadow-lg"
+            >
+              Mandatory Disclosure
+            </Link>
           </div>
         </div>
-
       </div>
     </main>
   );

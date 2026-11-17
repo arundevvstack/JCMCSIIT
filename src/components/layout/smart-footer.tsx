@@ -1,7 +1,12 @@
 import Link from "next/link";
-import Image from "next/image";
+import { getPublicSiteSettings } from "@/lib/cms/site-settings";
 
-export function SmartFooter() {
+export async function SmartFooter() {
+  const settings = await getPublicSiteSettings();
+  const footerText = settings.footer_text;
+  const copyrightLine = footerText?.copyright_line || "John Cox Memorial CSI Institute of Technology.";
+  const locationLine = footerText?.location_line || "Kannammoola, Trivandrum, Kerala 695011.";
+
   return (
     <footer className="w-full font-sans border-t border-slate-200">
       {/* Top Section - White Background */}
@@ -141,7 +146,7 @@ export function SmartFooter() {
 
             {/* Copyright Text */}
             <div className="text-[11px] text-white/60 pt-2">
-              © {new Date().getFullYear()} John Cox Memorial CSI Institute of Technology. Kannammoola, Trivandrum, Kerala 695011.
+              © {new Date().getFullYear()} {copyrightLine} {locationLine}
             </div>
 
           </div>

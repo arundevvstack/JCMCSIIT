@@ -35,17 +35,16 @@ export default async function AdminContactMessagesPage() {
             />
 
             <AdminHonestNotice
-                title="Public /contact Form Backend Wiring — Coming Soon"
-                variant="pending"
+                title="Connected to public.inquiries (General Contact Inbox)"
+                variant="info"
             >
-                Per schema rules, no duplicate contact table was invented;
-                general inquiries without a{" "}
-                <code className="text-[#E5C158]">course_interest</code> are
-                queried live from{" "}
-                <code className="text-[#E5C158]">public.inquiries</code>. The
-                existing public <code className="text-zinc-200">/contact</code>{" "}
-                page remains untouched and is not yet wired to submit into
-                Supabase.
+                General visitor messages submitted via{" "}
+                <code className="text-zinc-200">/contact</code> are persisted
+                directly to{" "}
+                <code className="text-[#E5C158]">public.inquiries</code> with{" "}
+                <code className="text-[#E5C158]">course_interest = NULL</code>{" "}
+                and protected by PostgreSQL Row Level Security (
+                <code className="text-zinc-200">inquiries_admin_all</code>).
             </AdminHonestNotice>
 
             <InquiriesManager

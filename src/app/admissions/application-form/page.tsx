@@ -1,9 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ArrowRight, Phone, FileText, Download, User, Building, ExternalLink, CreditCard, Globe, Layers, BookOpen, GraduationCap } from "lucide-react";
+import { ArrowRight, Phone, FileText, Download, Building, ExternalLink, CreditCard, Globe, Layers, BookOpen, GraduationCap } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { submitAdmissionLead } from "@/app/actions/admissions";
 
 const internalLinks = [
   { label: "Admissions Home",           desc: "Overview of all admission programmes",        href: "/admissions",                    icon: GraduationCap, color: "blue",    download: false },
@@ -38,15 +38,38 @@ const colorMap: Record<string, string> = {
 export default function ApplicationFormPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const submittingRef = useRef(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (submittingRef.current || isSubmitting) {
+      return;
+    }
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    submittingRef.current = true;
     setIsSubmitting(true);
-    // Simulate network delay
-    setTimeout(() => {
+    setErrorMessage(null);
+
+    try {
+      const result = await submitAdmissionLead(formData);
+      if (result.success) {
+        form.reset();
+        setIsSubmitted(true);
+      } else {
+        setErrorMessage(
+          result.error || "Failed to submit enquiry. Please check your details and try again."
+        );
+      }
+    } catch {
+      setErrorMessage("Unable to submit enquiry right now. Please check your connection and try again.");
+    } finally {
+      submittingRef.current = false;
       setIsSubmitting(false);
-      setIsSubmitted(true);
-    }, 1200);
+    }
   };
 
   return (
@@ -90,7 +113,11 @@ export default function ApplicationFormPage() {
                   Thank you for your interest in JCMCSIIT. Our admissions team has received your details and will contact you shortly.
                 </p>
                 <button 
-                  onClick={() => setIsSubmitted(false)}
+                  type="button"
+                  onClick={() => {
+                    setErrorMessage(null);
+                    setIsSubmitted(false);
+                  }}
                   className="mt-8 px-6 py-3 bg-white border border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 hover:text-primary transition-colors shadow-sm"
                 >
                   Submit Another Enquiry
@@ -98,25 +125,43 @@ export default function ApplicationFormPage() {
               </div>
             ) : (
             <form className="space-y-6" onSubmit={handleSubmit}>
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="hidden"
+              />
+
+              {errorMessage ? (
+                <div
+                  role="alert"
+                  className="p-4 rounded-xl border border-red-200 bg-red-50 text-red-700 text-sm font-medium"
+                >
+                  {errorMessage}
+                </div>
+              ) : null}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700">Full Name</label>
-                  <input required type="text" placeholder="John Doe" className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
+                  <input required name="name" maxLength={255} disabled={isSubmitting} type="text" placeholder="John Doe" className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all disabled:opacity-60" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700">Email Address</label>
-                  <input required type="email" placeholder="john@example.com" className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
+                  <input required name="email" maxLength={255} disabled={isSubmitting} type="email" placeholder="john@example.com" className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all disabled:opacity-60" />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700">Phone Number</label>
-                  <input required type="tel" placeholder="+91 98765 43210" className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" />
+                  <input required name="phone" maxLength={50} disabled={isSubmitting} type="tel" placeholder="+91 98765 43210" className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all disabled:opacity-60" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700">Program</label>
-                  <select required className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-700">
+                  <select required name="program" disabled={isSubmitting} className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-700 disabled:opacity-60">
                     <option value="">Select Program</option>
                     <option value="btech">B.Tech Engineering</option>
                     <option value="mtech">M.Tech (PG)</option>
@@ -126,7 +171,7 @@ export default function ApplicationFormPage() {
 
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-slate-700">Preferred Department</label>
-                <select required className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-700">
+                <select required name="department" disabled={isSubmitting} className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-700 disabled:opacity-60">
                   <option value="">Select Department</option>
                   <option value="aiml">Artificial Intelligence &amp; Machine Learning</option>
                   <option value="bme">Biomedical &amp; Robotic Engineering</option>
@@ -140,7 +185,7 @@ export default function ApplicationFormPage() {
 
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-slate-700">Any Questions?</label>
-                <textarea rows={4} placeholder="Type your message here..." className="w-full p-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none"></textarea>
+                <textarea name="message" maxLength={5000} disabled={isSubmitting} rows={4} placeholder="Type your message here..." className="w-full p-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none disabled:opacity-60"></textarea>
               </div>
 
               <button 

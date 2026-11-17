@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { PRINCIPAL_MESSAGE_CMS_BLOCK_KEY } from "@/data/principal-message";
 import {
     ADMIN_ROLES,
     AdminAuthError,
@@ -42,11 +43,11 @@ function getBool(formData: FormData, key: string): boolean {
     return val === "true" || val === "on" || val === "1";
 }
 
-function enforceWorkflowWritePermission(
+export async function verifyWorkflowWriteRule(
     admin: AdminProfile,
     isInsert: boolean,
     targetStatus: z.infer<typeof WorkflowStatusSchema>
-): string | null {
+): Promise<string | null> {
     if (admin.role === "PUBLISHER" && isInsert) {
         return "Publisher accounts can review and update publication status on existing records, but cannot create new records.";
     }
@@ -56,14 +57,163 @@ function enforceWorkflowWritePermission(
     return null;
 }
 
+function verifyAffectedRows(
+    rows: readonly unknown[] | null | undefined,
+    admin: AdminProfile,
+    operation: "update" | "delete",
+    entityLabel: string
+): string | null {
+    if (Array.isArray(rows) && rows.length > 0) {
+        return null;
+    }
+    if (operation === "update" && admin.role === "EDITOR") {
+        return `Permission denied: Editor accounts can only modify ${entityLabel} records that are currently in Draft status.`;
+    }
+    return `Unable to ${operation} ${entityLabel}: record was not found or database row-level security blocked this action.`;
+}
+
+function formatDatabaseError(
+    error: { code?: string; message?: string },
+    entityLabel: string
+): string {
+    if (error.code === "23505") {
+        return `A ${entityLabel} record with this slug or unique key already exists.`;
+    }
+    if (error.code === "23503") {
+        return `Cannot delete or modify this ${entityLabel} because other records still reference it.`;
+    }
+    if (error.code === "42501") {
+        return `Permission denied: your role is not authorized to perform this ${entityLabel} operation.`;
+    }
+    if (error.code === "23514") {
+        return `Validation rejected by database constraint for ${entityLabel}.`;
+    }
+    if (error.message && /Forbidden:|Unauthorized:|Cannot demote|Cannot delete/i.test(error.message)) {
+        return error.message;
+    }
+    return `Database operation failed for ${entityLabel}. Please check your inputs and permissions.`;
+}
+
 function mapActionError(err: unknown): string {
     if (err instanceof AdminAuthError) {
         return err.message;
     }
-    if (err instanceof Error) {
-        return err.message;
+    if (err instanceof z.ZodError) {
+        return err.issues[0]?.message || "Invalid identifier or input payload.";
     }
     return "An unexpected error occurred while processing the request.";
+}
+
+// ----------------------------------------------------------------------------
+// TARGETED PUBLIC ROUTE REVALIDATION HELPERS
+// ----------------------------------------------------------------------------
+
+function revalidatePagePublicPaths(slug?: string | null, routePath?: string | null) {
+    if (routePath && routePath.startsWith("/")) {
+        revalidatePath(routePath);
+    }
+    const cleanSlug = (slug || "").trim().replace(/^\/+|\/+$/g, "");
+    if (!cleanSlug || cleanSlug === "home") {
+        revalidatePath("/");
+    } else {
+        revalidatePath(`/${cleanSlug}`);
+    }
+}
+
+function revalidateContentBlockPublicPaths(key: string) {
+    const normalized = key.trim().toLowerCase();
+    if (normalized === PRINCIPAL_MESSAGE_CMS_BLOCK_KEY) {
+        revalidatePath("/about/college/principal");
+        revalidatePath("/");
+        return;
+    }
+    if (
+        normalized.startsWith("home") ||
+        normalized.startsWith("hero") ||
+        normalized.startsWith("banner") ||
+        normalized.startsWith("footer") ||
+        normalized.startsWith("ticker")
+    ) {
+        revalidatePath("/");
+    }
+    if (normalized.startsWith("contact")) {
+        revalidatePath("/contact");
+    }
+}
+
+function revalidateNewsPublicPaths(slug?: string | null) {
+    revalidatePath("/");
+    revalidatePath("/news-events/news");
+    if (slug) {
+        revalidatePath(`/news-events/news/${slug}`);
+    }
+    revalidatePath("/sitemap.xml");
+}
+
+function revalidateCoursePublicPaths(slug?: string | null) {
+    revalidatePath("/");
+    revalidatePath("/academics");
+    revalidatePath("/academics/ug");
+    revalidatePath("/academics/pg");
+    if (slug) {
+        revalidatePath(`/academics/courses/${slug}`);
+    }
+}
+
+function revalidateDepartmentPublicPaths(slug?: string | null) {
+    revalidatePath("/academics/departments");
+    if (slug) {
+        revalidatePath(`/academics/departments/${slug}`);
+        if (slug === "civil" || slug === "ce") {
+            revalidatePath("/academics/departments/civil");
+            revalidatePath("/academics/departments/ce");
+        } else if (slug === "mechanical" || slug === "me") {
+            revalidatePath("/academics/departments/mechanical");
+            revalidatePath("/academics/departments/me");
+        }
+    }
+    revalidatePath("/sitemap.xml");
+}
+
+function revalidateFacultyPublicPaths(slug?: string | null) {
+    revalidatePath("/academics/faculty");
+    revalidatePath("/academics/departments");
+    if (slug) {
+        revalidatePath(`/academics/faculty/${slug}`);
+        revalidatePath(`/faculty/${slug}`);
+    }
+}
+
+function revalidateEventPublicPaths(slug?: string | null) {
+    revalidatePath("/");
+    revalidatePath("/news-events/events");
+    if (slug) {
+        revalidatePath(`/news-events/events/${slug}`);
+    }
+    revalidatePath("/sitemap.xml");
+}
+
+function revalidateNoticePublicPaths() {
+    revalidatePath("/");
+    revalidatePath("/news-events/news");
+    revalidatePath("/sitemap.xml");
+}
+
+function revalidatePopupPublicPaths() {
+    revalidatePath("/");
+}
+
+function revalidateGalleryPublicPaths() {
+    revalidatePath("/");
+    revalidatePath("/gallery");
+    revalidatePath("/news-events/gallery");
+}
+
+function revalidateSiteSettingPublicPaths(isPublic: boolean) {
+    if (isPublic) {
+        revalidatePath("/");
+        revalidatePath("/contact");
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -94,11 +244,14 @@ export async function savePage(formData: FormData): Promise<CmsActionResult> {
     try {
         const admin = await requireAdminRole(ADMIN_ROLES);
         const rawId = getStr(formData, "id");
-        const rawStatus =
-            getStr(formData, "status") ||
-            (getBool(formData, "is_published") ? "published" : "draft");
-        const effectiveStatus =
-            admin.role === "EDITOR" ? "draft" : rawStatus;
+        const explicitStatus = getStr(formData, "status");
+        const resolvedStatus =
+            explicitStatus ||
+            (formData.has("is_published")
+                ? getBool(formData, "is_published")
+                    ? "published"
+                    : "draft"
+                : "draft");
 
         const parsed = PageSchema.safeParse({
             id: rawId || undefined,
@@ -112,7 +265,7 @@ export async function savePage(formData: FormData): Promise<CmsActionResult> {
                 typeof formData.get("content") === "string"
                     ? (formData.get("content") as string)
                     : "",
-            status: effectiveStatus,
+            status: resolvedStatus,
             integration_status:
                 (getStr(formData, "integration_status") as
                     | "pending"
@@ -127,7 +280,7 @@ export async function savePage(formData: FormData): Promise<CmsActionResult> {
             };
         }
 
-        const roleErr = enforceWorkflowWritePermission(
+        const roleErr = await verifyWorkflowWriteRule(
             admin,
             !parsed.data.id,
             parsed.data.status
@@ -147,19 +300,36 @@ export async function savePage(formData: FormData): Promise<CmsActionResult> {
             integration_status: parsed.data.integration_status,
         };
 
+        let savedRoutePath: string | null = null;
+
         if (parsed.data.id) {
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from("pages")
                 .update(payload)
-                .eq("id", parsed.data.id);
-            if (error) return { ok: false, error: error.message };
+                .eq("id", parsed.data.id)
+                .select("id, slug, route_path");
+            if (error) {
+                return { ok: false, error: formatDatabaseError(error, "page") };
+            }
+            const affectedErr = verifyAffectedRows(data, admin, "update", "page");
+            if (affectedErr) {
+                return { ok: false, error: affectedErr };
+            }
+            savedRoutePath = data?.[0]?.route_path ?? null;
         } else {
-            const { error } = await supabase.from("pages").insert(payload);
-            if (error) return { ok: false, error: error.message };
+            const { data, error } = await supabase
+                .from("pages")
+                .insert(payload)
+                .select("id, slug, route_path");
+            if (error) {
+                return { ok: false, error: formatDatabaseError(error, "page") };
+            }
+            savedRoutePath = data?.[0]?.route_path ?? null;
         }
 
         revalidatePath("/admin");
         revalidatePath("/admin/content/pages");
+        revalidatePagePublicPaths(parsed.data.slug, savedRoutePath);
         return { ok: true, message: "Page saved successfully." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -168,18 +338,26 @@ export async function savePage(formData: FormData): Promise<CmsActionResult> {
 
 export async function deletePage(id: string): Promise<CmsActionResult> {
     try {
-        await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
+        const admin = await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
         const validId = z.string().uuid().parse(id);
         const supabase = await createClient();
 
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from("pages")
             .delete()
-            .eq("id", validId);
-        if (error) return { ok: false, error: error.message };
+            .eq("id", validId)
+            .select("id, slug, route_path");
+        if (error) {
+            return { ok: false, error: formatDatabaseError(error, "page") };
+        }
+        const affectedErr = verifyAffectedRows(data, admin, "delete", "page");
+        if (affectedErr) {
+            return { ok: false, error: affectedErr };
+        }
 
         revalidatePath("/admin");
         revalidatePath("/admin/content/pages");
+        revalidatePagePublicPaths(data?.[0]?.slug, data?.[0]?.route_path);
         return { ok: true, message: "Page deleted." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -224,8 +402,6 @@ export async function saveContentBlock(
         const admin = await requireAdminRole(ADMIN_ROLES);
         const rawId = getStr(formData, "id");
         const rawStatus = getStr(formData, "status") || "draft";
-        const effectiveStatus =
-            admin.role === "EDITOR" ? "draft" : rawStatus;
 
         const parsed = BlockSchema.safeParse({
             id: rawId || undefined,
@@ -236,7 +412,7 @@ export async function saveContentBlock(
                 typeof formData.get("content") === "string"
                     ? (formData.get("content") as string)
                     : "",
-            status: effectiveStatus,
+            status: rawStatus,
         });
 
         if (!parsed.success) {
@@ -248,7 +424,7 @@ export async function saveContentBlock(
             };
         }
 
-        const roleErr = enforceWorkflowWritePermission(
+        const roleErr = await verifyWorkflowWriteRule(
             admin,
             !parsed.data.id,
             parsed.data.status
@@ -265,20 +441,40 @@ export async function saveContentBlock(
         };
 
         if (parsed.data.id) {
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from("content_blocks")
                 .update(payload)
-                .eq("id", parsed.data.id);
-            if (error) return { ok: false, error: error.message };
+                .eq("id", parsed.data.id)
+                .select("id, key");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "content block"),
+                };
+            }
+            const affectedErr = verifyAffectedRows(
+                data,
+                admin,
+                "update",
+                "content block"
+            );
+            if (affectedErr) return { ok: false, error: affectedErr };
         } else {
             const { error } = await supabase
                 .from("content_blocks")
-                .insert(payload);
-            if (error) return { ok: false, error: error.message };
+                .insert(payload)
+                .select("id, key");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "content block"),
+                };
+            }
         }
 
         revalidatePath("/admin");
         revalidatePath("/admin/content/blocks");
+        revalidateContentBlockPublicPaths(parsed.data.key);
         return { ok: true, message: "Content block saved." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -287,18 +483,34 @@ export async function saveContentBlock(
 
 export async function deleteContentBlock(id: string): Promise<CmsActionResult> {
     try {
-        await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
+        const admin = await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
         const validId = z.string().uuid().parse(id);
         const supabase = await createClient();
 
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from("content_blocks")
             .delete()
-            .eq("id", validId);
-        if (error) return { ok: false, error: error.message };
+            .eq("id", validId)
+            .select("id, key");
+        if (error) {
+            return {
+                ok: false,
+                error: formatDatabaseError(error, "content block"),
+            };
+        }
+        const affectedErr = verifyAffectedRows(
+            data,
+            admin,
+            "delete",
+            "content block"
+        );
+        if (affectedErr) return { ok: false, error: affectedErr };
 
         revalidatePath("/admin");
         revalidatePath("/admin/content/blocks");
+        if (data?.[0]?.key) {
+            revalidateContentBlockPublicPaths(data[0].key);
+        }
         return { ok: true, message: "Content block deleted." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -334,10 +546,7 @@ export async function saveNewsItem(
         const rawId = getStr(formData, "id");
         const title = getStr(formData, "title");
         const slugInput = getStr(formData, "slug") || normalizeSlug(title);
-        const statusInput =
-            admin.role === "EDITOR"
-                ? "draft"
-                : getStr(formData, "status") || "draft";
+        const statusInput = getStr(formData, "status") || "draft";
 
         const parsed = NewsSchema.safeParse({
             id: rawId || undefined,
@@ -360,7 +569,7 @@ export async function saveNewsItem(
             };
         }
 
-        const roleErr = enforceWorkflowWritePermission(
+        const roleErr = await verifyWorkflowWriteRule(
             admin,
             !parsed.data.id,
             parsed.data.status
@@ -381,20 +590,40 @@ export async function saveNewsItem(
         };
 
         if (parsed.data.id) {
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from("news")
                 .update(payload)
-                .eq("id", parsed.data.id);
-            if (error) return { ok: false, error: error.message };
+                .eq("id", parsed.data.id)
+                .select("id, slug");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "news article"),
+                };
+            }
+            const affectedErr = verifyAffectedRows(
+                data,
+                admin,
+                "update",
+                "news article"
+            );
+            if (affectedErr) return { ok: false, error: affectedErr };
         } else {
             const { error } = await supabase
                 .from("news")
-                .insert({ ...payload, author_id: admin.id });
-            if (error) return { ok: false, error: error.message };
+                .insert({ ...payload, author_id: admin.id })
+                .select("id, slug");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "news article"),
+                };
+            }
         }
 
         revalidatePath("/admin");
         revalidatePath("/admin/news");
+        revalidateNewsPublicPaths(parsed.data.slug);
         return { ok: true, message: "News article saved." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -403,16 +632,31 @@ export async function saveNewsItem(
 
 export async function deleteNewsItem(id: string): Promise<CmsActionResult> {
     try {
-        await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
+        const admin = await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
         const validId = z.string().uuid().parse(id);
         const supabase = await createClient();
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from("news")
             .delete()
-            .eq("id", validId);
-        if (error) return { ok: false, error: error.message };
+            .eq("id", validId)
+            .select("id, slug");
+        if (error) {
+            return {
+                ok: false,
+                error: formatDatabaseError(error, "news article"),
+            };
+        }
+        const affectedErr = verifyAffectedRows(
+            data,
+            admin,
+            "delete",
+            "news article"
+        );
+        if (affectedErr) return { ok: false, error: affectedErr };
+
         revalidatePath("/admin");
         revalidatePath("/admin/news");
+        revalidateNewsPublicPaths(data?.[0]?.slug);
         return { ok: true, message: "News article deleted." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -450,10 +694,7 @@ export async function saveCourseItem(
         const rawId = getStr(formData, "id");
         const name = getStr(formData, "name");
         const rawIntake = getStr(formData, "intake");
-        const statusInput =
-            admin.role === "EDITOR"
-                ? "draft"
-                : getStr(formData, "status") || "draft";
+        const statusInput = getStr(formData, "status") || "draft";
 
         const parsed = CourseSchema.safeParse({
             id: rawId || undefined,
@@ -478,7 +719,7 @@ export async function saveCourseItem(
             };
         }
 
-        const roleErr = enforceWorkflowWritePermission(
+        const roleErr = await verifyWorkflowWriteRule(
             admin,
             !parsed.data.id,
             parsed.data.status
@@ -501,18 +742,40 @@ export async function saveCourseItem(
         };
 
         if (parsed.data.id) {
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from("courses")
                 .update(payload)
-                .eq("id", parsed.data.id);
-            if (error) return { ok: false, error: error.message };
+                .eq("id", parsed.data.id)
+                .select("id, slug");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "course"),
+                };
+            }
+            const affectedErr = verifyAffectedRows(
+                data,
+                admin,
+                "update",
+                "course"
+            );
+            if (affectedErr) return { ok: false, error: affectedErr };
         } else {
-            const { error } = await supabase.from("courses").insert(payload);
-            if (error) return { ok: false, error: error.message };
+            const { error } = await supabase
+                .from("courses")
+                .insert(payload)
+                .select("id, slug");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "course"),
+                };
+            }
         }
 
         revalidatePath("/admin");
         revalidatePath("/admin/courses");
+        revalidateCoursePublicPaths(parsed.data.slug);
         return { ok: true, message: "Course saved." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -521,16 +784,23 @@ export async function saveCourseItem(
 
 export async function deleteCourseItem(id: string): Promise<CmsActionResult> {
     try {
-        await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
+        const admin = await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
         const validId = z.string().uuid().parse(id);
         const supabase = await createClient();
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from("courses")
             .delete()
-            .eq("id", validId);
-        if (error) return { ok: false, error: error.message };
+            .eq("id", validId)
+            .select("id, slug");
+        if (error) {
+            return { ok: false, error: formatDatabaseError(error, "course") };
+        }
+        const affectedErr = verifyAffectedRows(data, admin, "delete", "course");
+        if (affectedErr) return { ok: false, error: affectedErr };
+
         revalidatePath("/admin");
         revalidatePath("/admin/courses");
+        revalidateCoursePublicPaths(data?.[0]?.slug);
         return { ok: true, message: "Course deleted." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -566,10 +836,7 @@ export async function saveDepartmentItem(
         const admin = await requireAdminRole(ADMIN_ROLES);
         const rawId = getStr(formData, "id");
         const name = getStr(formData, "name");
-        const statusInput =
-            admin.role === "EDITOR"
-                ? "draft"
-                : getStr(formData, "status") || "draft";
+        const statusInput = getStr(formData, "status") || "draft";
 
         const parsed = DepartmentSchema.safeParse({
             id: rawId || undefined,
@@ -593,7 +860,7 @@ export async function saveDepartmentItem(
             };
         }
 
-        const roleErr = enforceWorkflowWritePermission(
+        const roleErr = await verifyWorkflowWriteRule(
             admin,
             !parsed.data.id,
             parsed.data.status
@@ -614,20 +881,40 @@ export async function saveDepartmentItem(
         };
 
         if (parsed.data.id) {
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from("departments")
                 .update(payload)
-                .eq("id", parsed.data.id);
-            if (error) return { ok: false, error: error.message };
+                .eq("id", parsed.data.id)
+                .select("id, slug");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "department"),
+                };
+            }
+            const affectedErr = verifyAffectedRows(
+                data,
+                admin,
+                "update",
+                "department"
+            );
+            if (affectedErr) return { ok: false, error: affectedErr };
         } else {
             const { error } = await supabase
                 .from("departments")
-                .insert(payload);
-            if (error) return { ok: false, error: error.message };
+                .insert(payload)
+                .select("id, slug");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "department"),
+                };
+            }
         }
 
         revalidatePath("/admin");
         revalidatePath("/admin/departments");
+        revalidateDepartmentPublicPaths(parsed.data.slug);
         return { ok: true, message: "Department saved." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -638,16 +925,31 @@ export async function deleteDepartmentItem(
     id: string
 ): Promise<CmsActionResult> {
     try {
-        await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
+        const admin = await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
         const validId = z.string().uuid().parse(id);
         const supabase = await createClient();
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from("departments")
             .delete()
-            .eq("id", validId);
-        if (error) return { ok: false, error: error.message };
+            .eq("id", validId)
+            .select("id, slug");
+        if (error) {
+            return {
+                ok: false,
+                error: formatDatabaseError(error, "department"),
+            };
+        }
+        const affectedErr = verifyAffectedRows(
+            data,
+            admin,
+            "delete",
+            "department"
+        );
+        if (affectedErr) return { ok: false, error: affectedErr };
+
         revalidatePath("/admin");
         revalidatePath("/admin/departments");
+        revalidateDepartmentPublicPaths(data?.[0]?.slug);
         return { ok: true, message: "Department deleted." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -680,10 +982,7 @@ export async function saveFacultyItem(
         const rawId = getStr(formData, "id");
         const name = getStr(formData, "name");
         const deptId = getStr(formData, "department_id");
-        const statusInput =
-            admin.role === "EDITOR"
-                ? "draft"
-                : getStr(formData, "status") || "draft";
+        const statusInput = getStr(formData, "status") || "draft";
 
         const parsed = FacultySchema.safeParse({
             id: rawId || undefined,
@@ -708,7 +1007,7 @@ export async function saveFacultyItem(
             };
         }
 
-        const roleErr = enforceWorkflowWritePermission(
+        const roleErr = await verifyWorkflowWriteRule(
             admin,
             !parsed.data.id,
             parsed.data.status
@@ -730,18 +1029,40 @@ export async function saveFacultyItem(
         };
 
         if (parsed.data.id) {
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from("faculty")
                 .update(payload)
-                .eq("id", parsed.data.id);
-            if (error) return { ok: false, error: error.message };
+                .eq("id", parsed.data.id)
+                .select("id, slug");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "faculty profile"),
+                };
+            }
+            const affectedErr = verifyAffectedRows(
+                data,
+                admin,
+                "update",
+                "faculty profile"
+            );
+            if (affectedErr) return { ok: false, error: affectedErr };
         } else {
-            const { error } = await supabase.from("faculty").insert(payload);
-            if (error) return { ok: false, error: error.message };
+            const { error } = await supabase
+                .from("faculty")
+                .insert(payload)
+                .select("id, slug");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "faculty profile"),
+                };
+            }
         }
 
         revalidatePath("/admin");
         revalidatePath("/admin/faculty");
+        revalidateFacultyPublicPaths(parsed.data.slug);
         return { ok: true, message: "Faculty profile saved." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -750,16 +1071,31 @@ export async function saveFacultyItem(
 
 export async function deleteFacultyItem(id: string): Promise<CmsActionResult> {
     try {
-        await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
+        const admin = await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
         const validId = z.string().uuid().parse(id);
         const supabase = await createClient();
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from("faculty")
             .delete()
-            .eq("id", validId);
-        if (error) return { ok: false, error: error.message };
+            .eq("id", validId)
+            .select("id, slug");
+        if (error) {
+            return {
+                ok: false,
+                error: formatDatabaseError(error, "faculty profile"),
+            };
+        }
+        const affectedErr = verifyAffectedRows(
+            data,
+            admin,
+            "delete",
+            "faculty profile"
+        );
+        if (affectedErr) return { ok: false, error: affectedErr };
+
         revalidatePath("/admin");
         revalidatePath("/admin/faculty");
+        revalidateFacultyPublicPaths(data?.[0]?.slug);
         return { ok: true, message: "Faculty profile deleted." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -796,10 +1132,7 @@ export async function saveEventItem(
         const admin = await requireAdminRole(ADMIN_ROLES);
         const rawId = getStr(formData, "id");
         const title = getStr(formData, "title");
-        const statusInput =
-            admin.role === "EDITOR"
-                ? "draft"
-                : getStr(formData, "status") || "draft";
+        const statusInput = getStr(formData, "status") || "draft";
 
         const parsed = EventSchema.safeParse({
             id: rawId || undefined,
@@ -824,7 +1157,7 @@ export async function saveEventItem(
             };
         }
 
-        const roleErr = enforceWorkflowWritePermission(
+        const roleErr = await verifyWorkflowWriteRule(
             admin,
             !parsed.data.id,
             parsed.data.status
@@ -847,18 +1180,40 @@ export async function saveEventItem(
         };
 
         if (parsed.data.id) {
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from("events")
                 .update(payload)
-                .eq("id", parsed.data.id);
-            if (error) return { ok: false, error: error.message };
+                .eq("id", parsed.data.id)
+                .select("id, slug");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "event"),
+                };
+            }
+            const affectedErr = verifyAffectedRows(
+                data,
+                admin,
+                "update",
+                "event"
+            );
+            if (affectedErr) return { ok: false, error: affectedErr };
         } else {
-            const { error } = await supabase.from("events").insert(payload);
-            if (error) return { ok: false, error: error.message };
+            const { error } = await supabase
+                .from("events")
+                .insert(payload)
+                .select("id, slug");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "event"),
+                };
+            }
         }
 
         revalidatePath("/admin");
         revalidatePath("/admin/events");
+        revalidateEventPublicPaths(parsed.data.slug);
         return { ok: true, message: "Event saved." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -867,16 +1222,23 @@ export async function saveEventItem(
 
 export async function deleteEventItem(id: string): Promise<CmsActionResult> {
     try {
-        await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
+        const admin = await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
         const validId = z.string().uuid().parse(id);
         const supabase = await createClient();
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from("events")
             .delete()
-            .eq("id", validId);
-        if (error) return { ok: false, error: error.message };
+            .eq("id", validId)
+            .select("id, slug");
+        if (error) {
+            return { ok: false, error: formatDatabaseError(error, "event") };
+        }
+        const affectedErr = verifyAffectedRows(data, admin, "delete", "event");
+        if (affectedErr) return { ok: false, error: affectedErr };
+
         revalidatePath("/admin");
         revalidatePath("/admin/events");
+        revalidateEventPublicPaths(data?.[0]?.slug);
         return { ok: true, message: "Event deleted." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -916,10 +1278,7 @@ export async function saveNoticeItem(
         const rawId = getStr(formData, "id");
         const title = getStr(formData, "title");
         const today = new Date().toISOString().slice(0, 10);
-        const statusInput =
-            admin.role === "EDITOR"
-                ? "draft"
-                : getStr(formData, "status") || "draft";
+        const statusInput = getStr(formData, "status") || "draft";
 
         const parsed = NoticeSchema.safeParse({
             id: rawId || undefined,
@@ -943,7 +1302,7 @@ export async function saveNoticeItem(
             };
         }
 
-        const roleErr = enforceWorkflowWritePermission(
+        const roleErr = await verifyWorkflowWriteRule(
             admin,
             !parsed.data.id,
             parsed.data.status
@@ -965,18 +1324,40 @@ export async function saveNoticeItem(
         };
 
         if (parsed.data.id) {
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from("notices")
                 .update(payload)
-                .eq("id", parsed.data.id);
-            if (error) return { ok: false, error: error.message };
+                .eq("id", parsed.data.id)
+                .select("id");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "notice"),
+                };
+            }
+            const affectedErr = verifyAffectedRows(
+                data,
+                admin,
+                "update",
+                "notice"
+            );
+            if (affectedErr) return { ok: false, error: affectedErr };
         } else {
-            const { error } = await supabase.from("notices").insert(payload);
-            if (error) return { ok: false, error: error.message };
+            const { error } = await supabase
+                .from("notices")
+                .insert(payload)
+                .select("id");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "notice"),
+                };
+            }
         }
 
         revalidatePath("/admin");
         revalidatePath("/admin/notices");
+        revalidateNoticePublicPaths();
         return { ok: true, message: "Notice saved." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -985,16 +1366,23 @@ export async function saveNoticeItem(
 
 export async function deleteNoticeItem(id: string): Promise<CmsActionResult> {
     try {
-        await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
+        const admin = await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
         const validId = z.string().uuid().parse(id);
         const supabase = await createClient();
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from("notices")
             .delete()
-            .eq("id", validId);
-        if (error) return { ok: false, error: error.message };
+            .eq("id", validId)
+            .select("id");
+        if (error) {
+            return { ok: false, error: formatDatabaseError(error, "notice") };
+        }
+        const affectedErr = verifyAffectedRows(data, admin, "delete", "notice");
+        if (affectedErr) return { ok: false, error: affectedErr };
+
         revalidatePath("/admin");
         revalidatePath("/admin/notices");
+        revalidateNoticePublicPaths();
         return { ok: true, message: "Notice deleted." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -1028,10 +1416,7 @@ export async function savePopupItem(
     try {
         const admin = await requireAdminRole(ADMIN_ROLES);
         const rawId = getStr(formData, "id");
-        const statusInput =
-            admin.role === "EDITOR"
-                ? "draft"
-                : getStr(formData, "status") || "draft";
+        const statusInput = getStr(formData, "status") || "draft";
 
         const parsed = PopupSchema.safeParse({
             id: rawId || undefined,
@@ -1052,7 +1437,7 @@ export async function savePopupItem(
             };
         }
 
-        const roleErr = enforceWorkflowWritePermission(
+        const roleErr = await verifyWorkflowWriteRule(
             admin,
             !parsed.data.id,
             parsed.data.status
@@ -1072,17 +1457,39 @@ export async function savePopupItem(
         };
 
         if (parsed.data.id) {
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from("popups")
                 .update(payload)
-                .eq("id", parsed.data.id);
-            if (error) return { ok: false, error: error.message };
+                .eq("id", parsed.data.id)
+                .select("id");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "popup campaign"),
+                };
+            }
+            const affectedErr = verifyAffectedRows(
+                data,
+                admin,
+                "update",
+                "popup campaign"
+            );
+            if (affectedErr) return { ok: false, error: affectedErr };
         } else {
-            const { error } = await supabase.from("popups").insert(payload);
-            if (error) return { ok: false, error: error.message };
+            const { error } = await supabase
+                .from("popups")
+                .insert(payload)
+                .select("id");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "popup campaign"),
+                };
+            }
         }
 
         revalidatePath("/admin/homepage");
+        revalidatePopupPublicPaths();
         return { ok: true, message: "Popup campaign saved." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -1091,16 +1498,188 @@ export async function savePopupItem(
 
 export async function deletePopupItem(id: string): Promise<CmsActionResult> {
     try {
-        await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
+        const admin = await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
         const validId = z.string().uuid().parse(id);
         const supabase = await createClient();
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from("popups")
             .delete()
-            .eq("id", validId);
-        if (error) return { ok: false, error: error.message };
+            .eq("id", validId)
+            .select("id");
+        if (error) {
+            return {
+                ok: false,
+                error: formatDatabaseError(error, "popup campaign"),
+            };
+        }
+        const affectedErr = verifyAffectedRows(
+            data,
+            admin,
+            "delete",
+            "popup campaign"
+        );
+        if (affectedErr) return { ok: false, error: affectedErr };
+
         revalidatePath("/admin/homepage");
+        revalidatePopupPublicPaths();
         return { ok: true, message: "Popup campaign deleted." };
+    } catch (err) {
+        return { ok: false, error: mapActionError(err) };
+    }
+}
+
+// ----------------------------------------------------------------------------
+// 9B. NAVIGATION & TICKER ITEMS (`public.navigation_items`)
+// ----------------------------------------------------------------------------
+
+const NavigationItemSchema = z.object({
+    id: z.string().uuid().optional(),
+    menu_location: z.enum([
+        "navbar",
+        "footer",
+        "quick_links",
+        "floating_actions",
+        "ticker",
+    ]),
+    label: z.string().min(1, "Label is required.").max(255),
+    href: z.string().min(1, "Link URL is required."),
+    parent_id: z.string().uuid().nullable().optional(),
+    open_in_new_tab: z.boolean().default(false),
+    badge_text: z.string().max(64).nullable().optional(),
+    icon_name: z.string().max(64).nullable().optional(),
+    column_group: z.string().max(64).nullable().optional(),
+    sort_order: z.number().int().default(0),
+    is_visible: z.boolean().default(true),
+    status: WorkflowStatusSchema,
+});
+
+export async function saveNavigationItem(
+    formData: FormData
+): Promise<CmsActionResult> {
+    try {
+        const admin = await requireAdminRole(ADMIN_ROLES);
+        const rawId = getStr(formData, "id");
+        const statusInput = getStr(formData, "status") || "draft";
+        const rawParentId = getStr(formData, "parent_id");
+        const rawSort = getStr(formData, "sort_order");
+
+        const parsed = NavigationItemSchema.safeParse({
+            id: rawId || undefined,
+            menu_location: getStr(formData, "menu_location") || "navbar",
+            label: getStr(formData, "label"),
+            href: getStr(formData, "href"),
+            parent_id: rawParentId || null,
+            open_in_new_tab: getBool(formData, "open_in_new_tab"),
+            badge_text: getStr(formData, "badge_text") || null,
+            icon_name: getStr(formData, "icon_name") || null,
+            column_group: getStr(formData, "column_group") || null,
+            sort_order: rawSort ? parseInt(rawSort, 10) : 0,
+            is_visible: getBool(formData, "is_visible"),
+            status: statusInput,
+        });
+
+        if (!parsed.success) {
+            return {
+                ok: false,
+                error: parsed.error.issues[0]?.message || "Invalid navigation item data.",
+            };
+        }
+
+        const ruleErr = await verifyWorkflowWriteRule(
+            admin,
+            !parsed.data.id,
+            parsed.data.status
+        );
+        if (ruleErr) return { ok: false, error: ruleErr };
+
+        const supabase = await createClient();
+        const payload = {
+            menu_location: parsed.data.menu_location,
+            label: parsed.data.label,
+            href: parsed.data.href,
+            parent_id: parsed.data.parent_id ?? null,
+            open_in_new_tab: parsed.data.open_in_new_tab,
+            badge_text: parsed.data.badge_text ?? null,
+            icon_name: parsed.data.icon_name ?? null,
+            column_group: parsed.data.column_group ?? null,
+            sort_order: isNaN(parsed.data.sort_order) ? 0 : parsed.data.sort_order,
+            is_visible: parsed.data.is_visible,
+            status: parsed.data.status,
+            updated_by: admin.id,
+            ...(parsed.data.status === "published"
+                ? { published_at: new Date().toISOString() }
+                : {}),
+        };
+
+        if (parsed.data.id) {
+            const { data, error } = await supabase
+                .from("navigation_items")
+                .update(payload)
+                .eq("id", parsed.data.id)
+                .select("id");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "navigation item"),
+                };
+            }
+            const affectedErr = verifyAffectedRows(
+                data,
+                admin,
+                "update",
+                "navigation item"
+            );
+            if (affectedErr) return { ok: false, error: affectedErr };
+        } else {
+            const { error } = await supabase
+                .from("navigation_items")
+                .insert(payload)
+                .select("id");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "navigation item"),
+                };
+            }
+        }
+
+        revalidatePath("/admin/homepage");
+        revalidatePath("/");
+        return { ok: true, message: "Navigation item saved." };
+    } catch (err) {
+        return { ok: false, error: mapActionError(err) };
+    }
+}
+
+export async function deleteNavigationItem(
+    id: string
+): Promise<CmsActionResult> {
+    try {
+        const admin = await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
+        const validId = z.string().uuid().parse(id);
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("navigation_items")
+            .delete()
+            .eq("id", validId)
+            .select("id");
+        if (error) {
+            return {
+                ok: false,
+                error: formatDatabaseError(error, "navigation item"),
+            };
+        }
+        const affectedErr = verifyAffectedRows(
+            data,
+            admin,
+            "delete",
+            "navigation item"
+        );
+        if (affectedErr) return { ok: false, error: affectedErr };
+
+        revalidatePath("/admin/homepage");
+        revalidatePath("/");
+        return { ok: true, message: "Navigation item deleted." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
     }
@@ -1122,10 +1701,7 @@ export async function saveGalleryItem(
     try {
         const admin = await requireAdminRole(ADMIN_ROLES);
         const rawId = getStr(formData, "id");
-        const statusInput =
-            admin.role === "EDITOR"
-                ? "draft"
-                : getStr(formData, "status") || "draft";
+        const statusInput = getStr(formData, "status") || "draft";
 
         const parsed = GalleryItemSchema.safeParse({
             id: rawId || undefined,
@@ -1146,7 +1722,7 @@ export async function saveGalleryItem(
             };
         }
 
-        const roleErr = enforceWorkflowWritePermission(
+        const roleErr = await verifyWorkflowWriteRule(
             admin,
             !parsed.data.id,
             parsed.data.status
@@ -1164,19 +1740,39 @@ export async function saveGalleryItem(
         };
 
         if (parsed.data.id) {
-            const { error } = await supabase
+            const { data, error } = await supabase
                 .from("gallery_items")
                 .update(payload)
-                .eq("id", parsed.data.id);
-            if (error) return { ok: false, error: error.message };
+                .eq("id", parsed.data.id)
+                .select("id");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "gallery item"),
+                };
+            }
+            const affectedErr = verifyAffectedRows(
+                data,
+                admin,
+                "update",
+                "gallery item"
+            );
+            if (affectedErr) return { ok: false, error: affectedErr };
         } else {
             const { error } = await supabase
                 .from("gallery_items")
-                .insert(payload);
-            if (error) return { ok: false, error: error.message };
+                .insert(payload)
+                .select("id");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "gallery item"),
+                };
+            }
         }
 
         revalidatePath("/admin/media");
+        revalidateGalleryPublicPaths();
         return { ok: true, message: "Gallery item saved." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -1185,15 +1781,30 @@ export async function saveGalleryItem(
 
 export async function deleteGalleryItem(id: string): Promise<CmsActionResult> {
     try {
-        await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
+        const admin = await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
         const validId = z.string().uuid().parse(id);
         const supabase = await createClient();
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from("gallery_items")
             .delete()
-            .eq("id", validId);
-        if (error) return { ok: false, error: error.message };
+            .eq("id", validId)
+            .select("id");
+        if (error) {
+            return {
+                ok: false,
+                error: formatDatabaseError(error, "gallery item"),
+            };
+        }
+        const affectedErr = verifyAffectedRows(
+            data,
+            admin,
+            "delete",
+            "gallery item"
+        );
+        if (affectedErr) return { ok: false, error: affectedErr };
+
         revalidatePath("/admin/media");
+        revalidateGalleryPublicPaths();
         return { ok: true, message: "Gallery item deleted." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
@@ -1231,16 +1842,26 @@ export async function updateInquiryAction(
         }
 
         const supabase = await createClient();
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from("inquiries")
             .update({
                 status: parsed.data.status,
                 notes: parsed.data.notes ?? null,
                 handled_by: admin.id,
             })
-            .eq("id", parsed.data.id);
+            .eq("id", parsed.data.id)
+            .select("id");
 
-        if (error) return { ok: false, error: error.message };
+        if (error) {
+            return { ok: false, error: formatDatabaseError(error, "inquiry") };
+        }
+        const affectedErr = verifyAffectedRows(
+            data,
+            admin,
+            "update",
+            "inquiry"
+        );
+        if (affectedErr) return { ok: false, error: affectedErr };
 
         revalidatePath("/admin");
         revalidatePath("/admin/admissions");
@@ -1255,18 +1876,42 @@ export async function updateInquiryAction(
 // 11. SITE SETTINGS (`public.site_settings` — SUPER_ADMIN & ADMIN ONLY)
 // ----------------------------------------------------------------------------
 
+/**
+ * Approved public-setting keys permitted to have is_public = true.
+ * Matches institutional security specification.
+ */
+const APPROVED_PUBLIC_SETTINGS_KEYS = [
+    "logo_id",
+    "favicon_id",
+    "homepage_hero",
+    "contact_info",
+    "social_links",
+    "footer_text",
+    "default_og_image_id",
+] as const;
+
 const SiteSettingSchema = z.object({
     key: z
         .string()
-        .min(2)
-        .max(128)
+        .min(2, "Setting key must be at least 2 characters.")
+        .max(128, "Setting key must not exceed 128 characters.")
         .regex(
             /^[a-z0-9]+(?:[._-][a-z0-9]+)*$/,
             "Setting key must use lowercase letters, numbers, dots, underscores, or hyphens."
         ),
-    category: z.string().min(1).max(64),
-    value_raw: z.string().min(1, "JSON value is required."),
-    description: z.string().max(1000).optional(),
+    category: z
+        .string()
+        .min(1, "Category is required.")
+        .max(64, "Category must not exceed 64 characters.")
+        .regex(/^[a-z0-9_-]+$/i, "Category must be alphanumeric."),
+    value_raw: z
+        .string()
+        .min(1, "Setting value is required.")
+        .max(65536, "Setting value payload exceeds 64KB limit."),
+    description: z
+        .string()
+        .max(1000, "Description must not exceed 1000 characters.")
+        .optional(),
     is_public: z.boolean(),
 });
 
@@ -1274,7 +1919,7 @@ export async function saveSiteSettingAction(
     formData: FormData
 ): Promise<CmsActionResult> {
     try {
-        await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
+        const admin = await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
         const parsed = SiteSettingSchema.safeParse({
             key: getStr(formData, "key").toLowerCase(),
             category: getStr(formData, "category") || "general",
@@ -1292,40 +1937,67 @@ export async function saveSiteSettingAction(
             };
         }
 
-        let valueJson: unknown;
-        try {
-            valueJson = JSON.parse(parsed.data.value_raw);
-        } catch {
+        const { key, category, value_raw, description, is_public } = parsed.data;
+
+        // Security boundary: enforce 7-key allowlist for public settings
+        if (
+            is_public &&
+            !(APPROVED_PUBLIC_SETTINGS_KEYS as readonly string[]).includes(key)
+        ) {
             return {
                 ok: false,
-                error: 'Value must be valid JSON (for example: {"phone":"+91-471-2555555"} or "Enabled").',
+                error: `Security violation: Setting key "${key}" is not permitted to be made public. Only approved keys (${APPROVED_PUBLIC_SETTINGS_KEYS.join(
+                    ", "
+                )}) may have is_public enabled.`,
             };
         }
 
-        if (
-            valueJson === null ||
-            typeof valueJson !== "object" ||
-            Array.isArray(valueJson)
-        ) {
-            valueJson = { value: valueJson };
+        // Validate JSON payload
+        let valueJson: unknown;
+        try {
+            valueJson = JSON.parse(value_raw);
+        } catch {
+            return {
+                ok: false,
+                error: 'Invalid JSON format. Value must be valid JSON (e.g., {"phone": "+91-471-2555555"} or "string_value").',
+            };
         }
 
         const supabase = await createClient();
-        const { error } = await supabase.from("site_settings").upsert(
-            {
-                key: parsed.data.key,
-                category: parsed.data.category,
-                value_json: valueJson,
-                description: parsed.data.description ?? null,
-                is_public: parsed.data.is_public,
-            },
-            { onConflict: "key" }
-        );
+        const { data, error } = await supabase
+            .from("site_settings")
+            .upsert(
+                {
+                    key,
+                    category,
+                    value_json: valueJson,
+                    description: description ?? null,
+                    is_public,
+                    updated_by: admin.id,
+                },
+                { onConflict: "key" }
+            )
+            .select("key, is_public");
 
-        if (error) return { ok: false, error: error.message };
+        if (error) {
+            return {
+                ok: false,
+                error: formatDatabaseError(error, "site setting"),
+            };
+        }
+
+        const affectedErr = verifyAffectedRows(
+            data,
+            admin,
+            "update",
+            "site setting"
+        );
+        if (affectedErr) return { ok: false, error: affectedErr };
 
         revalidatePath("/admin/settings");
-        return { ok: true, message: "Site setting saved." };
+        revalidateSiteSettingPublicPaths(is_public);
+
+        return { ok: true, message: `Site setting "${key}" saved successfully.` };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
     }
@@ -1335,20 +2007,50 @@ export async function deleteSiteSettingAction(
     key: string
 ): Promise<CmsActionResult> {
     try {
-        await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
+        const admin = await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
         const validKey = z
             .string()
-            .min(1)
-            .max(128)
-            .parse(key);
+            .min(1, "Setting key is required.")
+            .max(128, "Setting key must not exceed 128 characters.")
+            .regex(
+                /^[a-z0-9]+(?:[._-][a-z0-9]+)*$/,
+                "Invalid setting key format."
+            )
+            .parse(key.trim().toLowerCase());
+
         const supabase = await createClient();
-        const { error } = await supabase
+
+        // Perform delete and return affected row
+        const { data, error } = await supabase
             .from("site_settings")
             .delete()
-            .eq("key", validKey);
-        if (error) return { ok: false, error: error.message };
+            .eq("key", validKey)
+            .select("key, is_public");
+
+        if (error) {
+            return {
+                ok: false,
+                error: formatDatabaseError(error, "site setting"),
+            };
+        }
+
+        const affectedErr = verifyAffectedRows(
+            data,
+            admin,
+            "delete",
+            "site setting"
+        );
+        if (affectedErr) return { ok: false, error: affectedErr };
+
+        const wasPublic = Boolean(data?.[0]?.is_public);
+
         revalidatePath("/admin/settings");
-        return { ok: true, message: "Site setting deleted." };
+        revalidateSiteSettingPublicPaths(wasPublic);
+
+        return {
+            ok: true,
+            message: `Site setting "${validKey}" deleted successfully.`,
+        };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
     }
@@ -1397,19 +2099,220 @@ export async function updateAdminMemberAction(
         }
 
         const supabase = await createClient();
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from("admin_users")
             .update({
                 full_name: parsed.data.full_name,
                 role: parsed.data.role,
                 is_active: parsed.data.is_active,
             })
-            .eq("id", parsed.data.id);
+            .eq("id", parsed.data.id)
+            .select("id");
 
-        if (error) return { ok: false, error: error.message };
+        if (error) {
+            return {
+                ok: false,
+                error: formatDatabaseError(error, "administrator profile"),
+            };
+        }
+        const affectedErr = verifyAffectedRows(
+            data,
+            currentSuperAdmin,
+            "update",
+            "administrator profile"
+        );
+        if (affectedErr) return { ok: false, error: affectedErr };
 
         revalidatePath("/admin/users");
         return { ok: true, message: "Administrator permissions updated." };
+    } catch (err) {
+        return { ok: false, error: mapActionError(err) };
+    }
+}
+
+// ----------------------------------------------------------------------------
+// 13. MEDIA METADATA (`public.media` — SUPER_ADMIN, ADMIN, OR OWN ACTIVE EDITOR)
+// ----------------------------------------------------------------------------
+
+const MediaMetadataUpdateSchema = z.object({
+    id: z.string().uuid("Invalid media asset ID."),
+    alt_text: z
+        .string()
+        .max(500, "Alt text must not exceed 500 characters.")
+        .optional(),
+    caption: z
+        .string()
+        .max(1000, "Caption must not exceed 1,000 characters.")
+        .optional(),
+});
+
+export async function updateMediaMetadataAction(
+    formData: FormData
+): Promise<CmsActionResult> {
+    try {
+        // PUBLISHER is strictly read-only on `public.media`; EDITOR may update only
+        // their own active uploads (enforced by `media_editor_update_own` RLS & `trg_media_security`).
+        const admin = await requireAdminRole([
+            "SUPER_ADMIN",
+            "ADMIN",
+            "EDITOR",
+        ]);
+
+        const cleanField = (key: string): string | undefined => {
+            const raw = formData.get(key);
+            if (typeof raw !== "string") return undefined;
+            const trimmed = raw
+                .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "")
+                .trim();
+            return trimmed.length > 0 ? trimmed : undefined;
+        };
+
+        const parsed = MediaMetadataUpdateSchema.safeParse({
+            id: getStr(formData, "id"),
+            alt_text: cleanField("alt_text"),
+            caption: cleanField("caption"),
+        });
+
+        if (!parsed.success) {
+            return {
+                ok: false,
+                error:
+                    parsed.error.issues[0]?.message ||
+                    "Invalid media metadata input.",
+            };
+        }
+
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("media")
+            .update({
+                alt_text: parsed.data.alt_text ?? null,
+                caption: parsed.data.caption ?? null,
+            })
+            .eq("id", parsed.data.id)
+            .select("id");
+
+        if (error) {
+            return {
+                ok: false,
+                error: formatDatabaseError(error, "media asset"),
+            };
+        }
+
+        if (!data || data.length === 0) {
+            if (admin.role === "EDITOR") {
+                return {
+                    ok: false,
+                    error: "Permission denied: Editor accounts may only edit alt text and captions on their own active uploads.",
+                };
+            }
+            return {
+                ok: false,
+                error: "Unable to update media metadata: record was not found or access was denied.",
+            };
+        }
+
+        revalidatePath("/admin");
+        revalidatePath("/admin/media");
+        revalidatePath("/admin/documents");
+        return { ok: true, message: "Metadata saved successfully." };
+    } catch (err) {
+        return { ok: false, error: mapActionError(err) };
+    }
+}
+
+// ----------------------------------------------------------------------------
+// 13. MEDIA & DOCUMENT PICKER ASSETS
+// ----------------------------------------------------------------------------
+
+export interface MediaPickerAsset {
+    id: string;
+    bucket_id: string;
+    storage_path: string;
+    original_filename: string;
+    public_url: string;
+    mime_type: string;
+    size_bytes: number;
+    width: number | null;
+    height: number | null;
+    alt_text: string | null;
+    caption: string | null;
+    created_at: string;
+}
+
+export interface MediaPickerActionResult {
+    ok: boolean;
+    assets?: MediaPickerAsset[];
+    error?: string;
+}
+
+const SERVER_IMAGE_BUCKETS = [
+    "cms-media",
+    "galleries",
+    "faculty-profiles",
+] as const;
+
+const SERVER_DOCUMENT_BUCKETS = [
+    "cms-documents",
+    "pdfs",
+] as const;
+
+export async function fetchMediaPickerAssetsAction(
+    category: "image" | "document",
+    allowedBuckets?: readonly string[]
+): Promise<MediaPickerActionResult> {
+    try {
+        await requireAdminRole(ADMIN_ROLES);
+
+        if (category !== "image" && category !== "document") {
+            return {
+                ok: false,
+                error: "Invalid media category requested.",
+            };
+        }
+
+        const standardBuckets =
+            category === "image"
+                ? SERVER_IMAGE_BUCKETS
+                : SERVER_DOCUMENT_BUCKETS;
+
+        let effectiveBuckets: readonly string[] = standardBuckets;
+
+        if (allowedBuckets && Array.isArray(allowedBuckets) && allowedBuckets.length > 0) {
+            const hasInvalid = allowedBuckets.some(
+                (b) => !(standardBuckets as readonly string[]).includes(b)
+            );
+            if (hasInvalid) {
+                return {
+                    ok: false,
+                    error: `Invalid bucket requested for ${category} assets.`,
+                };
+            }
+            effectiveBuckets = Array.from(new Set(allowedBuckets));
+        }
+
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("media")
+            .select(
+                "id, bucket_id, storage_path, original_filename, public_url, mime_type, size_bytes, width, height, alt_text, caption, created_at"
+            )
+            .in("bucket_id", effectiveBuckets)
+            .eq("is_archived", false)
+            .order("created_at", { ascending: false })
+            .limit(100);
+
+        if (error) {
+            return {
+                ok: false,
+                error: formatDatabaseError(error, "media library"),
+            };
+        }
+
+        return {
+            ok: true,
+            assets: (data ?? []) as MediaPickerAsset[],
+        };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
     }

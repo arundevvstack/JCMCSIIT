@@ -1,10 +1,14 @@
 import { ADMIN_ROLES, requireAdminRole } from "@/lib/auth/rbac";
 import { createClient } from "@/lib/supabase/server";
-import { savePopupItem, deletePopupItem } from "@/actions/cms";
+import {
+    savePopupItem,
+    deletePopupItem,
+    saveNavigationItem,
+    deleteNavigationItem,
+} from "@/actions/cms";
 import {
     AdminHonestNotice,
     AdminPageHeader,
-    AdminStatusBadge,
 } from "@/components/admin/admin-primitives";
 import { CmsCollectionManager } from "@/components/admin/cms-collection-manager";
 
@@ -25,31 +29,32 @@ export default async function AdminHomepagePage() {
             .order("updated_at", { ascending: false }),
         supabase
             .from("navigation_items")
-            .select("id, menu_location, label, href, is_visible, status")
-            .in("menu_location", ["ticker", "quick_links", "navbar"])
+            .select(
+                "id, menu_location, label, href, parent_id, sort_order, is_visible, status, updated_at"
+            )
             .order("menu_location", { ascending: true })
-            .order("sort_order", { ascending: true })
-            .limit(20),
+            .order("sort_order", { ascending: true }),
     ]);
 
     return (
         <div className="space-y-8">
             <AdminPageHeader
                 eyebrow="Homepage Management"
-                title="Homepage Campaigns & Quick Links"
-                description="Manage promotional popups in public.popups and inspect navigation/ticker entries stored in public.navigation_items."
+                title="Homepage Campaigns & Navigation"
+                description="Manage promotional popups in public.popups and live navigation/ticker entries in public.navigation_items."
             />
 
             <AdminHonestNotice
-                title="Homepage Hero & Ticker Frontend Binding — Coming Soon"
-                variant="pending"
+                title="Homepage Hero & Ticker Connected to CMS"
+                variant="info"
             >
-                Popup records below save directly to{" "}
-                <code className="text-[#E5C158]">public.popups</code>. The live
-                public homepage (<code className="text-zinc-200">/</code>),
-                graduation ceremony popup, and scrolling news ticker remain
-                preserved in their existing static components until explicit
-                frontend data binding is enabled.
+                Promotional popups, News Ticker items, and the Homepage Hero
+                are wired to CMS data with resilient fallbacks. Live updates
+                to <code className="text-[#E5C158]">public.navigation_items</code>{" "}
+                (with menu location <code className="text-zinc-200">ticker</code>)
+                or <code className="text-[#E5C158]">public.site_settings</code>{" "}
+                (<code className="text-zinc-200">homepage_hero</code>) will
+                revalidate and render on the public website.
             </AdminHonestNotice>
 
             <section className="space-y-3">
@@ -98,6 +103,11 @@ export default async function AdminHomepagePage() {
                             label: "Banner / Poster Image URL",
                             type: "url",
                             placeholder: "/graduation-2026.png",
+                            mediaPicker: {
+                                category: "image",
+                                allowedBuckets: ["cms-media"],
+                                modalTitle: "Select Popup Campaign Banner",
+                            },
                         },
                         {
                             name: "status",
@@ -136,51 +146,85 @@ export default async function AdminHomepagePage() {
                 />
             </section>
 
-            <section className="rounded-2xl border border-white/[0.07] bg-[#12141C] overflow-hidden">
-                <div className="px-6 py-4 border-b border-white/[0.07] bg-[#0E1017] flex items-center justify-between">
-                    <h2 className="text-sm font-bold text-zinc-100">
-                        Registered Navigation & Ticker Items
-                        (public.navigation_items)
-                    </h2>
-                    <span className="text-xs text-zinc-400">
-                        {(navItems ?? []).length} item
-                        {(navItems ?? []).length === 1 ? "" : "s"}
-                    </span>
-                </div>
-                {(navItems ?? []).length === 0 ? (
-                    <div className="p-8 text-center text-xs text-zinc-500">
-                        No navigation or ticker items have been seeded into{" "}
-                        <code className="text-zinc-300">
-                            public.navigation_items
-                        </code>{" "}
-                        yet. Visual menu builder is scheduled for a future CMS
-                        phase.
-                    </div>
-                ) : (
-                    <div className="divide-y divide-white/[0.05] text-xs">
-                        {(navItems ?? []).map((nav) => (
-                            <div
-                                key={nav.id}
-                                className="px-6 py-3 flex items-center justify-between gap-4"
-                            >
-                                <div>
-                                    <span className="font-semibold text-zinc-200">
-                                        {nav.label}
-                                    </span>
-                                    <span className="ml-3 font-mono text-zinc-400">
-                                        {nav.href}
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <span className="font-mono text-[11px] text-[#E5C158]">
-                                        {nav.menu_location}
-                                    </span>
-                                    <AdminStatusBadge status={nav.status} />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
+            <section className="space-y-3">
+                <h2 className="text-base font-bold text-zinc-100">
+                    Navigation & Ticker Items (public.navigation_items)
+                </h2>
+                <CmsCollectionManager
+                    entityLabel="Navigation Item"
+                    role={admin.role}
+                    items={(navItems ?? []) as Record<string, unknown>[]}
+                    columns={[
+                        { key: "label", label: "Label / Headline" },
+                        { key: "href", label: "Target URL", isMono: true },
+                        { key: "menu_location", label: "Location", isMono: true },
+                        { key: "sort_order", label: "Sort" },
+                        { key: "status", label: "Status", isStatus: true },
+                    ]}
+                    searchKeys={["label", "href", "menu_location"]}
+                    fields={[
+                        {
+                            name: "label",
+                            label: "Menu Label / Ticker Headline",
+                            type: "text",
+                            required: true,
+                            placeholder: "e.g. Admission 2026 Open or Placements",
+                        },
+                        {
+                            name: "href",
+                            label: "Target Link URL",
+                            type: "text",
+                            required: true,
+                            placeholder: "/admissions or https://...",
+                        },
+                        {
+                            name: "menu_location",
+                            label: "Menu Location",
+                            type: "select",
+                            required: true,
+                            options: [
+                                { label: "News Ticker (Top Bar)", value: "ticker" },
+                                { label: "Main Navbar", value: "navbar" },
+                                { label: "Quick Links (Homepage/Drawer)", value: "quick_links" },
+                                { label: "Floating Action Menu", value: "floating_actions" },
+                                { label: "Footer Links", value: "footer" },
+                            ],
+                            defaultValue: "ticker",
+                        },
+                        {
+                            name: "sort_order",
+                            label: "Sort Order (Numeric)",
+                            type: "number",
+                            defaultValue: "0",
+                        },
+                        {
+                            name: "status",
+                            label: "Workflow Status",
+                            type: "select",
+                            required: true,
+                            options: [
+                                { label: "Draft", value: "draft" },
+                                { label: "Published", value: "published" },
+                                { label: "Archived", value: "archived" },
+                            ],
+                            defaultValue: "published",
+                        },
+                        {
+                            name: "is_visible",
+                            label: "Visible to Visitors",
+                            type: "checkbox",
+                            defaultValue: true,
+                        },
+                        {
+                            name: "open_in_new_tab",
+                            label: "Open in New Browser Tab",
+                            type: "checkbox",
+                            defaultValue: false,
+                        },
+                    ]}
+                    saveAction={saveNavigationItem}
+                    deleteAction={deleteNavigationItem}
+                />
             </section>
         </div>
     );

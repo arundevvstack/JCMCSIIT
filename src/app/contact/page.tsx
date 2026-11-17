@@ -1,12 +1,21 @@
 import { Metadata } from "next";
-import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
+import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { ContactForm } from "./contact-form";
+import { getPublicSiteSettings } from "@/lib/cms/site-settings";
 
 export const metadata: Metadata = {
   title: "Contact Us | JCMCSIIT",
   description: "Get in touch with JCMCSIIT. Find our address, phone numbers, and email contacts.",
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await getPublicSiteSettings();
+  const contact = settings.contact_info;
+
+  const address = contact?.address || "Kannammoola, Medical College P.O,\nThiruvananthapuram — 695011, Kerala, India";
+  const phones = contact?.phones && contact.phones.length > 0 ? contact.phones : ["+91 94969 81555", "+91 0471 2550474 / 2446949"];
+  const emails = contact?.emails && contact.emails.length > 0 ? contact.emails : ["principal@jcmcsiit.ac.in", "jcmcsiit@gmail.com"];
+  const officeHours = contact?.office_hours || "Mon — Sat: 9:00 AM — 5:00 PM";
   return (
     <main className="min-h-screen pt-32 pb-24 bg-white relative">
       <div className="container px-4 md:px-6 relative z-10 mx-auto">
@@ -16,7 +25,7 @@ export default function ContactPage() {
             Get in Touch.
           </h1>
           <p className="text-slate-500 text-xl leading-relaxed max-w-2xl mx-auto">
-            We're here to help. Reach out to us for admissions inquiries, campus visits, or general information.
+            We&apos;re here to help. Reach out to us for admissions inquiries, campus visits, or general information.
           </p>
         </div>
 
@@ -25,29 +34,7 @@ export default function ContactPage() {
           {/* Contact Form */}
           <div className="bg-white rounded-3xl p-10 border border-slate-200 shadow-xl shadow-slate-200/50">
             <h2 className="text-2xl font-bold mb-8 text-foreground">Send a Message</h2>
-            <form className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-600 mb-2">Full Name</label>
-                  <input type="text" className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 text-foreground placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="Your name" />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-600 mb-2">Email Address</label>
-                  <input type="email" className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 text-foreground placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="you@email.com" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-600 mb-2">Subject</label>
-                <input type="text" className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 text-foreground placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="How can we help?" />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-600 mb-2">Message</label>
-                <textarea rows={5} className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 text-foreground placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none" placeholder="Write your message here..." />
-              </div>
-              <button type="submit" className="w-full h-14 rounded-xl bg-foreground text-white font-semibold hover:bg-foreground/90 transition-all shadow-lg text-lg flex items-center justify-center gap-2">
-                <Send className="h-5 w-5" /> Send Message
-              </button>
-            </form>
+            <ContactForm />
           </div>
 
           {/* Contact Information */}
@@ -61,7 +48,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Campus Address</h3>
-                    <p className="text-slate-500 leading-relaxed">Kannammoola, Medical College P.O,<br/>Thiruvananthapuram — 695011, Kerala, India</p>
+                    <p className="text-slate-500 leading-relaxed whitespace-pre-line">{address}</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
@@ -70,8 +57,9 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Phone</h3>
-                    <p className="text-slate-500">+91 94969 81555</p>
-                    <p className="text-slate-500">+91 0471 2550474 / 2446949</p>
+                    {phones.map((phone, idx) => (
+                      <p key={idx} className="text-slate-500">{phone}</p>
+                    ))}
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
@@ -80,8 +68,9 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Email</h3>
-                    <p className="text-slate-500">principal@jcmcsiit.ac.in</p>
-                    <p className="text-slate-500">jcmcsiit@gmail.com</p>
+                    {emails.map((email, idx) => (
+                      <p key={idx} className="text-slate-500">{email}</p>
+                    ))}
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
@@ -90,7 +79,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Office Hours</h3>
-                    <p className="text-slate-500">Mon — Sat: 9:00 AM — 5:00 PM</p>
+                    <p className="text-slate-500">{officeHours}</p>
                   </div>
                 </li>
               </ul>

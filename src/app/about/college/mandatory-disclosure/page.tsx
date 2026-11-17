@@ -1,13 +1,14 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, FileText, Download, Eye, Shield, Calendar, ExternalLink, Info, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Download, Eye, Info, CheckCircle2 } from 'lucide-react';
+import { getPublicContentBlocks } from '@/lib/cms/content-blocks';
 
 export const metadata: Metadata = {
   title: 'Mandatory Disclosure | JCMCSIIT',
   description: 'AICTE Mandatory Disclosure for John Cox Memorial C.S.I Institute of Technology, Thiruvananthapuram.',
 };
 
-const disclosureSections = [
+const defaultDisclosureSections = [
   {
     title: 'Institution Details',
     items: [
@@ -59,14 +60,26 @@ const programs = [
   { name: 'Civil Engineering',                          code: 'CE',    intake: 60  },
 ];
 
-export default function MandatoryDisclosurePage() {
+export default async function MandatoryDisclosurePage() {
+  const blocks = await getPublicContentBlocks([
+    'mandatory_disclosure_note',
+    'mandatory_disclosure_pdf_url',
+  ]);
+
+  const pdfUrl = blocks.mandatory_disclosure_pdf_url?.content || '/documents/mandatory-disclosure.pdf';
+  const noticeNote =
+    blocks.mandatory_disclosure_note?.content ||
+    'This disclosure is updated periodically as per AICTE guidelines. For the official document, download the PDF below.';
+
   return (
     <main className="min-h-screen pt-32 pb-24 bg-slate-50">
       <div className="w-full max-w-screen-xl mx-auto px-4 md:px-8">
-
         {/* Back */}
         <div className="mb-8">
-          <Link href="/about" className="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-primary transition-colors">
+          <Link
+            href="/about"
+            className="inline-flex items-center text-sm font-semibold text-slate-500 hover:text-primary transition-colors"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to About
           </Link>
         </div>
@@ -74,8 +87,9 @@ export default function MandatoryDisclosurePage() {
         {/* Hero */}
         <div className="text-center max-w-3xl mx-auto mb-14">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-blue-200 bg-blue-50 mb-6">
-            <Shield className="w-4 h-4 text-blue-600" />
-            <span className="text-sm font-bold text-blue-700 uppercase tracking-widest">AICTE Compliance</span>
+            <span className="text-sm font-bold text-blue-700 uppercase tracking-widest">
+              Regulatory Compliance
+            </span>
           </div>
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 mb-5">
             Mandatory <span className="text-blue-600">Disclosure</span>
@@ -86,23 +100,27 @@ export default function MandatoryDisclosurePage() {
         </div>
 
         {/* Update Notice */}
-        <div className="flex items-start gap-4 bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-10">
-          <Info className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
-          <div>
-            <p className="font-bold text-blue-900 text-sm">Last Updated: 29 March 2024</p>
-            <p className="text-blue-700 text-sm mt-0.5">This disclosure is updated periodically as per AICTE guidelines. For the official document, download the PDF below.</p>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-10">
+          <div className="flex items-start gap-3 flex-1">
+            <Info className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-bold text-blue-900 text-sm">Official AICTE Compliance</p>
+              <p className="text-blue-700 text-sm mt-0.5">{noticeNote}</p>
+            </div>
           </div>
-          <div className="ml-auto flex gap-2 shrink-0">
+          <div className="flex gap-2 shrink-0 w-full sm:w-auto mt-2 sm:mt-0">
             <a
-              href="#"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-blue-200 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-50 transition-colors shadow-sm"
+              href={pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-blue-200 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-50 transition-colors shadow-sm flex-1 sm:flex-none"
             >
               <Eye className="w-3.5 h-3.5" /> Preview
             </a>
             <a
-              href="#"
+              href={pdfUrl}
               download
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-sm"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-sm flex-1 sm:flex-none"
             >
               <Download className="w-3.5 h-3.5" /> Download PDF
             </a>
@@ -111,7 +129,7 @@ export default function MandatoryDisclosurePage() {
 
         {/* Info Sections Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-          {disclosureSections.map((section, si) => (
+          {defaultDisclosureSections.map((section, si) => (
             <div key={si} className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
               <div className="flex items-center gap-3 px-6 py-5 border-b border-slate-100">
                 <div className="w-1.5 h-5 bg-blue-600 rounded-full shrink-0" />
@@ -137,76 +155,31 @@ export default function MandatoryDisclosurePage() {
           <div className="flex items-center gap-3 px-6 py-5 border-b border-slate-100">
             <div className="w-1.5 h-5 bg-blue-600 rounded-full shrink-0" />
             <h2 className="font-bold text-slate-900">AICTE Approved Programmes</h2>
-            <span className="ml-auto text-xs font-semibold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">{programs.length} Programmes</span>
+            <span className="ml-auto text-xs font-semibold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">
+              {programs.length} Programmes
+            </span>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-100">
-                  <th className="text-left px-6 py-3 text-xs font-bold text-slate-400 uppercase tracking-wider">S.No</th>
-                  <th className="text-left px-6 py-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Programme</th>
-                  <th className="text-left px-6 py-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Code</th>
-                  <th className="text-left px-6 py-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Sanctioned Intake</th>
-                  <th className="text-left px-6 py-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Degree</th>
+                <tr className="border-b border-slate-100 bg-slate-50/50">
+                  <th className="py-3.5 px-6 font-bold text-slate-600 text-xs uppercase tracking-wider">Programme</th>
+                  <th className="py-3.5 px-6 font-bold text-slate-600 text-xs uppercase tracking-wider">Code</th>
+                  <th className="py-3.5 px-6 font-bold text-slate-600 text-xs uppercase tracking-wider text-right">Sanctioned Intake</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
-                {programs.map((p, i) => (
-                  <tr key={i} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="px-6 py-4 text-slate-400 font-semibold">{String(i + 1).padStart(2, '0')}</td>
-                    <td className="px-6 py-4 font-semibold text-slate-900">{p.name}</td>
-                    <td className="px-6 py-4">
-                      <span className="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg border border-blue-100">{p.code}</span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-100">{p.intake} seats</span>
-                    </td>
-                    <td className="px-6 py-4 text-slate-500 font-medium">B.Tech (4 Years)</td>
+              <tbody className="divide-y divide-slate-100">
+                {programs.map((p, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="py-4 px-6 font-semibold text-slate-800 text-sm">{p.name}</td>
+                    <td className="py-4 px-6 text-slate-500 text-xs font-mono">{p.code}</td>
+                    <td className="py-4 px-6 text-slate-900 font-bold text-sm text-right">{p.intake} seats</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </div>
-
-        {/* AICTE Links Footer */}
-        <div className="relative bg-[#0B1F3A] rounded-3xl p-8 md:p-12 overflow-hidden">
-          <div className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-blue-600/10 pointer-events-none" />
-          <div className="absolute -bottom-10 -left-10 w-48 h-48 rounded-full bg-white/5 pointer-events-none" />
-          <div className="relative z-10">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
-                <FileText className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h3 className="text-white font-black text-lg">Official Regulatory Links</h3>
-                <p className="text-white/50 text-xs">Verify accreditations and disclosures via official portals</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {[
-                { name: 'AICTE Portal',         url: 'https://www.aicte-india.org/',      desc: 'All India Council for Technical Education' },
-                { name: 'KTU University',        url: 'https://ktu.edu.in/',              desc: 'APJ Abdul Kalam Technological University' },
-                { name: 'NBA Accreditation',     url: 'https://www.nbaind.org/',           desc: 'National Board of Accreditation' },
-              ].map((link, i) => (
-                <a
-                  key={i}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between gap-3 bg-white/10 border border-white/10 rounded-2xl p-4 hover:bg-white/15 hover:border-white/20 transition-all group"
-                >
-                  <div>
-                    <p className="text-white font-bold text-sm">{link.name}</p>
-                    <p className="text-white/40 text-xs mt-0.5">{link.desc}</p>
-                  </div>
-                  <ExternalLink className="w-4 h-4 text-white/40 group-hover:text-white transition-colors shrink-0" />
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-
       </div>
     </main>
   );

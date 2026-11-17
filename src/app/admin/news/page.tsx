@@ -87,6 +87,11 @@ export default async function AdminNewsPage() {
                         type: "url",
                         placeholder: "/images/news-banner.jpg",
                         colSpan: 2,
+                        mediaPicker: {
+                            category: "image",
+                            allowedBuckets: ["cms-media", "galleries"],
+                            modalTitle: "Select Article Featured Image",
+                        },
                     },
                     {
                         name: "is_featured",

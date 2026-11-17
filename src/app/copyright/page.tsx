@@ -1,11 +1,11 @@
-import { Metadata } from 'next';
-import { ComingSoon } from '@/components/layout/coming-soon';
+import { Metadata } from "next";
+import { ComingSoon } from "@/components/layout/coming-soon";
 
 export const metadata: Metadata = {
-  title: 'Copyright | JCMC SIIT',
-  description: 'Learn more about Copyright at JCMC SIIT.',
+    title: "Copyright | JCMC SIIT",
+    description: "Learn more about Copyright at JCMC SIIT.",
 };
 
 export default function Page() {
-  return <ComingSoon title="Copyright" />;
+    return <ComingSoon title="Copyright" routePath="/copyright" />;
 }
