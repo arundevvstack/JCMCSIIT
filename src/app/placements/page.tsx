@@ -1,6 +1,8 @@
 import { Metadata } from "next";
-import { TrendingUp, Users, Award, Building, Briefcase } from "lucide-react";
-import { getPublicRecruiterNames, getPublicPlacementStats } from "@/lib/cms/placements";
+import Link from "next/link";
+import Image from "next/image";
+import { TrendingUp, Users, Award, Building, Briefcase, ArrowRight } from "lucide-react";
+import { getPublicRecruiters, getPublicPlacementStats } from "@/lib/cms/placements";
 import { getPublicContentBlock } from "@/lib/cms/content-blocks";
 
 export const metadata: Metadata = {
@@ -11,7 +13,7 @@ export const metadata: Metadata = {
 export default async function PlacementsPage() {
     const [stats, recruiters, cgpuBlock] = await Promise.all([
         getPublicPlacementStats(),
-        getPublicRecruiterNames(),
+        getPublicRecruiters(),
         getPublicContentBlock("placement_cgpu_message"),
     ]);
 
@@ -68,14 +70,32 @@ export default async function PlacementsPage() {
                         Top Recruiting Partners
                     </h2>
                     <div className="flex flex-wrap justify-center gap-4">
-                        {recruiters.map((company) => (
+                        {recruiters.map((r) => (
                             <div
-                                key={company}
-                                className="px-6 py-3 rounded-xl bg-white border border-slate-200 shadow-sm text-lg font-semibold text-slate-700 hover:border-slate-300 hover:shadow-md transition-all cursor-default"
+                                key={r.id || r.company_name}
+                                className="px-6 py-3 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center gap-3 text-lg font-semibold text-slate-700 hover:border-slate-300 hover:shadow-md transition-all cursor-default"
                             >
-                                {company}
+                                {r.logo_url && (
+                                    <div className="relative h-6 w-16">
+                                        <Image
+                                            src={r.logo_url}
+                                            alt={r.company_name}
+                                            fill
+                                            className="object-contain"
+                                        />
+                                    </div>
+                                )}
+                                <span>{r.company_name}</span>
                             </div>
                         ))}
+                    </div>
+                    <div className="text-center mt-8">
+                        <Link
+                            href="/placements/recruiters"
+                            className="inline-flex items-center text-sm font-bold text-primary hover:text-slate-900 transition-colors gap-1.5"
+                        >
+                            View All Recruiting Partners & Corporate Directory <ArrowRight className="w-4 h-4" />
+                        </Link>
                     </div>
                 </div>
 

@@ -2,187 +2,99 @@ import "server-only";
 
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
+import {
+    GALLERY_CATEGORIES,
+    type GalleryCategory,
+    type PublicGalleryItem,
+    type PublicGalleryAlbum,
+    BASELINE_GALLERY_ITEMS,
+    BASELINE_GALLERY_ALBUMS,
+} from "@/types/gallery";
 
-export interface PublicGalleryItem {
-    id: string;
-    title: string;
-    caption?: string | null;
-    category: string;
-    album_name?: string | null;
-    image_url: string;
-    sort_order: number;
-    status: string;
-}
-
-export const BASELINE_GALLERY_ITEMS: PublicGalleryItem[] = [
-    {
-        id: "gallery-1",
-        title: "Amazon Placement Drive",
-        category: "Placements",
-        album_name: "2025",
-        image_url: "https://jcmcsiit.ac.in/Photogallery/2025/Amazon%20Placement%20Drive%20on%2001082025%20Friday/amazon%202025.jpeg",
-        sort_order: 1,
-        status: "published",
-    },
-    {
-        id: "gallery-2",
-        title: "Annual Athletic Meet",
-        category: "Sports",
-        album_name: "2025",
-        image_url: "https://jcmcsiit.ac.in/Photogallery/2025/Annual%20Athletic%20Meet/IMG-20250320-WA0093.jpg",
-        sort_order: 2,
-        status: "published",
-    },
-    {
-        id: "gallery-3",
-        title: "Bishops Visit our college",
-        category: "Campus",
-        album_name: "2025",
-        image_url: "https://jcmcsiit.ac.in/Photogallery/2025/Bishops%20Visit%20%20our%20college/WhatsApp%20Image%202025-06-04%20at%2016.20.50.jpeg",
-        sort_order: 3,
-        status: "published",
-    },
-    {
-        id: "gallery-4",
-        title: "Congratulations POWER QUIZ WINNERS",
-        category: "Events",
-        album_name: "2025",
-        image_url: "https://jcmcsiit.ac.in/Photogallery/2025/Congratulations%20POWER%20QUIZ%20WINNERS/WhatsApp%20Image%202025-11-10%20at%2018.41.59-imageonline.co-merged.jpeg",
-        sort_order: 4,
-        status: "published",
-    },
-    {
-        id: "gallery-5",
-        title: "Interactive Session on Sustainable Lifestyle",
-        category: "Events",
-        album_name: "2025",
-        image_url: "https://jcmcsiit.ac.in/Photogallery/2025/Interactive%20Session%20on%20Sustainable%20Lifestyle/WhatsApp%20Image%202025-02-14%20at%2012.09.19_00c566ec.jpg",
-        sort_order: 5,
-        status: "published",
-    },
-    {
-        id: "gallery-6",
-        title: "JIT Campus Pool Recruitment 2026",
-        category: "Placements",
-        album_name: "2026",
-        image_url: "https://jcmcsiit.ac.in/Photogallery/2025/JIT%20Campus%20Pool%20Recruitment%202026/WhatsApp%20Image%202026-01-12%20at%2021.34.10.jpeg",
-        sort_order: 6,
-        status: "published",
-    },
-    {
-        id: "gallery-7",
-        title: "JIT ROBOGREET 2026",
-        category: "Events",
-        album_name: "2026",
-        image_url: "https://jcmcsiit.ac.in/Photogallery/2025/JIT%20ROBOGREET%202026/WhatsApp%20Image%202025-12-31%20at%2018.26.31.jpeg",
-        sort_order: 7,
-        status: "published",
-    },
-    {
-        id: "gallery-8",
-        title: "JIT Super League 25",
-        category: "Sports",
-        album_name: "2025",
-        image_url: "https://jcmcsiit.ac.in/Photogallery/2025/JIT%20Super%20League%2025/CRICKET%20RUNNER-UP%20RUBY%20HOUSE.jpg",
-        sort_order: 8,
-        status: "published",
-    },
-    {
-        id: "gallery-9",
-        title: "Liver Foundation of Kerala",
-        category: "Events",
-        album_name: "2025",
-        image_url: "https://jcmcsiit.ac.in/Photogallery/2025/Liver%20Foundation%20of%20Kerala/IMG-20250320-WA0098.jpg",
-        sort_order: 9,
-        status: "published",
-    },
-    {
-        id: "gallery-10",
-        title: "Mega Placement Drive 2025",
-        category: "Placements",
-        album_name: "2025",
-        image_url: "https://jcmcsiit.ac.in/Photogallery/2025/Mega%20Placement%20Drive%202025/Campus%20Placement%20Drive'25.jpeg",
-        sort_order: 10,
-        status: "published",
-    },
-    {
-        id: "gallery-11",
-        title: "Nabhas 2K25",
-        category: "Cultural Fest",
-        album_name: "2025",
-        image_url: "https://jcmcsiit.ac.in/Photogallery/2025/Nabhas%202K25/IMG-20250320-WA0074.jpg",
-        sort_order: 11,
-        status: "published",
-    },
-    {
-        id: "gallery-12",
-        title: "SAYONARA 2K25",
-        category: "Cultural Fest",
-        album_name: "2025",
-        image_url: "https://jcmcsiit.ac.in/Photogallery/2025/SAYONARA%202K25/20250327_160913.jpg",
-        sort_order: 12,
-        status: "published",
-    },
-    {
-        id: "gallery-13",
-        title: "TECHNO VISTA 2025 National Conference",
-        category: "Events",
-        album_name: "2025",
-        image_url: "https://jcmcsiit.ac.in/Photogallery/2025/TECHNO%20VISTA%202025%20%20National%20Conference/IMG-20250324-WA0037.jpg",
-        sort_order: 13,
-        status: "published",
-    },
-];
+export {
+    GALLERY_CATEGORIES,
+    type GalleryCategory,
+    type PublicGalleryItem,
+    type PublicGalleryAlbum,
+    BASELINE_GALLERY_ITEMS,
+    BASELINE_GALLERY_ALBUMS,
+};
 
 export type GalleryQueryOptions = {
     category?: string;
+    album?: string;
     limit?: number;
 };
 
+function slugify(text: string): string {
+    return text
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)+/g, "");
+}
+
 /**
- * Fetches gallery items from `public.gallery_items`, optionally filtered by category or limited in count.
+ * Fetches gallery items from `public.gallery_items`, optionally filtered by category or album.
  */
 export const getPublicGalleryItems = cache(
     async (
         categoryOrOptions?: string | GalleryQueryOptions,
-        options?: { limit?: number }
+        options?: { limit?: number; album?: string }
     ): Promise<PublicGalleryItem[]> => {
         const category =
             typeof categoryOrOptions === "string"
                 ? categoryOrOptions
                 : categoryOrOptions?.category;
+        const album =
+            typeof categoryOrOptions === "object"
+                ? categoryOrOptions?.album
+                : options?.album;
         const limit =
             typeof categoryOrOptions === "object"
                 ? categoryOrOptions?.limit
                 : options?.limit;
 
-        let items: PublicGalleryItem[] = [];
+        const filterBaseline = () => {
+            let items = BASELINE_GALLERY_ITEMS;
+            if (category && category !== "All") {
+                items = items.filter(
+                    (i) => i.category.toLowerCase() === category.toLowerCase()
+                );
+            }
+            if (album && album !== "All") {
+                const normAlbum = album.toLowerCase();
+                items = items.filter(
+                    (i) =>
+                        i.album_name?.toLowerCase() === normAlbum ||
+                        slugify(i.album_name || "") === normAlbum
+                );
+            }
+            items.sort((a, b) => a.sort_order - b.sort_order);
+            return limit && limit > 0 ? items.slice(0, limit) : items;
+        };
 
         if (
             !process.env.NEXT_PUBLIC_SUPABASE_URL ||
             !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
         ) {
-            if (category && category !== "All") {
-                items = BASELINE_GALLERY_ITEMS.filter(
-                    (item) => item.category.toLowerCase() === category.toLowerCase()
-                );
-            } else {
-                items = BASELINE_GALLERY_ITEMS;
-            }
-            return limit && limit > 0 ? items.slice(0, limit) : items;
+            return filterBaseline();
         }
 
         try {
             const supabase = await createClient();
             let query = supabase
                 .from("gallery_items")
-                .select("id, title, caption, category, album_name, image_url, sort_order, status")
+                .select("id, title, caption, category, album_name, image_url, sort_order, status, created_at")
                 .eq("status", "published")
                 .order("sort_order", { ascending: true })
                 .order("created_at", { ascending: false });
 
             if (category && category !== "All") {
                 query = query.ilike("category", category);
+            }
+
+            if (album && album !== "All") {
+                query = query.ilike("album_name", album);
             }
 
             if (limit && limit > 0) {
@@ -192,38 +104,146 @@ export const getPublicGalleryItems = cache(
             const { data, error } = await query;
 
             if (error || !Array.isArray(data) || data.length === 0) {
-                if (category && category !== "All") {
-                    items = BASELINE_GALLERY_ITEMS.filter(
-                        (item) => item.category.toLowerCase() === category.toLowerCase()
-                    );
-                } else {
-                    items = BASELINE_GALLERY_ITEMS;
-                }
-                return limit && limit > 0 ? items.slice(0, limit) : items;
+                return filterBaseline();
             }
 
-            items = data.map((item) => ({
+            const items: PublicGalleryItem[] = data.map((item) => ({
                 id: item.id,
                 title: item.title,
                 caption: item.caption,
                 category: item.category || "Campus",
                 album_name: item.album_name,
                 image_url: item.image_url,
-                sort_order: item.sort_order || 0,
+                sort_order: item.sort_order ?? 0,
                 status: item.status,
+                created_at: item.created_at,
             }));
 
-            return limit && limit > 0 ? items.slice(0, limit) : items;
+            return items;
         } catch {
-            if (category && category !== "All") {
-                items = BASELINE_GALLERY_ITEMS.filter(
-                    (item) => item.category.toLowerCase() === category.toLowerCase()
-                );
-            } else {
-                items = BASELINE_GALLERY_ITEMS;
-            }
-            return limit && limit > 0 ? items.slice(0, limit) : items;
+            return filterBaseline();
         }
+    }
+);
+
+/**
+ * Fetches gallery albums:
+ * 1. Checks `public.gallery_albums` if the table exists.
+ * 2. Checks `public.content_blocks` (prefix `gallery_album_`).
+ * 3. Derives albums dynamically from `gallery_items`.
+ * 4. Merges with `BASELINE_GALLERY_ALBUMS` as fallback.
+ */
+export const getPublicGalleryAlbums = cache(
+    async (categoryFilter?: string): Promise<PublicGalleryAlbum[]> => {
+        const albumsMap = new Map<string, PublicGalleryAlbum>();
+
+        // 1. Populate baseline albums
+        for (const base of BASELINE_GALLERY_ALBUMS) {
+            albumsMap.set(base.slug, { ...base });
+        }
+
+        if (
+            process.env.NEXT_PUBLIC_SUPABASE_URL &&
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+        ) {
+            try {
+                const supabase = await createClient();
+
+                // Attempt to query formal table `gallery_albums`
+                const { data: dbAlbums, error: dbError } = await supabase
+                    .from("gallery_albums")
+                    .select("*")
+                    .eq("status", "published")
+                    .order("sort_order", { ascending: true });
+
+                if (!dbError && Array.isArray(dbAlbums) && dbAlbums.length > 0) {
+                    for (const row of dbAlbums) {
+                        const albumSlug = row.slug || slugify(row.title);
+                        albumsMap.set(albumSlug, {
+                            id: row.id,
+                            title: row.title,
+                            slug: albumSlug,
+                            description: row.description,
+                            category: row.category || "College Events",
+                            event_date: row.event_date,
+                            cover_image_url: row.cover_image_url,
+                            sort_order: row.sort_order ?? 0,
+                            status: row.status,
+                            photo_count: 0,
+                        });
+                    }
+                }
+
+                // Check content blocks fallback for albums created before formal table migration
+                const { data: blocks } = await supabase
+                    .from("content_blocks")
+                    .select("key, content, structured_data, status")
+                    .like("key", "gallery_album_%")
+                    .eq("status", "published");
+
+                if (Array.isArray(blocks)) {
+                    for (const b of blocks) {
+                        const raw = b.structured_data as Record<string, unknown> | null;
+                        if (raw && typeof raw.title === "string") {
+                            const albumSlug = (raw.slug as string) || slugify(raw.title);
+                            albumsMap.set(albumSlug, {
+                                id: b.key,
+                                title: raw.title,
+                                slug: albumSlug,
+                                description: (raw.description as string) || null,
+                                category: (raw.category as string) || "College Events",
+                                event_date: (raw.event_date as string) || null,
+                                cover_image_url: (raw.cover_image_url as string) || null,
+                                sort_order: Number(raw.sort_order) || 0,
+                                status: b.status,
+                                photo_count: 0,
+                            });
+                        }
+                    }
+                }
+            } catch {
+                // Non-blocking, continue with in-memory derivation
+            }
+        }
+
+        // Attach actual photo counts & cover image fallbacks from live published items
+        const allItems = await getPublicGalleryItems();
+        for (const item of allItems) {
+            if (!item.album_name) continue;
+            const albumSlug = slugify(item.album_name);
+            let album = albumsMap.get(albumSlug);
+
+            if (!album) {
+                // Auto-derive album from photos if not yet formally registered
+                album = {
+                    id: `derived-${albumSlug}`,
+                    title: item.album_name,
+                    slug: albumSlug,
+                    category: item.category || "Campus",
+                    cover_image_url: item.image_url,
+                    sort_order: 100,
+                    status: "published",
+                    photo_count: 0,
+                };
+                albumsMap.set(albumSlug, album);
+            }
+
+            album.photo_count = (album.photo_count || 0) + 1;
+            if (!album.cover_image_url) {
+                album.cover_image_url = item.image_url;
+            }
+        }
+
+        let albums = Array.from(albumsMap.values());
+
+        if (categoryFilter && categoryFilter !== "All") {
+            albums = albums.filter(
+                (a) => a.category.toLowerCase() === categoryFilter.toLowerCase()
+            );
+        }
+
+        albums.sort((a, b) => a.sort_order - b.sort_order);
+        return albums;
     }
 );
 
@@ -234,6 +254,10 @@ export const getPublicGalleryCategories = cache(
     async (): Promise<{ name: string; count: number }[]> => {
         const items = await getPublicGalleryItems();
         const counts: Record<string, number> = {};
+
+        for (const cat of GALLERY_CATEGORIES) {
+            counts[cat] = 0;
+        }
 
         for (const item of items) {
             const cat = item.category || "Campus";

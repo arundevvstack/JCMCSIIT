@@ -3,7 +3,6 @@
 import { useSelectedLayoutSegment } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
 import { NewsTicker } from "@/components/layout/news-ticker";
-import { GraduationPopup } from "@/components/layout/graduation-popup";
 import type { NavItem } from "@/lib/cms/navigation";
 
 interface RootRouteShellProps {
@@ -15,7 +14,7 @@ interface RootRouteShellProps {
 
 /**
  * Isolates `/admin` and `/admin/*` routes from the public website chrome
- * (`NewsTicker`, `Navbar`, `SmartFooter`, `GraduationPopup`, and `pt-20`)
+ * (`NewsTicker`, `Navbar`, `SmartFooter`, and `pt-20`)
  * without moving or renaming any existing public route files.
  */
 export function RootRouteShell({ children, footer, tickerItems, navItems }: RootRouteShellProps) {
@@ -35,7 +34,6 @@ export function RootRouteShell({ children, footer, tickerItems, navItems }: Root
             <Navbar navItems={navItems} />
             <div className="flex-1">{children}</div>
             {footer}
-            <GraduationPopup />
         </div>
     );
 }

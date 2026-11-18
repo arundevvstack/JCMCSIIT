@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { TrendingUp, Users, Building, Award, ArrowUpRight, Building2, Trophy, Briefcase, ChevronRight } from "lucide-react";
+import { TrendingUp, Users, Award, ArrowUpRight, Building2, Trophy } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import type { PublicRecruiterItem } from "@/lib/cms/placements";
 
 const stats = [
   { label: "Placement Rate", value: "98.5%", icon: TrendingUp },
@@ -25,14 +26,17 @@ const companies = [
   { name: "Oracle", url: "https://careers.oracle.com" }
 ];
 
-const recentPlacements = [
-  { name: "Arjun Nair", dept: "Computer Science", company: "Microsoft", package: "45 LPA", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" },
-  { name: "Meenakshi R.", dept: "Electronics (ECE)", company: "Amazon", package: "32 LPA", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop" },
-  { name: "Karthik Menon", dept: "AI & ML", company: "Google", package: "38 LPA", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop" },
-  { name: "Ananya S.", dept: "Civil Engineering", company: "L&T", package: "12 LPA", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop" },
-];
+interface PlacementDashboardProps {
+  recruiters?: PublicRecruiterItem[];
+}
 
-export function PlacementDashboard() {
+export function PlacementDashboard({ recruiters }: PlacementDashboardProps = {}) {
+  const activeCompanies = (recruiters && recruiters.length > 0)
+    ? recruiters.slice(0, 10).map((r) => ({
+        name: r.company_name,
+        url: r.website_url || undefined,
+      }))
+    : companies;
   return (
     <section className="py-32 relative w-full bg-white overflow-hidden">
       <div className="layout-grid">
@@ -86,13 +90,16 @@ export function PlacementDashboard() {
                   <span className="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse"></span>
                   Top Recruiters 2026
                 </h3>
-                <button className="text-sm font-semibold text-primary flex items-center hover:text-slate-900 transition-colors group/btn">
+                <Link
+                  href="/placements/recruiters"
+                  className="text-sm font-semibold text-primary flex items-center hover:text-slate-900 transition-colors group/btn"
+                >
                   View Full Report <ArrowUpRight className="h-4 w-4 ml-1 transition-transform group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5" />
-                </button>
+                </Link>
               </div>
               
               <div className="flex flex-wrap gap-3">
-                {companies.map((company, i) => (
+                {activeCompanies.map((company, i) => (
                   <motion.a
                     href={company.url}
                     target="_blank"
@@ -147,9 +154,11 @@ export function PlacementDashboard() {
             {/* 
               Poster Image: B.TECH CAMPUS PLACEMENTS 2026
             */}
-            <img 
+            <Image 
               src="/images/Placements/palcements.jpeg" 
               alt="B.Tech Campus Placements 2026" 
+              width={1024}
+              height={600}
               className="w-full max-w-5xl h-auto rounded-2xl object-contain shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100"
             />
           </motion.div>

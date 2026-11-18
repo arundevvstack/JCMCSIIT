@@ -1,29 +1,53 @@
 import { Metadata } from "next";
 import { Users, Link2, ArrowUpRight, GraduationCap, Briefcase, Globe } from "lucide-react";
+import { getPublicPageByRoute } from "@/lib/cms/pages";
+import { getPublicContentBlock } from "@/lib/cms/content-blocks";
 
 export const metadata: Metadata = {
   title: "Alumni Network | JCMCSIIT",
   description: "Connect with the JCMCSIIT alumni community. Discover success stories and networking opportunities.",
 };
 
-const alumniSpotlight = [
+const defaultAlumniSpotlight = [
   { name: "Ananya S. Nair", batch: "2018", role: "SDE II at Amazon", location: "Bangalore" },
   { name: "Rahul Krishnan", batch: "2016", role: "Data Scientist at Google", location: "Hyderabad" },
   { name: "Meera Thomas", batch: "2019", role: "Product Manager at Microsoft", location: "Seattle, USA" },
   { name: "Arun Kumar", batch: "2017", role: "Co-founder, TechStartup.io", location: "Kochi" },
 ];
 
-export default function AlumniPage() {
+export default async function AlumniPage() {
+  const [cmsPage, spotlightBlock] = await Promise.all([
+    getPublicPageByRoute("/campus-life/alumni").catch(() => null),
+    getPublicContentBlock("alumni_spotlight_profiles").catch(() => null),
+  ]);
+
+  const rawSpotlight = Array.isArray(spotlightBlock?.structured_data?.alumni)
+    ? (spotlightBlock.structured_data.alumni as Array<{ name?: string; batch?: string; role?: string; location?: string }>)
+    : null;
+
+  const alumniSpotlight = rawSpotlight && rawSpotlight.length > 0
+    ? rawSpotlight.map((alum, i) => ({
+        name: alum.name || `Alumnus ${i + 1}`,
+        batch: alum.batch || "Alumni",
+        role: alum.role || "Professional",
+        location: alum.location || "Global",
+      }))
+    : defaultAlumniSpotlight;
+
+  const title = cmsPage?.title || "Alumni Network.";
+  const subtitle = cmsPage?.subtitle || cmsPage?.summary || "Our alumni are our greatest ambassadors — building careers at global tech giants, founding startups, and contributing to society worldwide.";
   return (
     <main className="min-h-screen pt-32 pb-24 bg-white relative">
       <div className="container px-4 md:px-6 relative z-10 mx-auto">
 
         <div className="max-w-4xl mx-auto text-center mb-20">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-foreground">
-            Alumni Network.
+            {cmsPage?.title ? title : (
+              <>Alumni <span className="text-primary">Network</span>.</>
+            )}
           </h1>
           <p className="text-slate-500 text-xl leading-relaxed max-w-2xl mx-auto">
-            Our alumni are our greatest ambassadors — building careers at global tech giants, founding startups, and contributing to society worldwide.
+            {subtitle}
           </p>
         </div>
 

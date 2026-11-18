@@ -2,8 +2,18 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, BookOpen, Users, Beaker, FileText } from "lucide-react";
 
-const getResearchData = (slug: string) => {
-  const projects: Record<string, any> = {
+interface ResearchProject {
+  title: string;
+  lead: string;
+  focus: string[];
+  description: string;
+  publications: number;
+  patents: number;
+  students: number;
+}
+
+const getResearchData = (slug: string): ResearchProject => {
+  const projects: Record<string, ResearchProject> = {
     "cognitive-ai-center": {
       title: "Center for Cognitive AI",
       lead: "Dr. Alan Turing",

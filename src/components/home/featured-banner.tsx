@@ -1,12 +1,31 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { ArrowRight, Play } from "lucide-react";
 import Link from "next/link";
 import { ParallaxImage } from "@/components/ui/parallax-image";
 
-export function FeaturedBanner() {
-  const containerVariants = {
+export interface FeaturedBannerProps {
+  block?: {
+    title?: string;
+    content?: string;
+    structured_data?: Record<string, unknown>;
+  } | null;
+}
+
+export function FeaturedBanner({ block }: FeaturedBannerProps = {}) {
+  const badge = (block?.structured_data?.badge as string) || "Global Excellence";
+  const title = block?.title || null;
+  const description = block?.content || "Join a community of visionaries, builders, and leaders. Admissions for the 2026 academic year are now open.";
+  const ctaText = (block?.structured_data?.cta_text as string) || "Start Your Application";
+  const ctaLink = (block?.structured_data?.cta_link as string) || "https://forms.gle/NjqqxdBqvoa9Q7WU9";
+  const secondaryCtaText = (block?.structured_data?.secondary_cta_text as string) || "Watch Profile Video";
+  const secondaryCtaLink = (block?.structured_data?.secondary_cta_link as string) || "/about/campus-overview/tour";
+  const img1 = (block?.structured_data?.image_1 as string) || "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=800";
+  const img2 = (block?.structured_data?.image_2 as string) || "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=800";
+  const img3 = (block?.structured_data?.image_3 as string) || "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=1200";
+
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -17,7 +36,7 @@ export function FeaturedBanner() {
     }
   };
 
-  const itemVariants: any = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
   };
@@ -38,7 +57,7 @@ export function FeaturedBanner() {
             <motion.div variants={itemVariants}>
               <span className="inline-flex items-center px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-widest mb-8">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
-                Global Excellence
+                {badge}
               </span>
             </motion.div>
 
@@ -47,31 +66,37 @@ export function FeaturedBanner() {
               className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 leading-[1.05] tracking-tight mb-8"
               style={{ fontFamily: "var(--font-heading)" }}
             >
-              Engineer the <br />
-              <span className="italic font-editorial text-[#1c4762]">extraordinary.</span>
+              {title ? (
+                <span>{title}</span>
+              ) : (
+                <>
+                  Engineer the <br />
+                  <span className="italic font-editorial text-[#1c4762]">extraordinary.</span>
+                </>
+              )}
             </motion.h2>
 
             <motion.p
               variants={itemVariants}
               className="text-xl md:text-2xl text-slate-600 font-editorial leading-relaxed mb-12 max-w-lg"
             >
-              Join a community of visionaries, builders, and leaders. Admissions for the 2026 academic year are now open.
+              {description}
             </motion.p>
 
             <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4">
               <Link
-                href="https://forms.gle/NjqqxdBqvoa9Q7WU9" target="_blank" rel="noopener noreferrer"
+                href={ctaLink} target={ctaLink.startsWith("http") ? "_blank" : undefined} rel={ctaLink.startsWith("http") ? "noopener noreferrer" : undefined}
                 className="group relative inline-flex h-14 items-center justify-center overflow-hidden rounded-full bg-[#1c4762] px-8 font-bold text-white transition-all hover:bg-[#102e41] shadow-[0_8px_20px_rgb(28,71,98,0.2)]"
               >
-                <span className="mr-3 tracking-wide">Start Your Application</span>
+                <span className="mr-3 tracking-wide">{ctaText}</span>
                 <ArrowRight className="h-4 w-4 transition-transform duration-500 group-hover:translate-x-1" />
               </Link>
               <Link
-                href="/about/campus-overview/tour"
+                href={secondaryCtaLink}
                 className="group inline-flex h-14 items-center justify-center rounded-full border border-slate-200 bg-white px-8 font-bold text-slate-700 transition-all hover:bg-slate-50 hover:border-slate-300 shadow-sm"
               >
                 <Play className="h-4 w-4 mr-2 text-slate-400 group-hover:text-primary transition-colors" />
-                <span className="tracking-wide">Watch Profile Video</span>
+                <span className="tracking-wide">{secondaryCtaText}</span>
               </Link>
             </motion.div>
           </motion.div>
@@ -91,7 +116,7 @@ export function FeaturedBanner() {
               className="absolute top-[5%] left-[5%] w-[45%] h-[40%] rounded-2xl overflow-hidden shadow-2xl border-4 border-white z-10"
             >
               <ParallaxImage 
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=800" 
+                src={img1} 
                 alt="Students collaborating" 
                 fill 
                 offset={15}
@@ -107,7 +132,7 @@ export function FeaturedBanner() {
               className="absolute top-[15%] right-[5%] w-[40%] h-[35%] rounded-2xl overflow-hidden shadow-xl border-4 border-white z-20"
             >
               <ParallaxImage 
-                src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=800" 
+                src={img2} 
                 alt="Tech laboratory" 
                 fill 
                 offset={10}
@@ -123,7 +148,7 @@ export function FeaturedBanner() {
               className="absolute bottom-[5%] left-[15%] w-[65%] h-[50%] rounded-2xl overflow-hidden shadow-2xl border-4 border-white z-30"
             >
               <ParallaxImage 
-                src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=1200" 
+                src={img3} 
                 alt="Campus Architecture" 
                 fill 
                 offset={20}

@@ -60,6 +60,24 @@ export const BASELINE_CONTENT_BLOCKS: Record<string, PublicContentBlock> = {
             "For admission enquiries and prospectus, contact our admissions office at Kannammoola, Thiruvananthapuram.",
         status: "published",
     },
+    chairman_profile: {
+        id: "baseline-chairman-profile",
+        key: "chairman_profile",
+        title: "Rev. Dr. Princeton Ben Bishop",
+        block_type: "profile",
+        content:
+            "The institution is under the administrative control of the Society for Technical Training (STT) of South Kerala Diocese (SKD) of Church of South India (CSI). The management of the institution is vested with the Governing Body and the Executive Committee headed by the Reverend Chairman & Manager.",
+        structured_data: {
+            name: "Rev. Dr. Princeton Ben Bishop",
+            designation_line1: "Bishop, South Kerala Diocese",
+            designation_line2: "Chairman & Manager",
+            quote: "",
+            message:
+                "The institution is under the administrative control of the Society for Technical Training (STT) of South Kerala Diocese (SKD) of Church of South India (CSI). The management of the institution is vested with the Governing Body and the Executive Committee headed by the Reverend Chairman & Manager.",
+            image_url: "/images/new chair.jpeg",
+        },
+        status: "published",
+    },
 };
 
 /**

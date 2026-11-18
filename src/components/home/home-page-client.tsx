@@ -19,6 +19,9 @@ import type { HomepageHeroSetting } from "@/lib/cms/site-settings";
 import type { PublicNewsItem } from "@/lib/cms/news";
 import type { PublicEventItem } from "@/lib/cms/events";
 import type { PublicGalleryItem } from "@/lib/cms/gallery";
+import type { PublicRecruiterItem } from "@/lib/cms/placements";
+import type { PublicCourseSummary } from "@/lib/cms/courses";
+import type { PublicContentBlock } from "@/lib/cms/content-blocks";
 
 const SectionAnimate = ({ children }: { children: React.ReactNode }) => (
   <motion.div
@@ -36,9 +39,28 @@ interface HomePageClientProps {
   news?: PublicNewsItem[] | null;
   events?: PublicEventItem[] | null;
   gallery?: PublicGalleryItem[] | null;
+  recruiters?: PublicRecruiterItem[] | null;
+  ugCourses?: PublicCourseSummary[] | null;
+  diplomaCourses?: PublicCourseSummary[] | null;
+  featuredBanner?: PublicContentBlock | null;
+  principalMessage?: PublicContentBlock | null;
+  featuredLegacy?: PublicContentBlock | null;
+  scholarshipsBlock?: PublicContentBlock | null;
 }
 
-export function HomePageClient({ hero, news, events, gallery }: HomePageClientProps) {
+export function HomePageClient({
+  hero,
+  news,
+  events,
+  gallery,
+  recruiters,
+  ugCourses,
+  diplomaCourses,
+  featuredBanner,
+  principalMessage,
+  featuredLegacy,
+  scholarshipsBlock,
+}: HomePageClientProps) {
   return (
     <div className="-mt-20 relative bg-white selection:bg-primary/20">
       <FloatingActionButtons />
@@ -47,18 +69,18 @@ export function HomePageClient({ hero, news, events, gallery }: HomePageClientPr
       <HomeHero hero={hero} />
 
       {/* B.Tech Programmes Showcase */}
-      <SectionAnimate><AICourseExplorer /></SectionAnimate>
+      <SectionAnimate><AICourseExplorer courses={ugCourses} /></SectionAnimate>
       {/* Diploma Programmes Showcase */}
-      <SectionAnimate><DiplomaProgrammes /></SectionAnimate>
+      <SectionAnimate><DiplomaProgrammes courses={diplomaCourses} /></SectionAnimate>
 
       {/* Flagship Notice & Highlights */}
-      <SectionAnimate><FeaturedBanner /></SectionAnimate>
+      <SectionAnimate><FeaturedBanner block={featuredBanner} /></SectionAnimate>
 
       {/* Institutional Leadership & Vision Section */}
-      <SectionAnimate><PrincipalMessagePreview /></SectionAnimate>
+      <SectionAnimate><PrincipalMessagePreview block={principalMessage} /></SectionAnimate>
 
       {/* Placement Statistics & Top Recruiters */}
-      <SectionAnimate><PlacementDashboard /></SectionAnimate>
+      <SectionAnimate><PlacementDashboard recruiters={recruiters ?? undefined} /></SectionAnimate>
 
       {/* Campus Life & Student Facilities */}
       <SectionAnimate><CampusLifeGrid /></SectionAnimate>
@@ -73,10 +95,10 @@ export function HomePageClient({ hero, news, events, gallery }: HomePageClientPr
       <SectionAnimate><FeaturedResearch /></SectionAnimate>
 
       {/* Institutional Legacy & Heritage */}
-      <SectionAnimate><FeaturedLegacy /></SectionAnimate>
+      <SectionAnimate><FeaturedLegacy block={featuredLegacy} /></SectionAnimate>
 
       {/* Scholarships & Financial Assistance */}
-      <SectionAnimate><Scholarships /></SectionAnimate>
+      <SectionAnimate><Scholarships block={scholarshipsBlock} /></SectionAnimate>
 
       {/* Campus Life Visual Gallery */}
       <SectionAnimate><JitCampusGallery gallery={gallery} /></SectionAnimate>

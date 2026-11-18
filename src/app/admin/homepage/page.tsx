@@ -36,26 +36,8 @@ export default async function AdminHomepagePage() {
             .order("sort_order", { ascending: true }),
     ]);
 
-    // Fallback to baseline campaign popup if database table is not yet seeded
-    const baselinePopups = [
-        {
-            id: "popup-graduation-2026",
-            title: "Graduation Ceremony 2026",
-            description:
-                "Registration is now open for the 2026 Graduating Batch.",
-            image_url:
-                "https://jcmcsiit.ac.in/Photogallery/2025/Annual%20Athletic%20Meet/IMG-20250320-WA0093.jpg",
-            cta_label: "Register Now",
-            cta_url: "/events/graduation-ceremony-2026",
-            frequency: "every_session",
-            is_enabled: true,
-            status: "published",
-            updated_at: new Date().toISOString(),
-        },
-    ];
-
-    const sourcePopups =
-        popups && popups.length > 0 ? popups : baselinePopups;
+    // Source records from public.popups table (ensuring only persisted records with valid UUID primary keys are managed)
+    const sourcePopups = (popups ?? []) as Record<string, unknown>[];
 
     return (
         <div className="space-y-8">

@@ -1,13 +1,15 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, Download, ExternalLink, Globe, GraduationCap, FileText, Info, Calendar } from 'lucide-react';
+import { ArrowLeft, BookOpen, Download, ExternalLink, Globe, GraduationCap, FileText, Info } from 'lucide-react';
+import { getPublicPageByRoute } from '@/lib/cms/pages';
+import { getPublicContentBlock } from '@/lib/cms/content-blocks';
 
 export const metadata: Metadata = {
   title: 'KEAM Prospectus & Admission Guide | JCMCSIIT',
   description: 'Download the KEAM prospectus and learn about the centralised allotment process for B.Tech admission at JCMCSIIT.',
 };
 
-const chapters = [
+const defaultChapters = [
   { no: '1', title: 'Introduction',                  desc: 'Overview of KEAM and the Commissioner for Entrance Examinations.' },
   { no: '2', title: 'Courses Offered',               desc: 'List of Engineering, Architecture, and Medical courses covered.' },
   { no: '3', title: 'Eligibility',                   desc: 'Academic, nativity, and age requirements for engineering candidates.' },
@@ -18,7 +20,26 @@ const chapters = [
   { no: '8', title: 'Fee Structure',                 desc: 'Tuition fees, special fees, and payment procedures.' },
 ];
 
-export default function KeamProspectusPage() {
+export default async function KeamProspectusPage() {
+  const [page, block] = await Promise.all([
+    getPublicPageByRoute('/admissions/keam-prospectus').catch(() => null),
+    getPublicContentBlock('keam_prospectus_info').catch(() => null),
+  ]);
+
+  const pdfUrl = (block?.structured_data?.prospectus_pdf_url as string) || 'https://cee.kerala.gov.in/keamonline2024/public/pdf/Prospectus.pdf';
+  const rawChapters = Array.isArray(block?.structured_data?.chapters) ? block?.structured_data?.chapters : null;
+  const chapters = rawChapters && rawChapters.length > 0
+    ? rawChapters.map((ch, idx: number) => {
+        const item = ch as Record<string, unknown>;
+        return {
+          no: (item.no as string) || `${idx + 1}`,
+          title: (item.title as string) || `Chapter ${idx + 1}`,
+          desc: (item.desc as string) || (item.description as string) || '',
+        };
+      })
+    : defaultChapters;
+
+  const pageDesc = page?.seo_description || 'The official guide for admission to Professional Degree Courses in Kerala. Download the prospectus to understand the eligibility, reservation, and allotment processes.';
   return (
     <main className="min-h-screen pt-32 pb-24 bg-slate-50 relative overflow-hidden">
       {/* Background Decor */}
@@ -41,10 +62,14 @@ export default function KeamProspectusPage() {
             <span className="text-sm font-bold text-orange-700 uppercase tracking-widest">Entrance Examination</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 mb-6">
-            KEAM <span className="text-orange-600">Prospectus</span>
+            {page?.title ? (
+              page.title
+            ) : (
+              <>KEAM <span className="text-orange-600">Prospectus</span></>
+            )}
           </h1>
           <p className="text-slate-600 text-lg leading-relaxed">
-            The official guide for admission to Professional Degree Courses in Kerala. Download the prospectus to understand the eligibility, reservation, and allotment processes.
+            {pageDesc}
           </p>
         </div>
 
@@ -68,7 +93,7 @@ export default function KeamProspectusPage() {
                   </div>
                 </div>
                 <a
-                  href="https://cee.kerala.gov.in/keamonline2024/public/pdf/Prospectus.pdf"
+                  href={pdfUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="shrink-0 w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-orange-600 text-white font-bold py-3 px-6 rounded-xl hover:bg-orange-700 transition-colors shadow-lg hover:shadow-orange-600/20"

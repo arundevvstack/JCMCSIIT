@@ -2,13 +2,26 @@ import { Metadata } from "next";
 import { Home, MapPin, Shield, Users } from "lucide-react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { getPublicPageByRoute } from "@/lib/cms/pages";
+import { getPublicContentBlock } from "@/lib/cms/content-blocks";
 
 export const metadata: Metadata = {
   title: "Hostel Facilities | JCMCSIIT",
   description: "Learn about the comfortable and secure hostel accommodations available for JCMCSIIT students.",
 };
 
-export default function HostelPage() {
+export default async function HostelPage() {
+  const [cmsPage, hostelBlock] = await Promise.all([
+    getPublicPageByRoute("/facilities/hostel").catch(() => null),
+    getPublicContentBlock("hostel_specs").catch(() => null),
+  ]);
+
+  const title = cmsPage?.title || "Hostel Facilities.";
+  const subtitle = cmsPage?.subtitle || cmsPage?.summary || "Comfortable, secure, and well-connected accommodation for our students.";
+
+  const locationText = (hostelBlock?.structured_data?.location as string) || "LMS compound, Palayam";
+  const distanceText = (hostelBlock?.structured_data?.distance as string) || "Located just 2.5 km away from the college campus.";
+
   return (
     <main className="min-h-screen pt-32 pb-24 bg-white relative">
       <div className="container px-4 md:px-6 relative z-10 mx-auto">
@@ -18,10 +31,12 @@ export default function HostelPage() {
             <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
           </Link>
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-foreground">
-            Hostel <span className="text-primary">Facilities</span>.
+            {cmsPage?.title ? title : (
+              <>Hostel <span className="text-primary">Facilities</span>.</>
+            )}
           </h1>
           <p className="text-slate-500 text-xl leading-relaxed">
-            Comfortable, secure, and well-connected accommodation for our students.
+            {subtitle}
           </p>
         </div>
 
@@ -31,11 +46,11 @@ export default function HostelPage() {
               <div className="flex-1">
                 <h2 className="text-3xl font-bold mb-6 text-slate-900">A Home Away From Home</h2>
                 <p className="text-lg text-slate-700 leading-relaxed mb-6 font-medium">
-                  Hostel accommodation for both boys & girls are available in the <strong className="text-primary">LMS compound, Palayam</strong>.
+                  Hostel accommodation for both boys & girls are available in the <strong className="text-primary">{locationText}</strong>.
                 </p>
                 <div className="flex items-center gap-3 text-slate-600 bg-white p-4 rounded-xl border border-slate-200 shadow-sm inline-flex">
                   <MapPin className="h-6 w-6 text-emerald-500" />
-                  <span className="font-semibold">Located just 2.5 km away from the college campus.</span>
+                  <span className="font-semibold">{distanceText}</span>
                 </div>
               </div>
               
@@ -74,7 +89,7 @@ export default function HostelPage() {
           <div className="bg-white rounded-3xl p-8 md:p-12 border border-slate-200 shadow-sm">
             <h3 className="text-2xl font-bold mb-6 text-slate-900">How to Apply</h3>
             <p className="text-slate-600 mb-6 leading-relaxed">
-              Students seeking hostel accommodation should apply at the time of admission. Allocation is done based on availability and distance from the student's hometown.
+              Students seeking hostel accommodation should apply at the time of admission. Allocation is done based on availability and distance from the student&apos;s hometown.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link href="/contact" className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-primary text-white font-semibold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/25">

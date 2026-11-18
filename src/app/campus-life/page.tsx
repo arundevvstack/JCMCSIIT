@@ -1,5 +1,6 @@
 import { Metadata } from "next";
-import { Tent, Wifi, Utensils, ShieldCheck, Dumbbell, BookOpen, Bus } from "lucide-react";
+import { Wifi, Utensils, ShieldCheck, Dumbbell, BookOpen, Bus } from "lucide-react";
+import { getPublicPageByRoute } from "@/lib/cms/pages";
 
 export const metadata: Metadata = {
   title: "Campus Life | JCMCSIIT",
@@ -15,17 +16,23 @@ const facilities = [
   { title: "Security", desc: "24/7 CCTV surveillance and security personnel across the campus.", icon: ShieldCheck },
 ];
 
-export default function CampusLifePage() {
+export default async function CampusLifePage() {
+  const cmsPage = await getPublicPageByRoute("/campus-life");
+
+  const title = cmsPage?.title || "Campus Life.";
+  const subtitle = cmsPage?.subtitle || cmsPage?.summary || "A modern, well-equipped campus designed to inspire learning, collaboration, and personal growth.";
   return (
     <main className="min-h-screen pt-32 pb-24 bg-white relative">
       <div className="container px-4 md:px-6 relative z-10 mx-auto">
 
         <div className="max-w-4xl mx-auto text-center mb-20">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-foreground">
-            Campus Life.
+            {cmsPage?.title ? title : (
+              <>Campus <span className="text-primary">Life</span>.</>
+            )}
           </h1>
           <p className="text-slate-500 text-xl leading-relaxed max-w-2xl mx-auto">
-            A modern, well-equipped campus designed to inspire learning, collaboration, and personal growth.
+            {subtitle}
           </p>
         </div>
 

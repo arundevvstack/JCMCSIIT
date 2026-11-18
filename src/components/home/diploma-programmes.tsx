@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Building2, Laptop, Cpu, Zap, Cog, ArrowRight, Clock, Award } from "lucide-react";
 import Link from "next/link";
 
-const diplomaCourses = [
+const defaultDiplomaCourses = [
   {
     title: "Civil",
     description: "Design, planning and construction of buildings, roads, bridges and infrastructure with strong practical exposure.",
@@ -52,7 +52,85 @@ const diplomaCourses = [
   },
 ];
 
-export function DiplomaProgrammes() {
+interface DiplomaStyle {
+  icon: React.ComponentType<{ className?: string; "aria-hidden"?: boolean | "true" | "false" }>;
+  gradient: string;
+  bgLight: string;
+  iconColor: string;
+  link: string;
+}
+
+const diplomaCourseStyleMap: Record<string, DiplomaStyle> = {
+  "diploma-civil-engineering": {
+    icon: Building2,
+    gradient: "from-emerald-400 to-teal-500",
+    bgLight: "bg-emerald-50",
+    iconColor: "text-emerald-600",
+    link: "/academics/departments/diploma-civil-engineering",
+  },
+  "diploma-computer-engineering": {
+    icon: Laptop,
+    gradient: "from-blue-500 to-cyan-400",
+    bgLight: "bg-blue-50",
+    iconColor: "text-blue-600",
+    link: "/academics/departments/diploma-computer-engineering",
+  },
+  "diploma-electronics-communication": {
+    icon: Cpu,
+    gradient: "from-violet-500 to-purple-500",
+    bgLight: "bg-violet-50",
+    iconColor: "text-violet-600",
+    link: "/academics/departments/diploma-electronics-communication",
+  },
+  "diploma-electrical-engineering": {
+    icon: Zap,
+    gradient: "from-amber-400 to-orange-500",
+    bgLight: "bg-amber-50",
+    iconColor: "text-amber-600",
+    link: "/academics/departments/diploma-electrical-engineering",
+  },
+  "diploma-mechanical-engineering": {
+    icon: Cog,
+    gradient: "from-rose-400 to-red-500",
+    bgLight: "bg-rose-50",
+    iconColor: "text-rose-600",
+    link: "/academics/departments/diploma-mechanical-engineering",
+  },
+};
+
+export interface DiplomaProgrammesProps {
+  courses?: Array<{
+    id?: string;
+    slug?: string;
+    name?: string;
+    title?: string;
+    description?: string;
+    overview?: string;
+  }> | null;
+}
+
+export function DiplomaProgrammes({ courses: initialCourses }: DiplomaProgrammesProps = {}) {
+  const activeCourses = initialCourses && initialCourses.length > 0
+    ? initialCourses.map((c) => {
+        const slug = (c.slug || c.id || "").toLowerCase();
+        const style = diplomaCourseStyleMap[slug] || {
+          icon: Cog,
+          gradient: "from-blue-500 to-cyan-400",
+          bgLight: "bg-blue-50",
+          iconColor: "text-blue-600",
+          link: slug ? `/academics/departments/${slug}` : "/academics/departments",
+        };
+        return {
+          title: c.title || c.name || slug.replace("diploma-", "").replace("-", " ").toUpperCase(),
+          description: c.description || c.overview || "High-demand diploma program focusing on practical, hands-on engineering education.",
+          icon: style.icon,
+          gradient: style.gradient,
+          bgLight: style.bgLight,
+          iconColor: style.iconColor,
+          link: style.link,
+        };
+      })
+    : defaultDiplomaCourses;
   return (
     <section className="relative z-20 bg-white py-24 overflow-hidden border-b border-slate-100">
       {/* Subtle top gradient bleed from hero */}
@@ -81,7 +159,7 @@ export function DiplomaProgrammes() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-          {diplomaCourses.map((course, i) => (
+          {activeCourses.map((course, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 30 }}

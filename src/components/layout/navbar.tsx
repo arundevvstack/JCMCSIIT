@@ -17,11 +17,12 @@ export type NavLink = {
 export const DEFAULT_NAV_LINKS: NavLink[] = [
   { label: "Home", href: "/" },
   {
-    label: "About",
+    label: "About Us",
     children: [
       { label: "About the College", href: "/about/college/profile" },
       { label: "Vision & Mission", href: "/about/college/vision-mission" },
       { label: "Why Choose JIT", href: "/about/highlights" },
+      { label: "Our Chairman", href: "/about/our-chairman" },
       { label: "Management", href: "/about/college/governing-body" },
       { label: "Principal's Message", href: "/about/college/principal" },
       { label: "Approval & Affiliation", href: "/about/college/mandatory-disclosure" },

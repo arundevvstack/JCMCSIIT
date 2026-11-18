@@ -23,6 +23,15 @@ const nextConfig: NextConfig = {
       }
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/about/college/chairman',
+        destination: '/about/our-chairman',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

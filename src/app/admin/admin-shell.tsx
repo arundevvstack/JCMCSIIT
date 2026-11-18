@@ -16,6 +16,7 @@ import {
     UserCheck,
     Images,
     FileSpreadsheet,
+    Briefcase,
     MessageSquare,
     Blocks,
     ShieldCheck,
@@ -117,6 +118,12 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
         label: "Admissions",
         icon: UserCheck,
         allowedRoles: ADMIN_AND_SUPER,
+    },
+    {
+        href: "/admin/recruiters",
+        label: "Recruiters & Partners",
+        icon: Briefcase,
+        allowedRoles: ALL_CMS_ROLES,
     },
     {
         href: "/admin/media",

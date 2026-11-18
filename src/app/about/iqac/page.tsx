@@ -1,27 +1,51 @@
 import { Metadata } from "next";
 import { CheckCircle, Users, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { getPublicPageByRoute } from "@/lib/cms/pages";
+import { getPublicContentBlock } from "@/lib/cms/content-blocks";
 
 export const metadata: Metadata = {
   title: "Internal Quality Assurance Cell (IQAC) | JCMCSIIT",
   description: "Maintaining and enhancing the quality of academic and administrative performance at JCMCSIIT.",
 };
 
-export default function IQACPage() {
-  const members = [
-    { role: "Chairperson", name: "Prof. Dr. Anshad A S, Ph. D", title: "(Principal)" },
-    { role: "Coordinator", name: "Mrs. Sreelatha", title: "(HoD CE)" },
-    { role: "Teacher Representative", name: "Mr. Vishnukumar S", title: "(HoD CSE)" },
-    { role: "Teacher Representative", name: "Dr. Sheeba Jeba Malar", title: "(HoD EEE)" },
-    { role: "Teacher Representative", name: "Mr. Sanjith", title: "(HoD ME)" },
-    { role: "Teacher Representative", name: "Dr. Liji R F", title: "(HoD ECE)" },
-    { role: "Member, Management", name: "Rev. Akhil R L", title: "" },
-    { role: "Nominee from Local Society", name: "Ms. Sherly Mathew", title: "" },
-    { role: "Nominee from Students", name: "Bibin ML", title: "S7 CE" },
-    { role: "Nominee from Alumni", name: "Ms. Vinitha Raj poika", title: "" },
-    { role: "Nominee from Industry", name: "Deepu K. Krishnan", title: "Scientist C-DAC" },
-    { role: "Nominee from Professional Body", name: "Er. SaratKumar K, MIE", title: "" },
-  ];
+const defaultMembers = [
+  { role: "Chairperson", name: "Prof. Dr. Anshad A S, Ph. D", title: "(Principal)" },
+  { role: "Coordinator", name: "Mrs. Sreelatha", title: "(HoD CE)" },
+  { role: "Teacher Representative", name: "Mr. Vishnukumar S", title: "(HoD CSE)" },
+  { role: "Teacher Representative", name: "Dr. Sheeba Jeba Malar", title: "(HoD EEE)" },
+  { role: "Teacher Representative", name: "Mr. Sanjith", title: "(HoD ME)" },
+  { role: "Teacher Representative", name: "Dr. Liji R F", title: "(HoD ECE)" },
+  { role: "Member, Management", name: "Rev. Akhil R L", title: "" },
+  { role: "Nominee from Local Society", name: "Ms. Sherly Mathew", title: "" },
+  { role: "Nominee from Students", name: "Bibin ML", title: "S7 CE" },
+  { role: "Nominee from Alumni", name: "Ms. Vinitha Raj poika", title: "" },
+  { role: "Nominee from Industry", name: "Deepu K. Krishnan", title: "Scientist C-DAC" },
+  { role: "Nominee from Professional Body", name: "Er. SaratKumar K, MIE", title: "" },
+];
+
+export default async function IQACPage() {
+  const [cmsPage, rosterBlock] = await Promise.all([
+    getPublicPageByRoute("/about/iqac").catch(() => null),
+    getPublicContentBlock("iqac_committee_roster").catch(() => null),
+  ]);
+
+  const rawMembers = Array.isArray(rosterBlock?.structured_data?.members)
+    ? (rosterBlock.structured_data.members as Array<{ role?: string; name?: string; title?: string }>)
+    : null;
+
+  const members = rawMembers && rawMembers.length > 0
+    ? rawMembers.map((m, i) => ({
+        role: m.role || "Member",
+        name: m.name || `Member ${i + 1}`,
+        title: m.title || "",
+      }))
+    : defaultMembers;
+
+  const introText =
+    cmsPage?.summary ||
+    cmsPage?.subtitle ||
+    "Committed to continuous improvement in the entire operations of the institution, ensuring that quality becomes the defining element of our education system.";
 
   return (
     <main className="min-h-screen pt-32 pb-24 bg-slate-50 relative">
@@ -36,10 +60,12 @@ export default function IQACPage() {
             <span className="text-sm font-semibold text-emerald-700 tracking-wide">Quality Assurance</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 text-slate-900">
-            Internal Quality Assurance <span className="text-emerald-600">Cell (IQAC)</span>.
+            {cmsPage?.title || (
+              <>Internal Quality Assurance <span className="text-emerald-600">Cell (IQAC)</span>.</>
+            )}
           </h1>
           <p className="text-slate-600 text-xl leading-relaxed">
-            Committed to continuous improvement in the entire operations of the institution, ensuring that quality becomes the defining element of our education system.
+            {introText}
           </p>
         </div>
 

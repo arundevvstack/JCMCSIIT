@@ -1,6 +1,8 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, BookOpen, Search, Clock, Wifi, BookMarked, MonitorPlay, Library, Users, ExternalLink, Database, BookOpenCheck } from "lucide-react";
+import { getPublicPageByRoute } from "@/lib/cms/pages";
+import { getPublicContentBlock } from "@/lib/cms/content-blocks";
 
 export const metadata: Metadata = {
   title: "Central Library | JCMCSIIT",
@@ -32,7 +34,7 @@ const digitalFeatures = [
   "Automated barcode issue and return tracking system",
 ];
 
-const onlineAccessPortals = [
+const defaultOnlineAccessPortals = [
   {
     name: "Knimbus Digital Library Platform",
     tag: "Remote e-Library Portal",
@@ -62,7 +64,33 @@ const onlineAccessPortals = [
   }
 ];
 
-export default function LibraryPage() {
+export default async function LibraryPage() {
+  const [cmsPage, portalBlock] = await Promise.all([
+    getPublicPageByRoute("/facilities/library").catch(() => null),
+    getPublicContentBlock("library_portal_links").catch(() => null),
+  ]);
+
+  const rawPortals = Array.isArray(portalBlock?.structured_data?.portals)
+    ? (portalBlock.structured_data.portals as Array<{ name?: string; tag?: string; description?: string; features?: string[]; url?: string; badge?: string; color?: string }>)
+    : null;
+
+  const onlineAccessPortals = rawPortals && rawPortals.length > 0
+    ? rawPortals.map((p, i) => {
+        const colors = ["violet", "emerald", "blue"];
+        return {
+          name: p.name || `Portal ${i + 1}`,
+          tag: p.tag || "e-Resource Portal",
+          description: p.description || "",
+          features: Array.isArray(p.features) ? p.features : [],
+          url: p.url || "#",
+          badge: p.badge || "Online Resource",
+          color: p.color || colors[i % colors.length],
+        };
+      })
+    : defaultOnlineAccessPortals;
+
+  const heroTitle = cmsPage?.title || "Central Library & Information Centre";
+  const heroSubtitle = cmsPage?.subtitle || cmsPage?.summary || "A modern gateway to knowledge offering over 25,000+ volumes, 500+ e-journals, and 24/7 digital access through premier research networks including Knimbus, DELNET, and NDLI.";
   return (
     <main className="min-h-screen pt-32 pb-24 bg-slate-50 relative overflow-hidden">
       {/* Background Decor */}
@@ -85,10 +113,12 @@ export default function LibraryPage() {
             <span className="text-sm font-bold text-violet-700 uppercase tracking-widest">Central Library</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 mb-6">
-            The Hub of <span className="text-violet-600">Knowledge</span>
+            {cmsPage?.title ? heroTitle : (
+              <>The Hub of <span className="text-violet-600">Knowledge</span></>
+            )}
           </h1>
           <p className="text-slate-600 text-lg leading-relaxed">
-            A state-of-the-art knowledge center fostering academic excellence, research, and continuous learning with an extensive collection of physical and digital resources.
+            {heroSubtitle}
           </p>
         </div>
 

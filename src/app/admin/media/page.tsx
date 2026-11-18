@@ -1,16 +1,20 @@
 import { ADMIN_ROLES, requireAdminRole } from "@/lib/auth/rbac";
 import { createClient } from "@/lib/supabase/server";
-import { saveGalleryItem, deleteGalleryItem } from "@/actions/cms";
 import {
     AdminHonestNotice,
     AdminPageHeader,
 } from "@/components/admin/admin-primitives";
-import { CmsCollectionManager } from "@/components/admin/cms-collection-manager";
-import { BASELINE_GALLERY_ITEMS } from "@/lib/cms/gallery";
+import {
+    BASELINE_GALLERY_ITEMS,
+    BASELINE_GALLERY_ALBUMS,
+    type PublicGalleryAlbum,
+    type PublicGalleryItem,
+} from "@/lib/cms/gallery";
 import {
     MediaLibraryManager,
     type MediaAssetRecord,
 } from "./media-library-manager";
+import { GalleryManagementView } from "./gallery-management-view";
 
 export const dynamic = "force-dynamic";
 
@@ -20,11 +24,11 @@ export default async function AdminMediaLibraryPage() {
     });
 
     const supabase = await createClient();
-    const [galleryRes, mediaRes] = await Promise.all([
+    const [galleryRes, mediaRes, dbAlbumsRes, blocksRes] = await Promise.all([
         supabase
             .from("gallery_items")
             .select(
-                "id, title, category, album_name, image_url, caption, status, updated_at"
+                "id, title, category, album_name, image_url, caption, sort_order, status, created_at, updated_at"
             )
             .order("sort_order", { ascending: true })
             .order("created_at", { ascending: false }),
@@ -36,120 +40,147 @@ export default async function AdminMediaLibraryPage() {
             .in("bucket_id", ["cms-media", "galleries", "faculty-profiles"])
             .order("created_at", { ascending: false })
             .limit(120),
+        supabase
+            .from("gallery_albums")
+            .select("*")
+            .order("sort_order", { ascending: true }),
+        supabase
+            .from("content_blocks")
+            .select("key, content, structured_data, status")
+            .like("key", "gallery_album_%"),
     ]);
 
     // Fallback to baseline gallery items if database table has not yet been seeded
-    const galleryItems =
+    const galleryItems: PublicGalleryItem[] =
         galleryRes.data && galleryRes.data.length > 0
-            ? galleryRes.data
+            ? (galleryRes.data as PublicGalleryItem[])
             : BASELINE_GALLERY_ITEMS;
     const imageAssets = (mediaRes.data ?? []) as MediaAssetRecord[];
+
+    // Aggregate admin albums
+    const albumsMap = new Map<string, PublicGalleryAlbum>();
+
+    // Baseline albums as defaults
+    for (const base of BASELINE_GALLERY_ALBUMS) {
+        albumsMap.set(base.title.toLowerCase(), { ...base });
+    }
+
+    // DB albums if table exists
+    if (!dbAlbumsRes.error && Array.isArray(dbAlbumsRes.data)) {
+        for (const row of dbAlbumsRes.data) {
+            albumsMap.set(row.title.toLowerCase(), {
+                id: row.id,
+                title: row.title,
+                slug: row.slug || row.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                description: row.description,
+                category: row.category || "College Events",
+                event_date: row.event_date,
+                cover_image_url: row.cover_image_url,
+                sort_order: row.sort_order ?? 0,
+                status: row.status,
+                photo_count: 0,
+            });
+        }
+    }
+
+    // Content blocks albums
+    if (!blocksRes.error && Array.isArray(blocksRes.data)) {
+        for (const b of blocksRes.data) {
+            const raw = b.structured_data as Record<string, unknown> | null;
+            if (raw && typeof raw.title === "string") {
+                albumsMap.set(raw.title.toLowerCase(), {
+                    id: b.key,
+                    title: raw.title,
+                    slug: (raw.slug as string) || b.key.replace(/^gallery_album_/, ""),
+                    description: (raw.description as string) || b.content,
+                    category: (raw.category as string) || "College Events",
+                    event_date: (raw.event_date as string) || null,
+                    cover_image_url: (raw.cover_image_url as string) || null,
+                    sort_order: Number(raw.sort_order) || 0,
+                    status: b.status,
+                    photo_count: 0,
+                });
+            }
+        }
+    }
+
+    // Count photos per album
+    for (const item of galleryItems) {
+        if (!item.album_name) continue;
+        const key = item.album_name.toLowerCase();
+        let alb = albumsMap.get(key);
+        if (!alb) {
+            alb = {
+                id: `derived-${key}`,
+                title: item.album_name,
+                slug: item.album_name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                category: item.category || "Campus",
+                cover_image_url: item.image_url,
+                sort_order: 100,
+                status: "published",
+                photo_count: 0,
+            };
+            albumsMap.set(key, alb);
+        }
+        alb.photo_count = (alb.photo_count || 0) + 1;
+        if (!alb.cover_image_url) {
+            alb.cover_image_url = item.image_url;
+        }
+    }
+
+    const adminAlbums = Array.from(albumsMap.values()).sort(
+        (a, b) => a.sort_order - b.sort_order
+    );
 
     const mediaRefreshKey = imageAssets
         .map((a) => `${a.id}:${a.updated_at ?? a.created_at}`)
         .join("|");
 
     return (
-        <div className="space-y-10">
+        <div className="space-y-12">
             <AdminPageHeader
-                eyebrow="Gallery & Media Library"
-                title="Campus Gallery & Image Assets"
-                description="Upload verified images directly to Supabase Storage, manage accessibility metadata in public.media, and curate campus gallery items."
+                eyebrow="Campus Media & Gallery"
+                title="College Photo Gallery & Album Management"
+                description="Manage institutional event albums, curate campus photographs with sort ordering, and upload verified media assets directly to Supabase Storage."
             />
 
             <AdminHonestNotice
-                title="Connected to Supabase Storage & public.media (Authenticated SSR)"
+                title="Connected to Supabase Storage & public.gallery_items (Authenticated SSR)"
                 variant="info"
             >
-                Images uploaded below are verified by binary signature, checked
-                for SHA-256 duplicates, stored in{" "}
-                <code className="text-[#E5C158]">cms-media</code>,{" "}
-                <code className="text-[#E5C158]">galleries</code>, or{" "}
-                <code className="text-[#E5C158]">faculty-profiles</code> without
-                overwriting existing files, and registered in{" "}
-                <code className="text-[#E5C158]">public.media</code>. All
-                existing static images in{" "}
-                <code className="text-zinc-200">/public</code> remain untouched.
+                Photographs and albums configured here update the public{" "}
+                <code className="text-[#E5C158]">/gallery</code> and{" "}
+                <code className="text-[#E5C158]">/news-events/gallery</code> pages
+                instantly upon publish. Batch uploads are securely verified and stored
+                in the <code className="text-[#E5C158]">galleries</code> bucket.
             </AdminHonestNotice>
 
-            <section className="space-y-3">
-                <h2 className="text-base font-bold text-zinc-100">
-                    Storage Image Library (public.media)
-                </h2>
+            {/* Main Interactive Gallery Management Experience */}
+            <GalleryManagementView
+                initialItems={galleryItems}
+                initialAlbums={adminAlbums}
+                role={admin.role}
+            />
+
+            {/* Storage Media Asset Library (Raw Files & public.media) */}
+            <section className="space-y-4 pt-10 border-t border-white/10">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h2 className="text-base font-bold text-zinc-100">
+                            Storage Media Asset Library (public.media)
+                        </h2>
+                        <p className="text-xs text-zinc-400">
+                            Direct asset inspection, binary signature validation, and metadata for raw storage files across all CMS buckets.
+                        </p>
+                    </div>
+                </div>
+
                 <MediaLibraryManager
                     key={mediaRefreshKey}
                     initialAssets={imageAssets}
                     role={admin.role}
                     currentAdminId={admin.id}
                     loadError={mediaRes.error?.message ?? null}
-                />
-            </section>
-
-            <section className="space-y-3">
-                <h2 className="text-base font-bold text-zinc-100">
-                    Campus Gallery Items (public.gallery_items)
-                </h2>
-                <CmsCollectionManager
-                    entityLabel="Gallery Item"
-                    role={admin.role}
-                    items={galleryItems as Record<string, unknown>[]}
-                    searchKeys={["title", "category", "album_name"]}
-                    columns={[
-                        { key: "image_url", label: "Preview", isImage: true },
-                        { key: "title", label: "Title" },
-                        { key: "category", label: "Category" },
-                        { key: "album_name", label: "Album" },
-                        { key: "status", label: "Status", isStatus: true },
-                    ]}
-                    fields={[
-                        {
-                            name: "title",
-                            label: "Photo Title",
-                            type: "text",
-                            required: true,
-                            placeholder: "Main Academic Block Aerial View",
-                        },
-                        {
-                            name: "category",
-                            label: "Category",
-                            type: "text",
-                            defaultValue: "Campus",
-                            placeholder: "Campus / Labs / Convocation / Sports",
-                        },
-                        {
-                            name: "album_name",
-                            label: "Album Name (Optional)",
-                            type: "text",
-                            placeholder: "Graduation 2026",
-                        },
-                        {
-                            name: "status",
-                            label: "Workflow Status",
-                            type: "select",
-                            defaultValue: "draft",
-                        },
-                        {
-                            name: "image_url",
-                            label: "Image URL or Public Asset Path",
-                            type: "url",
-                            required: true,
-                            placeholder: "/campus/aerial-main.jpg",
-                            colSpan: 2,
-                            mediaPicker: {
-                                category: "image",
-                                allowedBuckets: ["galleries", "cms-media"],
-                                modalTitle: "Select Campus Gallery Photo",
-                            },
-                        },
-                        {
-                            name: "caption",
-                            label: "Caption",
-                            type: "textarea",
-                            placeholder: "Optional descriptive caption...",
-                        },
-                    ]}
-                    saveAction={saveGalleryItem}
-                    deleteAction={deleteGalleryItem}
                 />
             </section>
         </div>

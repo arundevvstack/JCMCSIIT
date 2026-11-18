@@ -2,64 +2,98 @@ import { Metadata } from "next";
 import { ArrowLeft, Wallet, GraduationCap, Percent, Info } from "lucide-react";
 import Link from "next/link";
 import { getPublicContentBlocks } from "@/lib/cms/content-blocks";
+import { getPublicPageByRoute } from "@/lib/cms/pages";
 
 export const metadata: Metadata = {
     title: "Fees & Scholarships | JCMCSIIT",
     description: "Detailed information about B.Tech fee structure and available scholarships.",
 };
 
+const defaultAdmissionFees = [
+    { item: "Application & Administration Fee", amount: "2,000", desc: "One-time payment at the time of admission" },
+    { item: "PTA Subscription", amount: "1,200", desc: "Payable annually" },
+    { item: "Smart Classroom Fee", amount: "250", desc: "Payable every semester" },
+    { item: "Registration Fee for Add-on LBS Course", amount: "2,000", desc: "One-time payment" },
+    { item: "Placement & Training Classes", amount: "2,000", desc: "Payable annually" },
+    { item: "College Development Fund", amount: "3,000", desc: "One-time payment" },
+    { item: "Caution Deposit", amount: "10,000", desc: "Refundable deposit" },
+    { item: "Learning Management Software", amount: "250", desc: "Payable every semester" },
+];
+
+const defaultTuitionBiomedicalAIML = [
+    { category: "Government Quota", fee: "42,000/-" },
+    { category: "Management", fee: "48,000/-" },
+    { category: "NRI", fee: "60,000/-" },
+];
+
+const defaultTuitionCSE = [
+    { category: "Government Quota", fee: "40,000/-" },
+    { category: "Management", fee: "45,000/-" },
+    { category: "NRI", fee: "55,000/-" },
+];
+
+const defaultTuitionECE = [
+    { category: "Government Quota", fee: "37,500/-" },
+    { category: "Management", fee: "40,000/-" },
+    { category: "NRI", fee: "55,000/-" },
+];
+
+const defaultTuitionCore = [
+    { category: "Government Quota", fee: "33,000/-" },
+    { category: "Management", fee: "35,000/-" },
+    { category: "NRI", fee: "43,000/-" },
+];
+
+const defaultLateralFees = [
+    { branch: "CSE", fee: "22,000/-" },
+    { branch: "ECE", fee: "22,000/-" },
+    { branch: "Civil Engineering", fee: "13,000/-" },
+    { branch: "Mechanical Engineering", fee: "13,000/-" },
+    { branch: "Electrical & Electronics Engineering", fee: "13,000/-" },
+];
+
 export default async function FeesScholarshipsPage() {
-    const blocks = await getPublicContentBlocks([
-        "fees_important_note",
-        "scholarships_info",
+    const [page, blocks] = await Promise.all([
+        getPublicPageByRoute("/admissions/fees-scholarships").catch(() => null),
+        getPublicContentBlocks([
+            "fees_important_note",
+            "scholarships_info",
+            "fees_and_scholarships_matrix",
+        ]).catch((): Record<string, import("@/lib/cms/content-blocks").PublicContentBlock> => ({})),
     ]);
 
-    const admissionFees = [
-        { item: "Application & Administration Fee", amount: "2,000", desc: "One-time payment at the time of admission" },
-        { item: "PTA Subscription", amount: "1,200", desc: "Payable annually" },
-        { item: "Smart Classroom Fee", amount: "250", desc: "Payable every semester" },
-        { item: "Registration Fee for Add-on LBS Course", amount: "2,000", desc: "One-time payment" },
-        { item: "Placement & Training Classes", amount: "2,000", desc: "Payable annually" },
-        { item: "College Development Fund", amount: "3,000", desc: "One-time payment" },
-        { item: "Caution Deposit", amount: "10,000", desc: "Refundable deposit" },
-        { item: "Learning Management Software", amount: "250", desc: "Payable every semester" },
-    ];
+    const structured = (blocks.fees_and_scholarships_matrix?.structured_data as Record<string, unknown>) || {};
 
-    const tuitionBiomedicalAIML = [
-        { category: "Government Quota", fee: "42,000/-" },
-        { category: "Management", fee: "48,000/-" },
-        { category: "NRI", fee: "60,000/-" },
-    ];
+    const admissionFees = Array.isArray(structured.admission_fees) && structured.admission_fees.length > 0
+        ? (structured.admission_fees as typeof defaultAdmissionFees)
+        : defaultAdmissionFees;
 
-    const tuitionCSE = [
-        { category: "Government Quota", fee: "40,000/-" },
-        { category: "Management", fee: "45,000/-" },
-        { category: "NRI", fee: "55,000/-" },
-    ];
+    const tuitionBiomedicalAIML = Array.isArray(structured.tuition_biomedical_aiml) && structured.tuition_biomedical_aiml.length > 0
+        ? (structured.tuition_biomedical_aiml as typeof defaultTuitionBiomedicalAIML)
+        : defaultTuitionBiomedicalAIML;
 
-    const tuitionECE = [
-        { category: "Government Quota", fee: "37,500/-" },
-        { category: "Management", fee: "40,000/-" },
-        { category: "NRI", fee: "55,000/-" },
-    ];
+    const tuitionCSE = Array.isArray(structured.tuition_cse) && structured.tuition_cse.length > 0
+        ? (structured.tuition_cse as typeof defaultTuitionCSE)
+        : defaultTuitionCSE;
 
-    const tuitionCore = [
-        { category: "Government Quota", fee: "33,000/-" },
-        { category: "Management", fee: "35,000/-" },
-        { category: "NRI", fee: "43,000/-" },
-    ];
+    const tuitionECE = Array.isArray(structured.tuition_ece) && structured.tuition_ece.length > 0
+        ? (structured.tuition_ece as typeof defaultTuitionECE)
+        : defaultTuitionECE;
 
-    const lateralFees = [
-        { branch: "CSE", fee: "22,000/-" },
-        { branch: "ECE", fee: "22,000/-" },
-        { branch: "Civil Engineering", fee: "13,000/-" },
-        { branch: "Mechanical Engineering", fee: "13,000/-" },
-        { branch: "Electrical & Electronics Engineering", fee: "13,000/-" },
-    ];
+    const tuitionCore = Array.isArray(structured.tuition_core) && structured.tuition_core.length > 0
+        ? (structured.tuition_core as typeof defaultTuitionCore)
+        : defaultTuitionCore;
+
+    const lateralFees = Array.isArray(structured.lateral_fees) && structured.lateral_fees.length > 0
+        ? (structured.lateral_fees as typeof defaultLateralFees)
+        : defaultLateralFees;
 
     const importantNote =
         blocks.fees_important_note?.content ||
         "University Fee will be collected additionally as per the norms of the University.";
+
+    const pageHeading = page?.title || "Fee Structure 2026–2027";
+    const pageSub = page?.seo_description || "Transparent fee structures and financial assistance programs to support your engineering journey.";
 
     return (
         <main className="min-h-screen pt-32 pb-24 bg-white relative">
@@ -72,10 +106,14 @@ export default async function FeesScholarshipsPage() {
                         <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
                     </Link>
                     <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 text-slate-900 uppercase">
-                        Fee Structure <span className="text-blue-600">2026–2027</span>
+                        {pageHeading === "Fee Structure 2026–2027" ? (
+                            <>Fee Structure <span className="text-blue-600">2026–2027</span></>
+                        ) : (
+                            pageHeading
+                        )}
                     </h1>
                     <p className="text-slate-600 text-xl leading-relaxed max-w-2xl mx-auto">
-                        Transparent fee structures and financial assistance programs to support your engineering journey.
+                        {pageSub}
                     </p>
                 </div>
 

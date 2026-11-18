@@ -8,7 +8,10 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <ContentLayout title="John Cox Memorial C.S.I Institute Of Technology">
+    <ContentLayout
+      title="Physical Education & Sports"
+      routePath="/campus-life/student-support/sports"
+    >
       <ul className="list-disc pl-6 mb-4 space-y-2">
 <li>  <strong>Admission Enquiry</strong></li>
 <li>  Director : 9496981555, Principal : 9496981666 , Bursar : 9496981777</li>
@@ -21,7 +24,7 @@ export default function Page() {
 <li>  Sports</li>
 </ul>
 <p className="mb-4"></p>
-<p className="mb-4">Physical education has an important role in day todays life and it greatly affects an individual's life style and healthy. It also helps to improve the academic performance of student. Accordingly the department provides training to the student's and conducts various sports and games for staff and students every year in the college. The department also organizes inter house competitions and provides opportunities to the students to participate in inter college level and University.</p>
+<p className="mb-4">Physical education has an important role in day todays life and it greatly affects an individual&apos;s life style and healthy. It also helps to improve the academic performance of student. Accordingly the department provides training to the student&apos;s and conducts various sports and games for staff and students every year in the college. The department also organizes inter house competitions and provides opportunities to the students to participate in inter college level and University.</p>
 <p className="mb-4">Chair Person</p>
 <p className="mb-4">:</p>
 <p className="mb-4">Dr. Anshad A.S, Principal</p>

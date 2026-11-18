@@ -5,20 +5,7 @@ import { useState } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { Image as ImageIcon, CreditCard, UserPlus, Users, Sparkles, FileText } from "lucide-react";
 
-export function FloatingActionButtons() {
-  const { scrollY } = useScroll();
-  const [hidden, setHidden] = useState(false);
-
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    const previous = scrollY.getPrevious() ?? 0;
-    if (latest > previous && latest > 150) {
-      setHidden(true);
-    } else {
-      setHidden(false);
-    }
-  });
-
-  const buttons = [
+  const defaultButtons = [
     {
       id: "gallery",
       label: "Photo Gallery",
@@ -56,6 +43,32 @@ export function FloatingActionButtons() {
       isNew: true,
     }
   ];
+
+export interface FloatingActionButtonsProps {
+  customButtons?: Array<{
+    id: string;
+    label: string;
+    icon?: React.ComponentType<{ className?: string }>;
+    href: string;
+    isNew?: boolean;
+    subtext?: string;
+  }> | null;
+}
+
+export function FloatingActionButtons({ customButtons }: FloatingActionButtonsProps = {}) {
+  const { scrollY } = useScroll();
+  const [hidden, setHidden] = useState(false);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    if (latest > previous && latest > 150) {
+      setHidden(true);
+    } else {
+      setHidden(false);
+    }
+  });
+
+  const buttons = customButtons && customButtons.length > 0 ? customButtons : defaultButtons;
 
   return (
     <motion.div 
@@ -103,7 +116,11 @@ export function FloatingActionButtons() {
 
               {/* Fixed Icon Container */}
               <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center shrink-0 bg-[#1c4762] text-white rounded-full group-hover:scale-105 transition-transform duration-300">
-                <Icon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                {Icon ? (
+                  <Icon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                ) : (
+                  <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                )}
               </div>
             </Link>
           </motion.div>

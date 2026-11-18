@@ -6,7 +6,7 @@ import { Sparkles, Search, ArrowRight, Microchip, Cpu, Code2, HeartPulse, Buildi
 import { ParallaxImage } from "@/components/ui/parallax-image";
 import Link from "next/link";
 
-const courses = [
+const defaultCourses = [
   { id: "aiml", name: "Artificial Intelligence & ML", icon: Microchip, tags: ["AI", "Data", "Algorithms"], image: "/courses/aiml_course_1779729860073.png" },
   { id: "biomedical-robotic", name: "Biomedical & Robotic Engg", icon: HeartPulse, tags: ["Healthcare", "Robotics", "Biology"], image: "/courses/bmre_course_1779729888838.png" },
   { id: "civil", name: "Civil Engineering", icon: Building2, tags: ["Infrastructure", "Construction", "Smart Cities"], image: "/courses/ce_course_1779729938816.png" },
@@ -16,15 +16,69 @@ const courses = [
   { id: "mechanical", name: "Mechanical Engineering", icon: Wrench, tags: ["Design", "Machines", "Automotive"], image: "/courses/me_course_1779729919795.png" }
 ];
 
-export function AICourseExplorer() {
+const courseIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  aiml: Microchip,
+  "biomedical-robotic": HeartPulse,
+  civil: Building2,
+  cse: Code2,
+  ece: Cpu,
+  eee: Zap,
+  mechanical: Wrench,
+};
+
+const courseImageMap: Record<string, string> = {
+  aiml: "/courses/aiml_course_1779729860073.png",
+  "biomedical-robotic": "/courses/bmre_course_1779729888838.png",
+  civil: "/courses/ce_course_1779729938816.png",
+  cse: "/courses/cse_course_1779729874773.png",
+  ece: "/courses/ece_course_1779729905116.png",
+  eee: "/courses/eee_course.png",
+  mechanical: "/courses/me_course_1779729919795.png",
+};
+
+const courseTagsMap: Record<string, string[]> = {
+  aiml: ["AI", "Data", "Algorithms"],
+  "biomedical-robotic": ["Healthcare", "Robotics", "Biology"],
+  civil: ["Infrastructure", "Construction", "Smart Cities"],
+  cse: ["Software", "Web", "Cloud"],
+  ece: ["Circuits", "IoT", "Signals"],
+  eee: ["Power Systems", "Energy", "Smart Grid"],
+  mechanical: ["Design", "Machines", "Automotive"],
+};
+
+export interface AICourseExplorerProps {
+  courses?: Array<{
+    id: string;
+    slug?: string;
+    name: string;
+    degree?: string;
+    category?: string;
+    overview?: string;
+  }> | null;
+}
+
+export function AICourseExplorer({ courses: initialCourses }: AICourseExplorerProps = {}) {
   const [query, setQuery] = useState("");
 
+  const activeCourses = initialCourses && initialCourses.length > 0
+    ? initialCourses.map((c) => {
+        const key = (c.slug || c.id).toLowerCase();
+        return {
+          id: key,
+          name: c.name || key.toUpperCase(),
+          icon: courseIconMap[key] || Microchip,
+          tags: courseTagsMap[key] || ["Engineering", "Technology", c.degree || "B.Tech"],
+          image: courseImageMap[key] || "/courses/cse_course_1779729874773.png",
+        };
+      })
+    : defaultCourses;
+
   const filteredCourses = query.length > 0
-    ? courses.filter(c => 
+    ? activeCourses.filter(c => 
         c.name.toLowerCase().includes(query.toLowerCase()) || 
         c.tags.some(t => t.toLowerCase().includes(query.toLowerCase()))
       )
-    : courses;
+    : activeCourses;
 
   return (
     <section className="py-32 relative w-full overflow-hidden bg-slate-50/30 border-y border-slate-100">

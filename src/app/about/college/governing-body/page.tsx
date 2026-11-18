@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Building2, CheckCircle2, Crown, Shield, BookOpen } from 'lucide-react';
 import { getPublicContentBlocks } from '@/lib/cms/content-blocks';
+import { getPublicPageByRoute } from '@/lib/cms/pages';
 
 export const metadata: Metadata = {
   title: 'Governing Body | JCMCSIIT',
@@ -52,10 +53,30 @@ const avatarColors = [
 ];
 
 export default async function GoverningBodyPage() {
-  const blocks = await getPublicContentBlocks([
-    'governing_body_functions',
-    'governing_body_intro',
+  const [blocks, cmsPage] = await Promise.all([
+    getPublicContentBlocks([
+      'governing_body_functions',
+      'governing_body_intro',
+      'governing_body_roster',
+    ]),
+    getPublicPageByRoute('/about/college/governing-body'),
   ]);
+
+  const rawMembers = Array.isArray(blocks.governing_body_roster?.structured_data?.members)
+    ? (blocks.governing_body_roster.structured_data.members as Array<{ sl?: number; name?: string; designation?: string; role?: string; badge?: string; badgeColor?: string; image?: string }>)
+    : null;
+
+  const members = rawMembers && rawMembers.length > 0
+    ? rawMembers.map((m, idx) => ({
+        sl: m.sl || idx + 1,
+        name: m.name || `Member ${idx + 1}`,
+        designation: m.designation || 'Member',
+        role: m.role || 'Governing Body Member',
+        badge: m.badge || 'Member',
+        badgeColor: m.badgeColor || 'blue',
+        image: m.image,
+      }))
+    : defaultMembers;
 
   const functions = blocks.governing_body_functions?.content
     ? blocks.governing_body_functions.content
@@ -65,6 +86,7 @@ export default async function GoverningBodyPage() {
     : defaultFunctions;
 
   const introText =
+    cmsPage?.summary ||
     blocks.governing_body_intro?.content ||
     'The Governing Body ensures effective management of the institution and plans its future development, overseeing academic excellence and institutional growth.';
 
@@ -154,12 +176,12 @@ export default async function GoverningBodyPage() {
             <div className="w-1.5 h-6 bg-blue-600 rounded-full shrink-0"></div>
             <h2 className="text-2xl font-bold text-slate-900">Governing Body Members</h2>
             <span className="ml-auto text-sm font-semibold text-slate-400">
-              {defaultMembers.length} Members
+              {members.length} Members
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {defaultMembers.map((m, i) => (
+            {members.map((m, i) => (
               <div
                 key={m.sl}
                 className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-lg hover:border-blue-200 transition-all duration-300 flex items-start gap-4"

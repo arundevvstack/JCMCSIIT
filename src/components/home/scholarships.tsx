@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, GraduationCap, Banknote, ShieldCheck, HeartHandshake } from "lucide-react";
 
-const scholarships = [
+const defaultScholarships = [
   {
     icon: <Banknote className="h-8 w-8 text-emerald-500" />,
     title: "Government Scholarships",
@@ -27,7 +27,33 @@ const scholarships = [
   },
 ];
 
-export function Scholarships() {
+export interface ScholarshipsProps {
+  block?: {
+    title?: string;
+    content?: string;
+    structured_data?: Record<string, unknown>;
+  } | null;
+}
+
+export function Scholarships({ block }: ScholarshipsProps = {}) {
+  const badge = (block?.structured_data?.badge as string) || "Financial Aid";
+  const title = block?.title || null;
+  const description = block?.content || "At JCMC SIIT, we believe that financial constraints should never be a barrier to quality education. We offer comprehensive scholarship programs and financial aid to support our students in achieving their academic goals.";
+  const ctaText = (block?.structured_data?.cta_text as string) || "View All Scholarships";
+  const ctaLink = (block?.structured_data?.cta_link as string) || "/admissions/fees-scholarships";
+
+  const rawSchemes = Array.isArray(block?.structured_data?.schemes) ? block?.structured_data?.schemes : null;
+  const activeScholarships = rawSchemes && rawSchemes.length > 0
+    ? rawSchemes.map((s, idx: number) => {
+        const item = s as Record<string, unknown>;
+        return {
+          icon: defaultScholarships[idx % defaultScholarships.length].icon,
+          title: (item.title as string) || (item.name as string) || `Scheme ${idx + 1}`,
+          description: (item.description as string) || (item.summary as string) || "",
+        };
+      })
+    : defaultScholarships;
+
   return (
     <section className="py-20 md:py-28 bg-white overflow-hidden border-t border-slate-100">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
@@ -40,23 +66,29 @@ export function Scholarships() {
           >
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 mb-6">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="text-xs font-semibold uppercase tracking-widest text-emerald-700">Financial Aid</span>
+              <span className="text-xs font-semibold uppercase tracking-widest text-emerald-700">{badge}</span>
             </div>
             
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 text-slate-900" style={{ fontFamily: "var(--font-heading)" }}>
-              Scholarships & <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-cyan-600">Assistance.</span>
+              {title ? (
+                <span>{title}</span>
+              ) : (
+                <>
+                  Scholarships & <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-cyan-600">Assistance.</span>
+                </>
+              )}
             </h2>
             
             <p className="text-slate-500 text-lg leading-relaxed mb-8 font-editorial">
-              At JCMC SIIT, we believe that financial constraints should never be a barrier to quality education. We offer comprehensive scholarship programs and financial aid to support our students in achieving their academic goals.
+              {description}
             </p>
 
             <Link 
-              href="/admissions/fees-scholarships"
+              href={ctaLink}
               className="inline-flex items-center justify-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-xl font-semibold hover:bg-slate-800 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-slate-900/20 group"
             >
-              <span>View All Scholarships</span>
+              <span>{ctaText}</span>
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </motion.div>
@@ -64,7 +96,7 @@ export function Scholarships() {
           <div className="grid sm:grid-cols-2 gap-6 relative">
             <div className="absolute inset-0 bg-gradient-to-tr from-emerald-100/30 to-cyan-100/30 blur-3xl -z-10 rounded-full scale-150"></div>
             
-            {scholarships.map((item, index) => (
+            {activeScholarships.map((item, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 30 }}

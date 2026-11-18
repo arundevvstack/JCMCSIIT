@@ -8,7 +8,10 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <ContentLayout title="John Cox Memorial C.S.I Institute Of Technology">
+    <ContentLayout
+      title="Industry Institute Interaction Cell (IIIC)"
+      routePath="/cells/iiic"
+    >
       <ul className="list-disc pl-6 mb-4 space-y-2">
 <li>  <strong>Admission Enquiry</strong></li>
 <li>  Director : 9496981555, Principal : 9496981666 , Bursar : 9496981777</li>
@@ -37,7 +40,7 @@ export default function Page() {
 <p className="mb-4"></p>
 <h4 className="text-xl font-bold mb-4 text-slate-800"><strong>MoU</strong></h4>
 <ul className="list-disc pl-6 mb-4 space-y-2">
-<li>  Oka Basu's Metal Technologies Pvt Ltd</li>
+<li>  Oka Basu&apos;s Metal Technologies Pvt Ltd</li>
 <li>  Placement Support, Internship & Skill Development</li>
 <li>  Inforich Technology Solutions Pvt Ltd</li>
 <li>  Embright Infotech Private Ltd</li>

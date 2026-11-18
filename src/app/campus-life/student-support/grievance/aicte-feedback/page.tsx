@@ -8,7 +8,10 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <ContentLayout title="Aicte Feedback">
+    <ContentLayout
+      title="AICTE Online Feedback System"
+      routePath="/campus-life/student-support/grievance/aicte-feedback"
+    >
       <p className="text-slate-500 italic">Content under update.</p>
     </ContentLayout>
   );

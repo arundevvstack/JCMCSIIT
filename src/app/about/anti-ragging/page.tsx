@@ -1,12 +1,28 @@
 import { Metadata } from "next";
 import { ShieldAlert, Phone, FileText, Scale } from "lucide-react";
+import { getPublicPageByRoute } from "@/lib/cms/pages";
+import { getPublicContentBlock } from "@/lib/cms/content-blocks";
 
 export const metadata: Metadata = {
   title: "Anti-Ragging Cell | JCMCSIIT",
   description: "JCMCSIIT maintains a zero-tolerance policy against ragging. Report incidents and access resources.",
 };
 
-export default function AntiRaggingPage() {
+export default async function AntiRaggingPage() {
+  const [cmsPage, helplineBlock] = await Promise.all([
+    getPublicPageByRoute("/about/anti-ragging").catch(() => null),
+    getPublicContentBlock("anti_ragging_helplines").catch(() => null),
+  ]);
+
+  const introText =
+    cmsPage?.summary ||
+    cmsPage?.subtitle ||
+    "JCMCSIIT enforces a strict zero-tolerance policy against ragging of any kind. The safety and dignity of every student is our highest priority.";
+
+  const nationalHelpline = (helplineBlock?.structured_data?.national_helpline as string) || "1800-180-5522";
+  const internalHelpline = (helplineBlock?.structured_data?.internal_helpline as string) || "+91 94969 81555";
+  const internalEmail = (helplineBlock?.structured_data?.internal_email as string) || "principal@jcmcsiit.ac.in";
+  const pdfUrl = (helplineBlock?.structured_data?.pdf_url as string) || "/general/Anti-Ragging-Committee.pdf";
   return (
     <main className="min-h-screen pt-32 pb-24 bg-white relative">
       <div className="container px-4 md:px-6 relative z-10 mx-auto">
@@ -17,10 +33,10 @@ export default function AntiRaggingPage() {
             <span className="text-sm font-semibold text-red-700 uppercase tracking-wider">Zero Tolerance</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-foreground">
-            Anti-Ragging Cell.
+            {cmsPage?.title || "Anti-Ragging Cell."}
           </h1>
           <p className="text-slate-500 text-xl leading-relaxed max-w-2xl mx-auto">
-            JCMCSIIT enforces a strict zero-tolerance policy against ragging of any kind. The safety and dignity of every student is our highest priority.
+            {introText}
           </p>
         </div>
 
@@ -45,13 +61,13 @@ export default function AntiRaggingPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
                 <h3 className="font-bold text-foreground mb-2">National Anti-Ragging Helpline</h3>
-                <p className="text-2xl font-bold text-red-600">1800-180-5522</p>
+                <p className="text-2xl font-bold text-red-600">{nationalHelpline}</p>
                 <p className="text-sm text-slate-500 mt-1">Toll-free, 24/7</p>
               </div>
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
                 <h3 className="font-bold text-foreground mb-2">JCMCSIIT Internal Helpline</h3>
-                <p className="text-2xl font-bold text-primary">+91 94969 81555</p>
-                <p className="text-sm text-slate-500 mt-1">Office hours or email: principal@jcmcsiit.ac.in</p>
+                <p className="text-2xl font-bold text-primary">{internalHelpline}</p>
+                <p className="text-sm text-slate-500 mt-1">Office hours or email: {internalEmail}</p>
               </div>
             </div>
           </div>
@@ -63,9 +79,9 @@ export default function AntiRaggingPage() {
             <p className="text-slate-600 leading-relaxed mb-6">
               The Anti-Ragging Committee comprises senior faculty members, administrative officers, and student representatives who are responsible for monitoring, preventing, and addressing any incidents of ragging on campus.
             </p>
-            <button className="px-6 py-3 rounded-xl bg-foreground text-white font-semibold hover:bg-foreground/90 transition-all shadow-sm">
+            <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="inline-block px-6 py-3 rounded-xl bg-foreground text-white font-semibold hover:bg-foreground/90 transition-all shadow-sm">
               View Committee Members (PDF)
-            </button>
+            </a>
           </div>
 
         </div>

@@ -1,13 +1,15 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Bus, MapPin, Navigation, Phone, ShieldCheck, Map } from 'lucide-react';
+import { getPublicPageByRoute } from '@/lib/cms/pages';
+import { getPublicContentBlock } from '@/lib/cms/content-blocks';
 
 export const metadata: Metadata = {
   title: 'Transportation | JCMCSIIT',
   description: 'College bus routes, transport facilities, and GPS tracking at JCMCSIIT.',
 };
 
-const busRoutes = [
+const defaultBusRoutes = [
   {
     id: 1,
     name: 'Route 1: Kattakkada',
@@ -44,7 +46,36 @@ const busRoutes = [
   }
 ];
 
-export default function TransportationPage() {
+export default async function TransportationPage() {
+  const [cmsPage, routesBlock] = await Promise.all([
+    getPublicPageByRoute('/facilities/transportation').catch(() => null),
+    getPublicContentBlock('transportation_routes_json').catch(() => null),
+  ]);
+
+  const rawRoutes = Array.isArray(routesBlock?.structured_data?.routes)
+    ? (routesBlock.structured_data.routes as Array<{ id?: number | string; name?: string; color?: string; stops?: string[] }>)
+    : null;
+
+  const busRoutes = rawRoutes && rawRoutes.length > 0
+    ? rawRoutes.map((r, i) => {
+        const colors = ['emerald', 'blue', 'violet'];
+        return {
+          id: r.id || i + 1,
+          name: r.name || `Route ${i + 1}`,
+          color: r.color || colors[i % colors.length],
+          stops: Array.isArray(r.stops) ? r.stops : [],
+        };
+      })
+    : defaultBusRoutes;
+
+  const coord = routesBlock?.structured_data?.coordinator as { name?: string; role?: string; dept?: string; notes?: string } | undefined;
+  const coordinatorName = coord?.name || 'Mr. Sanjit J';
+  const coordinatorRole = coord?.role || 'Transport In-Charge';
+  const coordinatorDept = coord?.dept || 'Assistant Professor, ME';
+  const coordinatorNotes = coord?.notes || 'For queries related to bus routes, timings, boarding passes, or any transport-related assistance, please contact the coordinator during office hours.';
+
+  const heroTitle = cmsPage?.title || 'Safe & Reliable Commute';
+  const heroSubtitle = cmsPage?.subtitle || cmsPage?.summary || 'The college operates a dedicated fleet of buses ensuring safe, comfortable, and timely transportation for students and staff from across the city and neighboring towns.';
   return (
     <main className="min-h-screen pt-32 pb-24 bg-slate-50 relative overflow-hidden">
       {/* Background Ornaments */}
@@ -67,10 +98,12 @@ export default function TransportationPage() {
             <span className="text-sm font-bold text-emerald-700 uppercase tracking-widest">Campus Transport</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 mb-6">
-            Safe & Reliable <span className="text-emerald-600">Commute</span>
+            {cmsPage?.title ? heroTitle : (
+              <>Safe & Reliable <span className="text-emerald-600">Commute</span></>
+            )}
           </h1>
           <p className="text-slate-600 text-lg leading-relaxed">
-            The college operates a dedicated fleet of buses ensuring safe, comfortable, and timely transportation for students and staff from across the city and neighboring towns.
+            {heroSubtitle}
           </p>
         </div>
 
@@ -193,18 +226,20 @@ export default function TransportationPage() {
               
               <div className="flex items-center gap-4 mb-5">
                 <div className="w-14 h-14 rounded-full bg-slate-100 border-2 border-white shadow-md flex items-center justify-center">
-                  <span className="text-xl font-black text-slate-400">SJ</span>
+                  <span className="text-xl font-black text-slate-400">
+                    {coordinatorName.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
+                  </span>
                 </div>
                 <div>
-                  <p className="font-bold text-slate-900">Mr. Sanjit J</p>
-                  <p className="text-sm font-medium text-emerald-600 mb-1">Transport In-Charge</p>
-                  <p className="text-xs text-slate-500">Assistant Professor, ME</p>
+                  <p className="font-bold text-slate-900">{coordinatorName}</p>
+                  <p className="text-sm font-medium text-emerald-600 mb-1">{coordinatorRole}</p>
+                  <p className="text-xs text-slate-500">{coordinatorDept}</p>
                 </div>
               </div>
               
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  For queries related to bus routes, timings, boarding passes, or any transport-related assistance, please contact the coordinator during office hours.
+                  {coordinatorNotes}
                 </p>
               </div>
             </div>

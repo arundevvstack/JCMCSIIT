@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getPublicGalleryItems } from "@/lib/cms/gallery";
+import { getPublicGalleryItems, getPublicGalleryAlbums } from "@/lib/cms/gallery";
 import GalleryClient from "./gallery-client";
 
 export const metadata: Metadata = {
@@ -9,7 +9,10 @@ export const metadata: Metadata = {
 };
 
 export default async function GalleryPage() {
-    const items = await getPublicGalleryItems();
+    const [items, albums] = await Promise.all([
+        getPublicGalleryItems(),
+        getPublicGalleryAlbums(),
+    ]);
 
-    return <GalleryClient items={items} />;
+    return <GalleryClient items={items} albums={albums} />;
 }

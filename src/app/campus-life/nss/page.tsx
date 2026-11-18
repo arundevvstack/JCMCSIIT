@@ -1,13 +1,48 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, Users, HeartHandshake, Tent, Droplet, UserSquare2, Image as ImageIcon, PlayCircle } from 'lucide-react';
+import { getPublicPageByRoute } from '@/lib/cms/pages';
+import { getPublicContentBlock } from '@/lib/cms/content-blocks';
 
 export const metadata: Metadata = {
   title: 'National Service Scheme (NSS) | JCMCSIIT',
   description: 'National Service Scheme (NSS) at John Cox Memorial C.S.I Institute Of Technology',
 };
 
-export default function NSSPage() {
+const defaultActivities = [
+  { icon: HeartHandshake, title: "Medical Camps", desc: "Organizing free health checkups and awareness drives for rural communities." },
+  { icon: Tent, title: "Flood Relief", desc: "Active participation in disaster management and relief material collection." },
+  { icon: Droplet, title: "Blood Donation", desc: "Regular life-saving blood donation camps conducted inside the campus." },
+  { icon: Users, title: "Community Service", desc: "Various local outreach programs designed to help underprivileged groups." }
+];
+
+export default async function NSSPage() {
+  const [cmsPage, nssBlock] = await Promise.all([
+    getPublicPageByRoute('/campus-life/nss').catch(() => null),
+    getPublicContentBlock('nss_unit_details').catch(() => null),
+  ]);
+
+  const rawActivities = Array.isArray(nssBlock?.structured_data?.activities)
+    ? (nssBlock.structured_data.activities as Array<{ title?: string; desc?: string; description?: string }>)
+    : null;
+
+  const activities = rawActivities && rawActivities.length > 0
+    ? rawActivities.map((act, i) => {
+        const icons = [HeartHandshake, Tent, Droplet, Users];
+        return {
+          icon: icons[i % icons.length],
+          title: act.title || `Programme ${i + 1}`,
+          desc: act.desc || act.description || '',
+        };
+      })
+    : defaultActivities;
+
+  const officerName = (nssBlock?.structured_data?.officer_name as string) || "Mrs. Beena Thamby";
+  const officerRole = (nssBlock?.structured_data?.officer_role as string) || "Programme Officer";
+  const officerDept = (nssBlock?.structured_data?.officer_dept as string) || "Asst. Prof. S&H";
+
+  const heroTitle = cmsPage?.title || 'National Service Scheme';
+  const heroSubtitle = cmsPage?.subtitle || cmsPage?.summary || 'Not Me But You. Fostering a feeling of sacrifice, a spirit of service, and a sense of togetherness among students.';
   return (
     <main className="min-h-screen pt-32 pb-24 bg-slate-50 relative overflow-hidden">
       {/* Background Decor */}
@@ -32,10 +67,10 @@ export default function NSSPage() {
             <span className="text-sm font-bold text-blue-700 uppercase tracking-widest">NSS Cell</span>
           </div>
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900 mb-6">
-            National Service Scheme
+            {heroTitle}
           </h1>
           <p className="text-xl text-slate-600 leading-relaxed max-w-2xl">
-            Not Me But You. Fostering a feeling of sacrifice, a spirit of service, and a sense of togetherness among students.
+            {heroSubtitle}
           </p>
         </div>
 
@@ -58,12 +93,7 @@ export default function NSSPage() {
                 <Tent className="w-6 h-6 text-emerald-600" /> Key Programmes
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {[
-                  { icon: HeartHandshake, title: "Medical Camps", desc: "Organizing free health checkups and awareness drives for rural communities." },
-                  { icon: Tent, title: "Flood Relief", desc: "Active participation in disaster management and relief material collection." },
-                  { icon: Droplet, title: "Blood Donation", desc: "Regular life-saving blood donation camps conducted inside the campus." },
-                  { icon: Users, title: "Community Service", desc: "Various local outreach programs designed to help underprivileged groups." }
-                ].map((activity, i) => (
+                {activities.map((activity, i) => (
                   <div key={i} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-start gap-4">
                     <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
                       <activity.icon className="w-6 h-6" />
@@ -107,12 +137,12 @@ export default function NSSPage() {
                     <UserSquare2 className="w-6 h-6" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-slate-900">Mrs. Beena Thamby</h4>
-                    <p className="text-sm font-semibold text-emerald-600">Programme Officer</p>
+                    <h4 className="font-bold text-slate-900">{officerName}</h4>
+                    <p className="text-sm font-semibold text-emerald-600">{officerRole}</p>
                   </div>
                 </div>
                 <div className="text-sm text-slate-500 px-2 py-1 bg-slate-50 rounded-lg inline-flex w-fit">
-                  Asst. Prof. S&H
+                  {officerDept}
                 </div>
               </div>
 

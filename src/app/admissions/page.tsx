@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { Calendar, FileText } from "lucide-react";
 import Link from "next/link";
 import { getPublicContentBlocks } from "@/lib/cms/content-blocks";
+import { getPublicPageByRoute } from "@/lib/cms/pages";
 
 export const metadata: Metadata = {
     title: "Admissions 2026 | JCMCSIIT",
@@ -29,18 +30,36 @@ const defaultSteps = [
 ];
 
 export default async function AdmissionsPage() {
-    const blocks = await getPublicContentBlocks([
-        "admissions_hero_title",
-        "admissions_hero_sub",
-        "admissions_process_note",
-        "admission_helpline",
+    const [page, blocks] = await Promise.all([
+        getPublicPageByRoute("/admissions").catch(() => null),
+        getPublicContentBlocks([
+            "admissions_hero_title",
+            "admissions_hero_sub",
+            "admissions_process_note",
+            "admissions_process_steps",
+            "admission_helpline",
+        ]).catch((): Record<string, import("@/lib/cms/content-blocks").PublicContentBlock> => ({})),
     ]);
 
     const heroTitle =
-        blocks.admissions_hero_title?.content || "Your Future Starts Here.";
+        page?.title ||
+        blocks.admissions_hero_title?.content ||
+        "Your Future Starts Here.";
     const heroSub =
+        page?.seo_description ||
         blocks.admissions_hero_sub?.content ||
         "Join a premium, AI-native institution that guarantees an industry-ready career and empowers you to build the intelligent systems of tomorrow.";
+
+    const rawSteps = Array.isArray(blocks.admissions_process_steps?.structured_data?.steps)
+        ? (blocks.admissions_process_steps.structured_data.steps as Array<{ title?: string; desc?: string; description?: string }>)
+        : null;
+
+    const steps = rawSteps && rawSteps.length > 0
+        ? rawSteps.map((s) => ({
+            title: s.title || "Step",
+            desc: s.desc || s.description || "",
+        }))
+        : defaultSteps;
 
     return (
         <main className="min-h-screen pt-32 pb-16 relative w-full overflow-hidden bg-white">
@@ -70,7 +89,7 @@ export default async function AdmissionsPage() {
                                 Admission Process
                             </h2>
                             <div className="space-y-10">
-                                {defaultSteps.map((step, i) => (
+                                {steps.map((step, i) => (
                                     <div key={i} className="flex relative">
                                         {i < 3 && (
                                             <div className="absolute left-7 top-14 bottom-[-2.5rem] w-0.5 bg-slate-100"></div>

@@ -6,7 +6,21 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { useRef } from "react";
 
-export function FeaturedLegacy() {
+export interface FeaturedLegacyProps {
+  block?: {
+    title?: string;
+    content?: string;
+    structured_data?: Record<string, unknown>;
+  } | null;
+}
+
+export function FeaturedLegacy({ block }: FeaturedLegacyProps = {}) {
+  const heading = block?.title || "A legacy of excellence, a network that spans the globe.";
+  const description = block?.content || "JCMCSIIT alumni are leading Fortune 500 companies, pioneering groundbreaking research, and shaping the future of technology worldwide.";
+  const ctaText = (block?.structured_data?.cta_text as string) || "Join the Alumni Network";
+  const ctaLink = (block?.structured_data?.cta_link as string) || "/campus-life/alumni";
+  const bgImage = (block?.structured_data?.image_url as string) || "/images/about/campus-1.jpg";
+
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -21,7 +35,7 @@ export function FeaturedLegacy() {
       {/* Background Image with Parallax */}
       <motion.div style={{ y }} className="absolute inset-0 z-0 scale-125 origin-center">
         <Image
-          src="/images/about/campus-1.jpg"
+          src={bgImage}
           alt="JCMCSIIT Campus and Legacy"
           fill
           className="object-cover opacity-60"
@@ -37,24 +51,24 @@ export function FeaturedLegacy() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as any }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           className="max-w-4xl flex flex-col items-center"
         >
           <div className="w-16 h-1 bg-primary mb-8 rounded-full"></div>
           
           <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight mb-8" style={{ fontFamily: "var(--font-heading)" }}>
-            A legacy of excellence, a network that spans the globe.
+            {heading}
           </h2>
           
           <p className="text-xl md:text-2xl text-slate-300 font-editorial leading-relaxed mb-12 max-w-3xl">
-            JCMCSIIT alumni are leading Fortune 500 companies, pioneering groundbreaking research, and shaping the future of technology worldwide.
+            {description}
           </p>
           
           <Link
-            href="/campus-life/alumni"
+            href={ctaLink}
             className="group relative inline-flex h-14 items-center justify-center overflow-hidden rounded-full bg-transparent border border-white/40 px-10 font-bold text-white transition-all hover:bg-white hover:text-[#1c4762] hover:border-white shadow-sm hover:shadow-lg"
           >
-            <span className="text-lg tracking-wide mr-2">Join the Alumni Network</span>
+            <span className="text-lg tracking-wide mr-2">{ctaText}</span>
             <ArrowUpRight className="h-5 w-5 transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1" />
           </Link>
         </motion.div>

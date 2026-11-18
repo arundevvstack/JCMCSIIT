@@ -6,6 +6,7 @@ import { Plus, Save, Trash2, Blocks, Search, Lock } from "lucide-react";
 import { saveContentBlock, deleteContentBlock } from "@/actions/cms";
 import type { AdminRole } from "@/lib/auth/rbac";
 import { AdminStatusBadge } from "@/components/admin/admin-primitives";
+import { UniversalStructuredEditor } from "@/components/admin/structured-block-editors";
 
 export type BlockData = {
     id: string;
@@ -13,6 +14,7 @@ export type BlockData = {
     title: string;
     block_type?: string;
     content: string;
+    structured_data?: Record<string, unknown>;
     status?: string;
     updated_at: string;
 };
@@ -56,6 +58,7 @@ export default function BlocksManager({
             title: "New Content Block",
             block_type: "markdown",
             content: "Enter reusable block content here...",
+            structured_data: {},
             status: "draft",
             updated_at: new Date().toISOString(),
         };
@@ -73,13 +76,22 @@ export default function BlocksManager({
         );
     };
 
+    const handleChangeStructured = (data: Record<string, unknown>) => {
+        if (isEditorLocked) return;
+        setBlocks((prev) =>
+            prev.map((b) =>
+                b.id === activeBlockId ? { ...b, structured_data: data } : b
+            )
+        );
+    };
+
     const handleSave = () => {
         if (!activeBlock || isEditorLocked) return;
         setFeedback(null);
 
         startTransition(async () => {
             const formData = new FormData();
-            if (!activeBlock.id.startsWith("new-")) {
+            if (!activeBlock.id.startsWith("new-") && !activeBlock.id.startsWith("baseline-")) {
                 formData.append("id", activeBlock.id);
             }
             formData.append("key", activeBlock.key);
@@ -89,6 +101,12 @@ export default function BlocksManager({
                 activeBlock.block_type || "markdown"
             );
             formData.append("content", activeBlock.content);
+            if (activeBlock.structured_data) {
+                formData.append(
+                    "structured_data",
+                    JSON.stringify(activeBlock.structured_data)
+                );
+            }
             formData.append(
                 "status",
                 isEditor ? "draft" : activeEffectiveStatus
@@ -392,7 +410,7 @@ export default function BlocksManager({
                                         Block Content
                                     </label>
                                     <textarea
-                                        rows={14}
+                                        rows={8}
                                         value={activeBlock.content}
                                         readOnly={isEditorLocked}
                                         onChange={(e) =>
@@ -404,6 +422,13 @@ export default function BlocksManager({
                                         className="w-full bg-[#0B0D12] border border-white/[0.1] rounded-xl p-4 font-mono text-xs focus:outline-none focus:border-[#D4AF37] text-zinc-100 read-only:opacity-60"
                                     />
                                 </div>
+
+                                <UniversalStructuredEditor
+                                    blockKey={activeBlock.key}
+                                    value={activeBlock.structured_data}
+                                    disabled={isEditorLocked}
+                                    onChange={handleChangeStructured}
+                                />
                             </div>
                         </>
                     ) : (

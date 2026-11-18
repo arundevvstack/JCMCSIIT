@@ -127,6 +127,12 @@ function revalidateContentBlockPublicPaths(key: string) {
         revalidatePath("/");
         return;
     }
+    if (normalized === "chairman_profile" || normalized.startsWith("chairman")) {
+        revalidatePath("/about/our-chairman");
+        revalidatePath("/about/college/chairman");
+        revalidatePath("/");
+        return;
+    }
     if (
         normalized.startsWith("home") ||
         normalized.startsWith("hero") ||
@@ -207,6 +213,8 @@ function revalidateGalleryPublicPaths() {
     revalidatePath("/");
     revalidatePath("/gallery");
     revalidatePath("/news-events/gallery");
+    revalidatePath("/admin/media");
+    revalidatePath("/admin/gallery");
 }
 
 function revalidateSiteSettingPublicPaths(isPublic: boolean) {
@@ -392,6 +400,7 @@ const BlockSchema = z.object({
         ])
         .default("markdown"),
     content: z.string().min(1, "Content is required.").max(100000),
+    structured_data: z.record(z.string(), z.unknown()).optional(),
     status: WorkflowStatusSchema,
 });
 
@@ -402,6 +411,19 @@ export async function saveContentBlock(
         const admin = await requireAdminRole(ADMIN_ROLES);
         const rawId = getStr(formData, "id");
         const rawStatus = getStr(formData, "status") || "draft";
+        const rawStructured = getStr(formData, "structured_data");
+
+        let parsedStructured: Record<string, unknown> | undefined = undefined;
+        if (rawStructured) {
+            try {
+                parsedStructured = JSON.parse(rawStructured);
+            } catch {
+                return {
+                    ok: false,
+                    error: "Invalid JSON format in structured data.",
+                };
+            }
+        }
 
         const parsed = BlockSchema.safeParse({
             id: rawId || undefined,
@@ -412,6 +434,7 @@ export async function saveContentBlock(
                 typeof formData.get("content") === "string"
                     ? (formData.get("content") as string)
                     : "",
+            structured_data: parsedStructured,
             status: rawStatus,
         });
 
@@ -432,13 +455,17 @@ export async function saveContentBlock(
         if (roleErr) return { ok: false, error: roleErr };
 
         const supabase = await createClient();
-        const payload = {
+        const payload: Record<string, unknown> = {
             key: parsed.data.key,
             title: parsed.data.title,
             block_type: parsed.data.block_type,
             content: parsed.data.content,
             status: parsed.data.status,
         };
+
+        if (parsed.data.structured_data !== undefined) {
+            payload.structured_data = parsed.data.structured_data;
+        }
 
         if (parsed.data.id) {
             const { data, error } = await supabase
@@ -460,14 +487,30 @@ export async function saveContentBlock(
             );
             if (affectedErr) return { ok: false, error: affectedErr };
         } else {
-            const { error } = await supabase
+            const { data: existing } = await supabase
                 .from("content_blocks")
-                .insert(payload)
-                .select("id, key");
-            if (error) {
+                .select("id")
+                .eq("key", parsed.data.key)
+                .maybeSingle();
+
+            let opError = null;
+            if (existing?.id) {
+                const { error } = await supabase
+                    .from("content_blocks")
+                    .update(payload)
+                    .eq("id", existing.id);
+                opError = error;
+            } else {
+                const { error } = await supabase
+                    .from("content_blocks")
+                    .insert(payload);
+                opError = error;
+            }
+
+            if (opError) {
                 return {
                     ok: false,
-                    error: formatDatabaseError(error, "content block"),
+                    error: formatDatabaseError(opError, "content block"),
                 };
             }
         }
@@ -1416,10 +1459,12 @@ export async function savePopupItem(
     try {
         const admin = await requireAdminRole(ADMIN_ROLES);
         const rawId = getStr(formData, "id");
+        // Ensure only valid UUIDs are passed as existing record IDs; synthetic/invalid IDs are treated as new insertions
+        const cleanId = rawId && z.string().uuid().safeParse(rawId).success ? rawId : undefined;
         const statusInput = getStr(formData, "status") || "draft";
 
         const parsed = PopupSchema.safeParse({
-            id: rawId || undefined,
+            id: cleanId,
             title: getStr(formData, "title"),
             description: getStr(formData, "description") || undefined,
             image_url: getStr(formData, "image_url") || undefined,
@@ -1499,7 +1544,28 @@ export async function savePopupItem(
 export async function deletePopupItem(id: string): Promise<CmsActionResult> {
     try {
         const admin = await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
-        const validId = z.string().uuid().parse(id);
+        const parsed = z
+            .string()
+            .uuid({ message: "Invalid popup ID. A valid UUID primary key is required." })
+            .safeParse(id);
+
+        if (!parsed.success) {
+            // Graceful handling if a legacy synthetic baseline identifier is passed from stale client state
+            if (id === "popup-graduation-2026" || id.startsWith("popup-baseline-")) {
+                revalidatePath("/admin/homepage");
+                revalidatePopupPublicPaths();
+                return {
+                    ok: true,
+                    message: "Baseline popup dismissed successfully.",
+                };
+            }
+            return {
+                ok: false,
+                error: parsed.error.issues[0]?.message || "Invalid popup identifier.",
+            };
+        }
+
+        const validId = parsed.data;
         const supabase = await createClient();
         const { data, error } = await supabase
             .from("popups")
@@ -1692,6 +1758,7 @@ const GalleryItemSchema = z.object({
     album_name: z.string().max(128).optional(),
     image_url: z.string().min(1, "Image URL or path is required.").max(2048),
     caption: z.string().max(1000).optional(),
+    sort_order: z.coerce.number().int().default(0),
     status: WorkflowStatusSchema,
 });
 
@@ -1710,6 +1777,7 @@ export async function saveGalleryItem(
             album_name: getStr(formData, "album_name") || undefined,
             image_url: getStr(formData, "image_url"),
             caption: getStr(formData, "caption") || undefined,
+            sort_order: getStr(formData, "sort_order") || "0",
             status: statusInput,
         });
 
@@ -1736,6 +1804,7 @@ export async function saveGalleryItem(
             album_name: parsed.data.album_name ?? null,
             image_url: parsed.data.image_url,
             caption: parsed.data.caption ?? null,
+            sort_order: parsed.data.sort_order,
             status: parsed.data.status,
         };
 
@@ -1772,6 +1841,7 @@ export async function saveGalleryItem(
         }
 
         revalidatePath("/admin/media");
+        revalidatePath("/admin/gallery");
         revalidateGalleryPublicPaths();
         return { ok: true, message: "Gallery item saved." };
     } catch (err) {
@@ -1804,8 +1874,448 @@ export async function deleteGalleryItem(id: string): Promise<CmsActionResult> {
         if (affectedErr) return { ok: false, error: affectedErr };
 
         revalidatePath("/admin/media");
+        revalidatePath("/admin/gallery");
         revalidateGalleryPublicPaths();
         return { ok: true, message: "Gallery item deleted." };
+    } catch (err) {
+        return { ok: false, error: mapActionError(err) };
+    }
+}
+
+const GalleryAlbumSchema = z.object({
+    id: z.string().optional(),
+    title: z.string().min(2, "Album title is required.").max(255),
+    slug: z
+        .string()
+        .min(2, "Slug must be at least 2 characters.")
+        .max(255)
+        .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must use lowercase letters, numbers, and hyphens."),
+    description: z.string().max(2000).optional(),
+    category: z.string().min(1).max(64),
+    event_date: z.string().max(32).optional(),
+    cover_image_url: z.string().max(2048).optional(),
+    sort_order: z.coerce.number().int().default(0),
+    status: WorkflowStatusSchema,
+    scheduled_for: z.string().optional(),
+});
+
+export async function saveGalleryAlbum(
+    formData: FormData
+): Promise<CmsActionResult> {
+    try {
+        const admin = await requireAdminRole(ADMIN_ROLES);
+        const rawId = getStr(formData, "id");
+        const statusInput = getStr(formData, "status") || "draft";
+        const rawScheduledFor = getStr(formData, "scheduled_for") || undefined;
+        if (statusInput === "scheduled" && !rawScheduledFor) {
+            return {
+                ok: false,
+                error: "Validation error: A scheduled date and time is required when status is scheduled.",
+            };
+        }
+
+        const rawTitle = getStr(formData, "title");
+        let rawSlug = getStr(formData, "slug");
+        if (!rawSlug && rawTitle) {
+            rawSlug = rawTitle
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/(^-|-$)+/g, "");
+        }
+
+        const parsed = GalleryAlbumSchema.safeParse({
+            id: rawId || undefined,
+            title: rawTitle,
+            slug: rawSlug,
+            description: getStr(formData, "description") || undefined,
+            category: getStr(formData, "category") || "College Events",
+            event_date: getStr(formData, "event_date") || undefined,
+            cover_image_url: getStr(formData, "cover_image_url") || undefined,
+            sort_order: getStr(formData, "sort_order") || "0",
+            status: statusInput,
+            scheduled_for: rawScheduledFor,
+        });
+
+        if (!parsed.success) {
+            return {
+                ok: false,
+                error:
+                    parsed.error.issues[0]?.message ||
+                    "Invalid gallery album data.",
+            };
+        }
+
+        const roleErr = await verifyWorkflowWriteRule(
+            admin,
+            !parsed.data.id,
+            parsed.data.status
+        );
+        if (roleErr) return { ok: false, error: roleErr };
+
+        const supabase = await createClient();
+
+        // Enforce Publisher restriction at application tier: Publishers may only change publication status
+        if (admin.role === "PUBLISHER" && parsed.data.id) {
+            const { data: existingAlbum } = await supabase
+                .from("gallery_albums")
+                .select("status, title, slug, description, category, event_date, cover_image_url, sort_order")
+                .eq("id", parsed.data.id)
+                .maybeSingle();
+
+            if (existingAlbum) {
+                const contentChanged =
+                    existingAlbum.title !== parsed.data.title ||
+                    existingAlbum.slug !== parsed.data.slug ||
+                    existingAlbum.category !== parsed.data.category ||
+                    (existingAlbum.description || "") !== (parsed.data.description || "") ||
+                    (existingAlbum.cover_image_url || "") !== (parsed.data.cover_image_url || "") ||
+                    (existingAlbum.event_date || "") !== (parsed.data.event_date || "") ||
+                    Number(existingAlbum.sort_order ?? 0) !== parsed.data.sort_order;
+
+                if (contentChanged) {
+                    return {
+                        ok: false,
+                        error: "Publisher accounts may only change publication status, not album content.",
+                    };
+                }
+
+                // Explicit Publisher transition matrix enforcement at application tier
+                if (existingAlbum.status && existingAlbum.status !== parsed.data.status) {
+                    const oldStatus = existingAlbum.status;
+                    const newStatus = parsed.data.status;
+                    const isPermitted =
+                        (oldStatus === "draft" && ["published", "scheduled", "archived"].includes(newStatus)) ||
+                        (oldStatus === "published" && ["archived", "draft"].includes(newStatus)) ||
+                        (oldStatus === "scheduled" && ["published", "draft", "archived"].includes(newStatus)) ||
+                        (oldStatus === "archived" && ["draft", "published"].includes(newStatus));
+
+                    if (!isPermitted) {
+                        return {
+                            ok: false,
+                            error: `Publisher cannot transition album from ${oldStatus} to ${newStatus}.`,
+                        };
+                    }
+                }
+            }
+        }
+
+        let savedSuccessfully = false;
+
+        // Try to save directly to `gallery_albums` if table exists
+        try {
+            const albumPayload = {
+                title: parsed.data.title,
+                slug: parsed.data.slug,
+                description: parsed.data.description ?? null,
+                category: parsed.data.category,
+                event_date: parsed.data.event_date ? parsed.data.event_date : null,
+                cover_image_url: parsed.data.cover_image_url ?? null,
+                sort_order: parsed.data.sort_order,
+                status: parsed.data.status,
+                scheduled_for: parsed.data.status === "scheduled" && parsed.data.scheduled_for ? parsed.data.scheduled_for : null,
+            };
+
+            if (parsed.data.id && !parsed.data.id.startsWith("gallery_album_")) {
+                const { error: albumErr } = await supabase
+                    .from("gallery_albums")
+                    .update(albumPayload)
+                    .eq("id", parsed.data.id);
+                if (!albumErr) {
+                    savedSuccessfully = true;
+                }
+            } else {
+                const { error: albumErr } = await supabase
+                    .from("gallery_albums")
+                    .insert(albumPayload);
+                if (!albumErr) {
+                    savedSuccessfully = true;
+                }
+            }
+        } catch {
+            savedSuccessfully = false;
+        }
+
+        // Fallback or mirror to content_blocks for instant reliability before migration
+        const blockKey = `gallery_album_${parsed.data.slug}`;
+        const blockPayload = {
+            key: blockKey,
+            title: parsed.data.title,
+            block_type: "json",
+            content: parsed.data.description || "",
+            structured_data: {
+                title: parsed.data.title,
+                slug: parsed.data.slug,
+                description: parsed.data.description || "",
+                category: parsed.data.category,
+                event_date: parsed.data.event_date || "",
+                cover_image_url: parsed.data.cover_image_url || "",
+                sort_order: parsed.data.sort_order,
+                status: parsed.data.status,
+            },
+            status: parsed.data.status,
+        };
+
+        const { error: blockErr } = await supabase
+            .from("content_blocks")
+            .upsert(blockPayload, { onConflict: "key" });
+
+        if (blockErr && !savedSuccessfully) {
+            return {
+                ok: false,
+                error: formatDatabaseError(blockErr, "gallery album"),
+            };
+        }
+
+        revalidatePath("/admin/media");
+        revalidatePath("/admin/gallery");
+        revalidateGalleryPublicPaths();
+        return { ok: true, message: "Album saved successfully." };
+    } catch (err) {
+        return { ok: false, error: mapActionError(err) };
+    }
+}
+
+export async function deleteGalleryAlbum(
+    idOrSlug: string,
+    albumTitle?: string
+): Promise<CmsActionResult> {
+    try {
+        await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
+        const supabase = await createClient();
+        const slug = idOrSlug.replace(/^gallery_album_/, "");
+
+        // 1. Delete from formal table if exists
+        try {
+            await supabase
+                .from("gallery_albums")
+                .delete()
+                .or(`id.eq.${idOrSlug},slug.eq.${slug}`);
+        } catch {
+            // Ignore if table does not exist
+        }
+
+        // 2. Delete from content_blocks
+        await supabase
+            .from("content_blocks")
+            .delete()
+            .or(`key.eq.${idOrSlug},key.eq.gallery_album_${slug}`);
+
+        // 3. Clear album_name association in photos if requested
+        if (albumTitle) {
+            await supabase
+                .from("gallery_items")
+                .update({ album_name: null })
+                .eq("album_name", albumTitle);
+        }
+
+        revalidatePath("/admin/media");
+        revalidatePath("/admin/gallery");
+        revalidateGalleryPublicPaths();
+        return { ok: true, message: "Album deleted successfully." };
+    } catch (err) {
+        return { ok: false, error: mapActionError(err) };
+    }
+}
+
+export interface BatchGalleryItemInput {
+    title: string;
+    category: string;
+    album_name?: string;
+    image_url: string;
+    caption?: string;
+    sort_order?: number;
+    status?: "draft" | "published" | "scheduled" | "archived";
+}
+
+export async function saveBatchGalleryItems(
+    items: BatchGalleryItemInput[]
+): Promise<CmsActionResult> {
+    try {
+        const admin = await requireAdminRole(ADMIN_ROLES);
+        if (!Array.isArray(items) || items.length === 0) {
+            return { ok: false, error: "No photo items provided for batch import." };
+        }
+
+        const validItems = items.map((item, idx) => ({
+            title: item.title?.trim() || `Campus Photo ${idx + 1}`,
+            category: item.category || "Campus",
+            album_name: item.album_name?.trim() || null,
+            image_url: item.image_url,
+            caption: item.caption?.trim() || null,
+            sort_order: typeof item.sort_order === "number" ? item.sort_order : idx + 1,
+            status: item.status || ("published" as const),
+        }));
+
+        for (const item of validItems) {
+            const roleErr = await verifyWorkflowWriteRule(
+                admin,
+                true,
+                item.status
+            );
+            if (roleErr) return { ok: false, error: roleErr };
+        }
+
+        const supabase = await createClient();
+        const { error } = await supabase.from("gallery_items").insert(validItems);
+
+        if (error) {
+            return {
+                ok: false,
+                error: formatDatabaseError(error, "batch gallery items"),
+            };
+        }
+
+        revalidatePath("/admin/media");
+        revalidatePath("/admin/gallery");
+        revalidateGalleryPublicPaths();
+        return {
+            ok: true,
+            message: `Successfully imported ${validItems.length} photos into gallery.`,
+        };
+    } catch (err) {
+        return { ok: false, error: mapActionError(err) };
+    }
+}
+
+// ----------------------------------------------------------------------------
+// 9b. RECRUITERS & PLACEMENT PARTNERS (`public.recruiters`)
+// ----------------------------------------------------------------------------
+
+const RecruiterSchema = z.object({
+    id: z.string().uuid().optional(),
+    company_name: z.string().min(2, "Company name is required.").max(255),
+    tier: z.string().max(50).optional(),
+    logo_url: z.string().max(2048).optional(),
+    website_url: z.string().max(2048).optional(),
+    display_order: z.coerce.number().int().min(0).default(0),
+    is_active: z.boolean().default(true),
+    status: WorkflowStatusSchema,
+});
+
+function revalidateRecruiterPublicPaths() {
+    revalidatePath("/admin/recruiters");
+    revalidatePath("/placements");
+    revalidatePath("/placements/recruiters");
+    revalidatePath("/");
+}
+
+export async function saveRecruiterItem(
+    formData: FormData
+): Promise<CmsActionResult> {
+    try {
+        const admin = await requireAdminRole(ADMIN_ROLES);
+        const rawId = getStr(formData, "id");
+        const companyName = getStr(formData, "company_name");
+        const statusInput = getStr(formData, "status") || "published";
+
+        const parsed = RecruiterSchema.safeParse({
+            id: rawId || undefined,
+            company_name: companyName,
+            tier: getStr(formData, "tier") || "Tier 1",
+            logo_url: getStr(formData, "logo_url") || undefined,
+            website_url: getStr(formData, "website_url") || undefined,
+            display_order: formData.has("display_order")
+                ? Number(formData.get("display_order"))
+                : 0,
+            is_active: formData.has("is_active")
+                ? getBool(formData, "is_active")
+                : true,
+            status: statusInput,
+        });
+
+        if (!parsed.success) {
+            return {
+                ok: false,
+                error:
+                    parsed.error.issues[0]?.message ||
+                    "Invalid recruiter data.",
+            };
+        }
+
+        const roleErr = await verifyWorkflowWriteRule(
+            admin,
+            !parsed.data.id,
+            parsed.data.status
+        );
+        if (roleErr) return { ok: false, error: roleErr };
+
+        const supabase = await createClient();
+        const payload = {
+            company_name: parsed.data.company_name,
+            tier: parsed.data.tier ?? null,
+            logo_url: parsed.data.logo_url ?? null,
+            website_url: parsed.data.website_url ?? null,
+            display_order: parsed.data.display_order,
+            is_active: parsed.data.is_active,
+            status: parsed.data.status,
+            updated_at: new Date().toISOString(),
+        };
+
+        if (parsed.data.id) {
+            const { data, error } = await supabase
+                .from("recruiters")
+                .update(payload)
+                .eq("id", parsed.data.id)
+                .select("id");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "recruiter"),
+                };
+            }
+            const affectedErr = verifyAffectedRows(
+                data,
+                admin,
+                "update",
+                "recruiter"
+            );
+            if (affectedErr) return { ok: false, error: affectedErr };
+        } else {
+            const { error } = await supabase
+                .from("recruiters")
+                .insert(payload)
+                .select("id");
+            if (error) {
+                return {
+                    ok: false,
+                    error: formatDatabaseError(error, "recruiter"),
+                };
+            }
+        }
+
+        revalidateRecruiterPublicPaths();
+        return { ok: true, message: "Recruiter saved." };
+    } catch (err) {
+        return { ok: false, error: mapActionError(err) };
+    }
+}
+
+export async function deleteRecruiterItem(id: string): Promise<CmsActionResult> {
+    try {
+        const admin = await requireAdminRole(["SUPER_ADMIN", "ADMIN"]);
+        const validId = z.string().uuid().parse(id);
+        const supabase = await createClient();
+        const { data, error } = await supabase
+            .from("recruiters")
+            .delete()
+            .eq("id", validId)
+            .select("id");
+        if (error) {
+            return {
+                ok: false,
+                error: formatDatabaseError(error, "recruiter"),
+            };
+        }
+        const affectedErr = verifyAffectedRows(
+            data,
+            admin,
+            "delete",
+            "recruiter"
+        );
+        if (affectedErr) return { ok: false, error: affectedErr };
+
+        revalidateRecruiterPublicPaths();
+        return { ok: true, message: "Recruiter deleted." };
     } catch (err) {
         return { ok: false, error: mapActionError(err) };
     }

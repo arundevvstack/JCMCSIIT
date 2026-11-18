@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <ContentLayout title="Service Rules">
+    <ContentLayout title="Service Rules" routePath="/about/college/service-rules">
       <p className="text-slate-500 italic">Content under update.</p>
     </ContentLayout>
   );

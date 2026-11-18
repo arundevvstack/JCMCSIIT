@@ -38,7 +38,35 @@ const societies: Society[] = [
   },
 ];
 
-export function IeeeBranchView() {
+interface IeeeBranchViewProps {
+  title?: string;
+  subtitle?: string | null;
+  summary?: string | null;
+  content?: string | null;
+  societiesBlock?: {
+    structured_data?: Record<string, unknown>;
+  } | null;
+}
+
+export function IeeeBranchView({ title, subtitle, summary, content, societiesBlock }: IeeeBranchViewProps) {
+  const rawSocieties = Array.isArray(societiesBlock?.structured_data?.societies)
+    ? (societiesBlock.structured_data.societies as Array<{ code?: string; name?: string; description?: string; focus?: string[]; color?: string }>)
+    : null;
+
+  const activeSocieties = rawSocieties && rawSocieties.length > 0
+    ? rawSocieties.map((s, idx) => {
+        const icons = [Cpu, Bot, Users];
+        const colors = ['emerald', 'blue', 'violet'];
+        return {
+          code: s.code || `Chapter ${idx + 1}`,
+          name: s.name || '',
+          description: s.description || '',
+          focus: Array.isArray(s.focus) ? s.focus : [],
+          icon: icons[idx % icons.length],
+          color: s.color || colors[idx % colors.length],
+        };
+      })
+    : societies;
   return (
     <main className="min-h-screen pt-32 pb-24 bg-slate-50">
       <div className="container px-4 md:px-8 mx-auto max-w-6xl">
@@ -57,11 +85,20 @@ export function IeeeBranchView() {
             <Globe className="w-4 h-4" /> IEEE Student Branch – JCMCSIIT
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-6">
-            Advancing Technology for <span className="text-blue-600">Humanity</span>
+            {title || (
+              <>Advancing Technology for <span className="text-blue-600">Humanity</span></>
+            )}
           </h1>
           <p className="text-slate-600 text-base md:text-lg leading-relaxed">
-            The IEEE Student Branch at John Cox Memorial CSI Institute of Technology (JCMCSIIT) serves as a vibrant platform for budding engineers to nurture innovation, technical proficiency, professional ethics, and leadership skills.
+            {summary || subtitle || (
+              'The IEEE Student Branch at John Cox Memorial CSI Institute of Technology (JCMCSIIT) serves as a vibrant platform for budding engineers to nurture innovation, technical proficiency, professional ethics, and leadership skills.'
+            )}
           </p>
+          {content && (
+            <div className="mt-6 text-left p-6 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-slate-700 whitespace-pre-line text-sm leading-relaxed">
+              {content}
+            </div>
+          )}
         </div>
 
         {/* Societies under Student Branch */}
@@ -74,7 +111,7 @@ export function IeeeBranchView() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {societies.map((soc, idx) => {
+            {activeSocieties.map((soc, idx) => {
               const Icon = soc.icon;
               const colorClasses: Record<string, { badge: string; iconBg: string; border: string }> = {
                 emerald: { badge: 'bg-emerald-50 text-emerald-700 border-emerald-200', iconBg: 'bg-emerald-100 text-emerald-700', border: 'hover:border-emerald-300' },

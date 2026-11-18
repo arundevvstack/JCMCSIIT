@@ -8,8 +8,26 @@ import {
     resolvePrincipalImageSrc,
 } from "@/data/principal-message";
 
-export function PrincipalMessagePreview() {
-    const content = OFFICIAL_PRINCIPAL_MESSAGE;
+export interface PrincipalMessagePreviewProps {
+    block?: {
+        title?: string;
+        content?: string;
+        structured_data?: Record<string, unknown>;
+    } | null;
+}
+
+export function PrincipalMessagePreview({ block }: PrincipalMessagePreviewProps = {}) {
+    const baseContent = OFFICIAL_PRINCIPAL_MESSAGE;
+    const content = {
+        heading: block?.title || baseContent.heading,
+        openingQuote: (block?.structured_data?.opening_quote as string) || baseContent.openingQuote,
+        paragraph: block?.content || baseContent.paragraphs[0],
+        principalName: (block?.structured_data?.principal_name as string) || baseContent.principalName,
+        designation: (block?.structured_data?.designation as string) || baseContent.designation,
+        institutionName: (block?.structured_data?.institution_name as string) || baseContent.institutionName,
+        imagePath: (block?.structured_data?.image_url as string) || baseContent.imagePath,
+        imageAlt: (block?.structured_data?.image_alt as string) || baseContent.imageAlt,
+    };
 
     return (
         <section className="relative w-full py-20 md:py-28 bg-slate-50/70 border-t border-slate-200/70 overflow-hidden">
@@ -54,7 +72,7 @@ export function PrincipalMessagePreview() {
                             </div>
 
                             <p className="text-slate-600 text-base leading-relaxed line-clamp-3">
-                                {content.paragraphs[0]}
+                                {content.paragraph}
                             </p>
 
                             <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-t border-slate-100">
