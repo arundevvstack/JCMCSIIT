@@ -2,8 +2,19 @@
 
 import { ParallaxImage } from "@/components/ui/parallax-image";
 import { motion } from "framer-motion";
+import type { PublicGalleryItem } from "@/lib/cms/gallery";
 
-const galleryImages = [
+interface JitCampusGalleryProps {
+  gallery?: PublicGalleryItem[] | null;
+}
+
+type GalleryImage = {
+  id: string | number;
+  src: string;
+  alt: string;
+};
+
+const galleryImages: GalleryImage[] = [
   { id: 1, src: "/images/about/campus-1.jpg", alt: "JIT Campus Main Building" },
   { id: 2, src: "/images/about/campus-2.jpg", alt: "JIT Campus Academic Block" },
   { id: 3, src: "/images/about/campus-3.jpg", alt: "JIT Campus Corridors" },
@@ -14,7 +25,24 @@ const galleryImages = [
   { id: 8, src: "/campus/cl_student_life_1779730901783.png", alt: "JIT Campus Student Life" },
 ];
 
-export function JitCampusGallery() {
+export function JitCampusGallery({ gallery }: JitCampusGalleryProps) {
+  const mappedCms: GalleryImage[] = (gallery || []).map((img, idx) => ({
+    id: img.id || `cms-${idx}`,
+    src: img.image_url,
+    alt: img.caption || img.title || "JIT Campus",
+  }));
+
+  const displayImages: GalleryImage[] = [...mappedCms];
+  if (displayImages.length === 0) {
+    displayImages.push(...galleryImages);
+  } else if (displayImages.length < 8) {
+    for (let i = displayImages.length; i < 8; i++) {
+      if (galleryImages[i]) {
+        displayImages.push(galleryImages[i]);
+      }
+    }
+  }
+
   return (
     <section className="py-24 bg-white border-t border-slate-100">
       <div className="container mx-auto px-4 md:px-8 max-w-7xl">
@@ -25,7 +53,7 @@ export function JitCampusGallery() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-          {galleryImages.map((img, index) => (
+          {displayImages.slice(0, 8).map((img, index) => (
             <motion.div
               key={img.id}
               initial={{ opacity: 0, y: 20 }}

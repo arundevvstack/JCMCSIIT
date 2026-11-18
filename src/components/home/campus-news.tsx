@@ -2,9 +2,30 @@
 
 import { ParallaxImage } from "@/components/ui/parallax-image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import type { PublicNewsItem } from "@/lib/cms/news";
 
-const newsItems = [
+interface CampusNewsProps {
+  news?: PublicNewsItem[] | null;
+}
+
+type NewsItem = {
+  id: string | number;
+  title: string;
+  category: string;
+  image: string;
+  isLarge: boolean;
+  link?: string;
+};
+
+const defaultImages = [
+  "/courses/aiml_course_1779729860073.png",
+  "/courses/ece_course_1779729905116.png",
+  "/courses/cse_course_1779729874773.png",
+  "https://www.jcmcsiit.ac.in/img/01.jpg",
+  "/courses/bmre_course_1779729888838.png",
+];
+
+const newsItems: NewsItem[] = [
   {
     id: "admission",
     title: "Schedule of B.Tech Admission 2026",
@@ -57,7 +78,30 @@ const newsItems = [
   },
 ];
 
-export function CampusNews() {
+export function CampusNews({ news }: CampusNewsProps) {
+  // Map dynamic CMS news items if available
+  const mappedCms: NewsItem[] = (news || []).map((item, idx) => ({
+    id: item.id,
+    title: item.title,
+    category: item.category ? item.category.toUpperCase() : "CAMPUS NEWS",
+    image: item.featured_image_url || defaultImages[idx % defaultImages.length],
+    isLarge: idx === 0,
+    link: `/news-events/news/${item.slug}`,
+  }));
+
+  // Combine with fallback items to preserve full grid layout
+  const items: NewsItem[] = [...mappedCms];
+  if (items.length === 0) {
+    items.push(...newsItems);
+  } else {
+    for (const fallback of newsItems) {
+      if (items.length >= 6) break;
+      if (!items.some((it) => it.title.toLowerCase() === fallback.title.toLowerCase())) {
+        items.push(fallback);
+      }
+    }
+  }
+
   return (
     <section className="py-24 bg-slate-50 border-t border-slate-100">
       <div className="container mx-auto px-4 md:px-8 max-w-7xl">
@@ -72,14 +116,14 @@ export function CampusNews() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {/* Top Row */}
-          <NewsCard item={newsItems[0]} className="md:col-span-2" />
-          <NewsCard item={newsItems[1]} />
-          <NewsCard item={newsItems[2]} />
+          <NewsCard item={items[0]} className="md:col-span-2" />
+          <NewsCard item={items[1]} />
+          <NewsCard item={items[2]} />
 
           {/* Bottom Row */}
-          <NewsCard item={newsItems[3]} />
-          <NewsCard item={newsItems[4]} />
-          <NewsCard item={newsItems[6] || newsItems[5]} className="md:col-span-2" />
+          <NewsCard item={items[3]} />
+          <NewsCard item={items[4]} />
+          <NewsCard item={items[5] || items[4]} className="md:col-span-2" />
         </div>
 
         <div className="flex justify-center">
@@ -95,9 +139,11 @@ export function CampusNews() {
   );
 }
 
-function NewsCard({ item, className = "" }: { item: any; className?: string }) {
+function NewsCard({ item, className = "" }: { item?: NewsItem; className?: string }) {
+  if (!item) return null;
   const href = item.link || `/news/${item.id}`;
   const target = item.link?.endsWith('.pdf') ? "_blank" : undefined;
+
 
   if (item.isLarge) {
     return (

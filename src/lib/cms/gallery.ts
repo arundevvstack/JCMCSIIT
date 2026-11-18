@@ -134,21 +134,42 @@ export const BASELINE_GALLERY_ITEMS: PublicGalleryItem[] = [
     },
 ];
 
+export type GalleryQueryOptions = {
+    category?: string;
+    limit?: number;
+};
+
 /**
- * Fetches gallery items from `public.gallery_items`, optionally filtered by category.
+ * Fetches gallery items from `public.gallery_items`, optionally filtered by category or limited in count.
  */
 export const getPublicGalleryItems = cache(
-    async (category?: string): Promise<PublicGalleryItem[]> => {
+    async (
+        categoryOrOptions?: string | GalleryQueryOptions,
+        options?: { limit?: number }
+    ): Promise<PublicGalleryItem[]> => {
+        const category =
+            typeof categoryOrOptions === "string"
+                ? categoryOrOptions
+                : categoryOrOptions?.category;
+        const limit =
+            typeof categoryOrOptions === "object"
+                ? categoryOrOptions?.limit
+                : options?.limit;
+
+        let items: PublicGalleryItem[] = [];
+
         if (
             !process.env.NEXT_PUBLIC_SUPABASE_URL ||
             !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
         ) {
             if (category && category !== "All") {
-                return BASELINE_GALLERY_ITEMS.filter(
+                items = BASELINE_GALLERY_ITEMS.filter(
                     (item) => item.category.toLowerCase() === category.toLowerCase()
                 );
+            } else {
+                items = BASELINE_GALLERY_ITEMS;
             }
-            return BASELINE_GALLERY_ITEMS;
+            return limit && limit > 0 ? items.slice(0, limit) : items;
         }
 
         try {
@@ -164,18 +185,24 @@ export const getPublicGalleryItems = cache(
                 query = query.ilike("category", category);
             }
 
+            if (limit && limit > 0) {
+                query = query.limit(limit);
+            }
+
             const { data, error } = await query;
 
             if (error || !Array.isArray(data) || data.length === 0) {
                 if (category && category !== "All") {
-                    return BASELINE_GALLERY_ITEMS.filter(
+                    items = BASELINE_GALLERY_ITEMS.filter(
                         (item) => item.category.toLowerCase() === category.toLowerCase()
                     );
+                } else {
+                    items = BASELINE_GALLERY_ITEMS;
                 }
-                return BASELINE_GALLERY_ITEMS;
+                return limit && limit > 0 ? items.slice(0, limit) : items;
             }
 
-            return data.map((item) => ({
+            items = data.map((item) => ({
                 id: item.id,
                 title: item.title,
                 caption: item.caption,
@@ -185,8 +212,17 @@ export const getPublicGalleryItems = cache(
                 sort_order: item.sort_order || 0,
                 status: item.status,
             }));
+
+            return limit && limit > 0 ? items.slice(0, limit) : items;
         } catch {
-            return BASELINE_GALLERY_ITEMS;
+            if (category && category !== "All") {
+                items = BASELINE_GALLERY_ITEMS.filter(
+                    (item) => item.category.toLowerCase() === category.toLowerCase()
+                );
+            } else {
+                items = BASELINE_GALLERY_ITEMS;
+            }
+            return limit && limit > 0 ? items.slice(0, limit) : items;
         }
     }
 );

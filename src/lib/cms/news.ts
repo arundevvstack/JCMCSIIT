@@ -171,3 +171,16 @@ export const getPublicNewsBySlug = cache(
         };
     }
 );
+
+/**
+ * Resolves a list of public news items, optionally limited to `limit` items.
+ */
+export const getPublicNews = cache(
+    async (options?: { limit?: number }): Promise<PublicNewsItem[]> => {
+        const items = await getPublicNewsList();
+        if (options?.limit && options.limit > 0) {
+            return items.slice(0, options.limit);
+        }
+        return items;
+    }
+);

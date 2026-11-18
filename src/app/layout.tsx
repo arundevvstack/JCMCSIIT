@@ -4,7 +4,7 @@ import "./globals.css";
 import { SmartFooter } from "@/components/layout/smart-footer";
 import { SchemaOrg } from "@/components/schema-org";
 import { RootRouteShell } from "@/components/layout/root-route-shell";
-import { getTickerItems } from "@/lib/cms/navigation";
+import { getTickerItems, getNavigationItems } from "@/lib/cms/navigation";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -37,7 +37,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const tickerItems = await getTickerItems();
+  const [tickerItems, navItems] = await Promise.all([
+    getTickerItems().catch(() => []),
+    getNavigationItems("navbar").catch(() => []),
+  ]);
 
   return (
     <html
@@ -51,7 +54,11 @@ export default async function RootLayout({
         <SchemaOrg />
       </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col font-sans">
-        <RootRouteShell tickerItems={tickerItems} footer={<SmartFooter />}>
+        <RootRouteShell
+          tickerItems={tickerItems}
+          navItems={navItems}
+          footer={<SmartFooter />}
+        >
           {children}
         </RootRouteShell>
       </body>

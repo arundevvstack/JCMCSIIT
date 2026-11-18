@@ -4,11 +4,13 @@ import { useSelectedLayoutSegment } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
 import { NewsTicker } from "@/components/layout/news-ticker";
 import { GraduationPopup } from "@/components/layout/graduation-popup";
+import type { NavItem } from "@/lib/cms/navigation";
 
 interface RootRouteShellProps {
     children: React.ReactNode;
     footer: React.ReactNode;
     tickerItems?: { title: string; href: string }[];
+    navItems?: NavItem[];
 }
 
 /**
@@ -16,7 +18,7 @@ interface RootRouteShellProps {
  * (`NewsTicker`, `Navbar`, `SmartFooter`, `GraduationPopup`, and `pt-20`)
  * without moving or renaming any existing public route files.
  */
-export function RootRouteShell({ children, footer, tickerItems }: RootRouteShellProps) {
+export function RootRouteShell({ children, footer, tickerItems, navItems }: RootRouteShellProps) {
     const segment = useSelectedLayoutSegment();
 
     if (segment === "admin") {
@@ -30,7 +32,7 @@ export function RootRouteShell({ children, footer, tickerItems }: RootRouteShell
     return (
         <div className="flex-1 flex flex-col pt-20">
             <NewsTicker items={tickerItems} />
-            <Navbar />
+            <Navbar navItems={navItems} />
             <div className="flex-1">{children}</div>
             {footer}
             <GraduationPopup />

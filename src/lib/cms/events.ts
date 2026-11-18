@@ -155,3 +155,16 @@ export const getPublicEventBySlug = cache(
         };
     }
 );
+
+/**
+ * Resolves a list of public events, optionally limited to `limit` items.
+ */
+export const getPublicEvents = cache(
+    async (options?: { limit?: number }): Promise<PublicEventItem[]> => {
+        const items = await getPublicEventsList();
+        if (options?.limit && options.limit > 0) {
+            return items.slice(0, options.limit);
+        }
+        return items;
+    }
+);

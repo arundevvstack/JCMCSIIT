@@ -6,14 +6,15 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown, ChevronRight, Phone, Mail } from "lucide-react";
 import { motion } from "framer-motion";
+import type { NavItem } from "@/lib/cms/navigation";
 
-type NavLink = {
+export type NavLink = {
   label: string;
   href?: string;
   children?: NavLink[];
 };
 
-const navLinks: NavLink[] = [
+export const DEFAULT_NAV_LINKS: NavLink[] = [
   { label: "Home", href: "/" },
   {
     label: "About",
@@ -29,6 +30,7 @@ const navLinks: NavLink[] = [
       { label: "Anti-Ragging", href: "/about/anti-ragging" },
     ],
   },
+
   {
     label: "Academics",
     children: [
@@ -132,7 +134,83 @@ const navLinks: NavLink[] = [
   { label: "Contact", href: "/contact" },
 ];
 
-export function Navbar() {
+export function buildNavTree(items?: NavItem[] | null): NavLink[] {
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    return [];
+  }
+
+  const activeItems = items.filter(
+    (item) =>
+      item.is_visible !== false &&
+      item.status !== "draft" &&
+      item.status !== "archived" &&
+      (item.menu_location === "navbar" || !item.menu_location)
+  );
+
+  if (activeItems.length === 0) {
+    return [];
+  }
+
+  const map = new Map<string, NavLink & { id: string; parent_id?: string | null; sort_order: number }>();
+
+  for (const item of activeItems) {
+    map.set(item.id, {
+      id: item.id,
+      parent_id: item.parent_id,
+      label: item.label,
+      href: item.href || undefined,
+      sort_order: item.sort_order ?? 0,
+      children: [],
+    });
+  }
+
+  const roots: (NavLink & { id: string; parent_id?: string | null; sort_order: number })[] = [];
+
+  for (const node of map.values()) {
+    if (node.parent_id && map.has(node.parent_id)) {
+      const parent = map.get(node.parent_id)!;
+      if (!parent.children) parent.children = [];
+      parent.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  }
+
+  function sortNodes(list: (NavLink & { sort_order?: number })[]) {
+    list.sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+    for (const item of list) {
+      if (item.children && item.children.length > 0) {
+        sortNodes(item.children as (NavLink & { sort_order?: number })[]);
+      } else {
+        delete item.children;
+      }
+    }
+  }
+
+  sortNodes(roots);
+
+  function cleanNode(node: NavLink): NavLink {
+    const cleaned: NavLink = {
+      label: node.label,
+      href: node.href,
+    };
+    if (node.children && node.children.length > 0) {
+      cleaned.children = node.children.map(cleanNode);
+    }
+    return cleaned;
+  }
+
+  return roots.map(cleanNode);
+}
+
+interface NavbarProps {
+  navItems?: NavItem[] | null;
+}
+
+export function Navbar({ navItems }: NavbarProps = {}) {
+  const dynamicLinks = buildNavTree(navItems);
+  const activeNavLinks = dynamicLinks.length >= 3 ? dynamicLinks : DEFAULT_NAV_LINKS;
+
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -262,7 +340,7 @@ export function Navbar() {
           </div>
 
           <nav className="hidden xl:flex flex-wrap items-center justify-end gap-x-1 gap-y-2 flex-1 ml-4">
-            {navLinks.map((item) =>
+            {activeNavLinks.map((item) =>
               item.children ? (
                 <div
                   key={item.label}
@@ -364,7 +442,7 @@ export function Navbar() {
 
       {mobileMenuOpen && (
         <div className="absolute top-full left-0 w-full bg-white border-b border-slate-200 shadow-xl py-4 px-6 flex flex-col gap-1 xl:hidden max-h-[80vh] overflow-y-auto">
-          {renderMobileLinks(navLinks)}
+          {renderMobileLinks(activeNavLinks)}
           <Link
             href="https://forms.gle/NjqqxdBqvoa9Q7WU9"
             target="_blank" rel="noopener noreferrer"

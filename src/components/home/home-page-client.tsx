@@ -16,6 +16,9 @@ import { DiplomaProgrammes } from "@/components/home/diploma-programmes";
 import { PrincipalMessagePreview } from "@/components/home/principal-message-preview";
 import { HomeHero } from "@/components/home/home-hero";
 import type { HomepageHeroSetting } from "@/lib/cms/site-settings";
+import type { PublicNewsItem } from "@/lib/cms/news";
+import type { PublicEventItem } from "@/lib/cms/events";
+import type { PublicGalleryItem } from "@/lib/cms/gallery";
 
 const SectionAnimate = ({ children }: { children: React.ReactNode }) => (
   <motion.div
@@ -28,7 +31,14 @@ const SectionAnimate = ({ children }: { children: React.ReactNode }) => (
   </motion.div>
 );
 
-export function HomePageClient({ hero }: { hero?: HomepageHeroSetting | null }) {
+interface HomePageClientProps {
+  hero?: HomepageHeroSetting | null;
+  news?: PublicNewsItem[] | null;
+  events?: PublicEventItem[] | null;
+  gallery?: PublicGalleryItem[] | null;
+}
+
+export function HomePageClient({ hero, news, events, gallery }: HomePageClientProps) {
   return (
     <div className="-mt-20 relative bg-white selection:bg-primary/20">
       <FloatingActionButtons />
@@ -54,10 +64,10 @@ export function HomePageClient({ hero }: { hero?: HomepageHeroSetting | null }) 
       <SectionAnimate><CampusLifeGrid /></SectionAnimate>
 
       {/* News & Institutional Updates */}
-      <SectionAnimate><CampusNews /></SectionAnimate>
+      <SectionAnimate><CampusNews news={news} /></SectionAnimate>
 
       {/* Upcoming Campus Events */}
-      <SectionAnimate><UpcomingEvents /></SectionAnimate>
+      <SectionAnimate><UpcomingEvents events={events} /></SectionAnimate>
 
       {/* Research & Innovation Highlights */}
       <SectionAnimate><FeaturedResearch /></SectionAnimate>
@@ -69,7 +79,7 @@ export function HomePageClient({ hero }: { hero?: HomepageHeroSetting | null }) 
       <SectionAnimate><Scholarships /></SectionAnimate>
 
       {/* Campus Life Visual Gallery */}
-      <SectionAnimate><JitCampusGallery /></SectionAnimate>
+      <SectionAnimate><JitCampusGallery gallery={gallery} /></SectionAnimate>
     </div>
   );
 }

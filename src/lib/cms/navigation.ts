@@ -12,6 +12,8 @@ export interface NavItem {
     sort_order: number;
     open_in_new_tab?: boolean;
     badge_text?: string | null;
+    is_visible?: boolean;
+    status?: string;
     children?: NavItem[];
 }
 

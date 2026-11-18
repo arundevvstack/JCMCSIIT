@@ -3,10 +3,27 @@
 import { ParallaxImage } from "@/components/ui/parallax-image";
 import Link from "next/link";
 import { GRADUATION_EVENT, GRADUATION_EVENT_PATH } from "@/lib/graduation-event";
+import type { PublicEventItem } from "@/lib/cms/events";
 
-const eventsData = [
+interface UpcomingEventsProps {
+  events?: PublicEventItem[] | null;
+}
+
+type EventCardItem = {
+  id: string;
+  title: string;
+  category: string;
+  image: string;
+  month: string;
+  day: string;
+  time: string;
+  contain?: boolean;
+  links?: { text: string; url: string }[];
+};
+
+const eventsData: EventCardItem[] = [
   {
-    id: 0,
+    id: "grad-0",
     title: GRADUATION_EVENT.title,
     category: GRADUATION_EVENT.category,
     image: GRADUATION_EVENT.poster,
@@ -20,7 +37,7 @@ const eventsData = [
     ],
   },
   {
-    id: 1,
+    id: "event-1",
     title: "Poster Design Competition: Future Powered by Signal Processing",
     category: "COMPETITION",
     image: "/events/The IEEE SPS SBC JCMCSIIT.jpeg",
@@ -33,7 +50,7 @@ const eventsData = [
     ]
   },
   {
-    id: 2,
+    id: "event-2",
     title: "Green Energy Solutions: Building a Sustainable World",
     category: "SEMINAR",
     image: "/events/Green Energy.jpeg",
@@ -42,7 +59,7 @@ const eventsData = [
     time: "Upcoming",
   },
   {
-    id: 3,
+    id: "event-3",
     title: "B.Tech Admissions Open 2026",
     category: "ADMISSION",
     image: "/events/betech.jpeg",
@@ -52,7 +69,52 @@ const eventsData = [
   }
 ];
 
-export function UpcomingEvents() {
+function parseDateText(dateText?: string | null) {
+  if (!dateText) return { month: "TBA", day: "TBA" };
+  const parts = dateText.trim().split(/[\s,]+/);
+  if (parts.length >= 2) {
+    const month = parts[0].substring(0, 3).toUpperCase();
+    const day = parts[1].replace(/[^0-9]/g, "");
+    return { month: month || "TBA", day: day || "TBA" };
+  }
+  return { month: "TBA", day: "TBA" };
+}
+
+export function UpcomingEvents({ events }: UpcomingEventsProps) {
+  const mappedCms: EventCardItem[] = (events || []).map((ev) => {
+    const { month, day } = parseDateText(ev.display_date_text);
+    const isGraduation = ev.slug === GRADUATION_EVENT.slug || ev.poster_url === GRADUATION_EVENT.poster;
+    const links: { text: string; url: string }[] = [];
+    if (ev.registration_url) {
+      links.push({ text: "Register Now", url: ev.registration_url });
+    }
+    links.push({ text: "Event Details", url: `/news-events/events/${ev.slug}` });
+
+    return {
+      id: ev.id || ev.slug,
+      title: ev.title,
+      category: ev.category ? ev.category.toUpperCase() : "EVENT",
+      image: ev.poster_url || "/events/The IEEE SPS SBC JCMCSIIT.jpeg",
+      month,
+      day,
+      time: `${ev.display_date_text}${ev.display_time_text ? ` · ${ev.display_time_text}` : ""}${ev.location ? ` · ${ev.location}` : ""}`,
+      contain: isGraduation,
+      links,
+    };
+  });
+
+  const displayEvents: EventCardItem[] = [...mappedCms];
+  if (displayEvents.length === 0) {
+    displayEvents.push(...eventsData);
+  } else {
+    for (const fallback of eventsData) {
+      if (displayEvents.length >= 3) break;
+      if (!displayEvents.some((it) => it.title.toLowerCase() === fallback.title.toLowerCase())) {
+        displayEvents.push(fallback);
+      }
+    }
+  }
+
   return (
     <section className="py-24 bg-slate-50 relative z-20 border-t border-slate-100">
       <div className="container mx-auto px-4 md:px-8 max-w-7xl">
@@ -63,7 +125,7 @@ export function UpcomingEvents() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          {eventsData.map((event) => (
+          {displayEvents.map((event) => (
             <div key={event.id} className="group flex flex-col bg-white shadow-sm hover:shadow-lg transition-all duration-300 h-full border border-slate-100 relative">
               <Link href={event.links ? event.links[0].url : "/news-events/events"} className="relative w-full aspect-[4/5] overflow-hidden bg-slate-200 block">
                 {event.contain ? (
