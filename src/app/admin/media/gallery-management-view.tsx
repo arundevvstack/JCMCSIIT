@@ -4,7 +4,6 @@ import { useState, useMemo } from "react";
 import Image from "next/image";
 import {
     Folder,
-    FolderPlus,
     Upload,
     Plus,
     Search,
@@ -24,7 +23,6 @@ import {
 } from "@/types/gallery";
 import { saveGalleryItem, deleteGalleryItem } from "@/actions/cms";
 import { BatchPhotoUploader } from "@/components/admin/batch-photo-uploader";
-import { AlbumEditorModal } from "@/components/admin/album-editor-modal";
 import { useRouter } from "next/navigation";
 
 interface GalleryManagementViewProps {
@@ -36,16 +34,12 @@ interface GalleryManagementViewProps {
 export function GalleryManagementView({
     initialItems,
     initialAlbums,
-    role,
+    role: _role,
 }: GalleryManagementViewProps) {
     const router = useRouter();
 
     // Modals
     const [isBatchUploaderOpen, setIsBatchUploaderOpen] = useState(false);
-    const [isAlbumModalOpen, setIsAlbumModalOpen] = useState(false);
-    const [editingAlbum, setEditingAlbum] = useState<PublicGalleryAlbum | null>(
-        null
-    );
 
     // Single Photo Edit/Add Modal
     const [editingPhoto, setEditingPhoto] = useState<PublicGalleryItem | null>(
@@ -263,17 +257,6 @@ export function GalleryManagementView({
                     {/* Action Buttons */}
                     <div className="flex items-center gap-2 ml-auto">
                         <button
-                            onClick={() => {
-                                setEditingAlbum(null);
-                                setIsAlbumModalOpen(true);
-                            }}
-                            className="h-10 px-3.5 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-200 transition-colors flex items-center gap-1.5"
-                        >
-                            <FolderPlus className="w-3.5 h-3.5 text-[#E5C158]" />
-                            <span>New Album</span>
-                        </button>
-
-                        <button
                             onClick={() => setIsBatchUploaderOpen(true)}
                             className="h-10 px-4 rounded-xl text-xs font-bold bg-[#D4AF37] hover:bg-[#E5C158] text-black transition-colors flex items-center gap-2 shadow-lg shadow-[#D4AF37]/10"
                         >
@@ -359,15 +342,6 @@ export function GalleryManagementView({
                         <div className="p-8 text-center rounded-2xl bg-black/20 border border-white/5 text-zinc-400 text-xs">
                             <Folder className="w-8 h-8 text-zinc-600 mx-auto mb-2" />
                             <p>No albums matching the active filters.</p>
-                            <button
-                                onClick={() => {
-                                    setEditingAlbum(null);
-                                    setIsAlbumModalOpen(true);
-                                }}
-                                className="mt-3 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-zinc-200 transition-colors"
-                            >
-                                Create First Album
-                            </button>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -448,17 +422,6 @@ export function GalleryManagementView({
                                             >
                                                 <Eye className="w-3.5 h-3.5" />
                                                 View Photos
-                                            </button>
-
-                                            <button
-                                                onClick={() => {
-                                                    setEditingAlbum(album);
-                                                    setIsAlbumModalOpen(true);
-                                                }}
-                                                className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
-                                                title="Edit Album"
-                                            >
-                                                <Pencil className="w-3.5 h-3.5" />
                                             </button>
                                         </div>
                                     </div>
@@ -577,15 +540,6 @@ export function GalleryManagementView({
                 onBatchComplete={() => {
                     router.refresh();
                 }}
-            />
-
-            {/* Album Editor Modal */}
-            <AlbumEditorModal
-                isOpen={isAlbumModalOpen}
-                onClose={() => setIsAlbumModalOpen(false)}
-                album={editingAlbum}
-                role={role}
-                onSaved={() => router.refresh()}
             />
 
             {/* Single Photo Add/Edit Modal */}
