@@ -1,17 +1,25 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Target, ShieldCheck, Briefcase, Building2, Users, Mail, Globe, CheckCircle2, TrendingUp, BookOpen, ChevronRight } from 'lucide-react';
+import { Target, ShieldCheck, Briefcase, Building2, Users, Globe, TrendingUp } from 'lucide-react';
 import { facultyData } from '@/data/faculty';
 import { departmentsData } from '@/data/departments';
+import { getPublicDepartmentBySlug } from '@/lib/cms/departments';
 
-export const metadata: Metadata = {
-  title: 'Diploma in Computer Engineering | JCMCSIIT',
-  description: 'AICTE-approved Diploma in Computer Engineering at JCMCSIIT. Focus on practical skills and career readiness.',
-};
+export const dynamic = "force-dynamic";
 
-export default function DiplomaComputerPage() {
-  const data = departmentsData["diploma-computer-engineering"];
+const departmentSlug = "diploma-computer-engineering";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const dept = await getPublicDepartmentBySlug(departmentSlug);
+  return {
+    title: dept?.seo?.metaTitle || 'Diploma in Computer Engineering | JCMCSIIT',
+    description: dept?.seo?.metaDescription || 'AICTE-approved Diploma in Computer Engineering at JCMCSIIT. Focus on practical skills and career readiness.',
+  };
+}
+
+export default async function DiplomaComputerPage() {
+  const data = (await getPublicDepartmentBySlug(departmentSlug)) || departmentsData[departmentSlug];
   const cseFaculty = facultyData.filter((f) => f.department_id === 'cse');
 
   return (

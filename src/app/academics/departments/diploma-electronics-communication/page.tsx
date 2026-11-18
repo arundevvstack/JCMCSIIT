@@ -4,12 +4,20 @@ import Link from 'next/link';
 import { Target, ShieldCheck, Briefcase, Building2, Users, Globe, CheckCircle2, TrendingUp, GraduationCap, AlertTriangle, BookMarked, Wrench } from 'lucide-react';
 import { facultyData } from '@/data/faculty';
 import { departmentsData } from '@/data/departments';
+import { getPublicDepartmentBySlug } from '@/lib/cms/departments';
 import { LabAccordion } from '@/components/departments/lab-accordion';
 
-export const metadata: Metadata = {
-  title: 'Diploma in Electronics & Communication | JCMCSIIT',
-  description: 'AICTE-approved Diploma in Electronics & Communication at JCMCSIIT. Empowering students to innovate and create sustainable solutions for societal and global challenges.',
-};
+export const dynamic = "force-dynamic";
+
+const departmentSlug = "diploma-electronics-communication";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const dept = await getPublicDepartmentBySlug(departmentSlug);
+  return {
+    title: dept?.seo?.metaTitle || 'Diploma in Electronics & Communication | JCMCSIIT',
+    description: dept?.seo?.metaDescription || 'AICTE-approved Diploma in Electronics & Communication at JCMCSIIT. Empowering students to innovate and create sustainable solutions for societal and global challenges.',
+  };
+}
 
 const DOC_FACULTY = [
   { name: 'Dr. LIM J SEELAN', designation: 'PROFESSOR', qualification: 'ME, Ph.D' },
@@ -127,8 +135,8 @@ const LABS = [
   { name: 'E-Waste Facility (Dept. of ECE)' }
 ];
 
-export default function DiplomaECEPage() {
-  const data = departmentsData["diploma-electronics-communication"];
+export default async function DiplomaECEPage() {
+  const data = (await getPublicDepartmentBySlug(departmentSlug)) || departmentsData[departmentSlug];
   
   // Mapping the static document faculty to the central database if they exist
   const eceFaculty = DOC_FACULTY.map(docF => {

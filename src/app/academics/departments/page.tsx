@@ -3,13 +3,25 @@ import Link from "next/link";
 import { Metadata } from "next";
 import Image from "next/image";
 import { departmentsData } from "@/data/departments";
+import { getPublicDepartmentsList, type PublicDepartmentSummary } from "@/lib/cms/departments";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Academic Departments | JCMCSIIT",
   description: "Explore our future-ready engineering disciplines and research programs.",
 };
 
-const btechDepartments = [
+type DepartmentCardItem = {
+  id: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  bg: string;
+  border: string;
+  image: string;
+};
+
+const btechDepartments: DepartmentCardItem[] = [
   { id: "aiml", icon: Brain, color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-100", image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=800&auto=format&fit=crop" },
   { id: "biomedical-robotic", icon: HeartPulse, color: "text-rose-600", bg: "bg-rose-50", border: "border-rose-100", image: "https://images.unsplash.com/photo-1530497610245-94d3c16cda28?q=80&w=800&auto=format&fit=crop" },
   { id: "civil", icon: Building2, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100", image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=800&auto=format&fit=crop" },
@@ -19,7 +31,7 @@ const btechDepartments = [
   { id: "mechanical", icon: Wrench, color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-100", image: "https://images.unsplash.com/photo-1537462715879-360eeb61a0ad?q=80&w=800&auto=format&fit=crop" }
 ];
 
-const diplomaDepartments = [
+const diplomaDepartments: DepartmentCardItem[] = [
   { id: "diploma-civil-engineering", icon: Building2, color: "text-emerald-600", bg: "bg-emerald-50", border: "border-emerald-100", image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=800&auto=format&fit=crop" },
   { id: "diploma-computer-engineering", icon: Laptop, color: "text-slate-700", bg: "bg-slate-100", border: "border-slate-200", image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop" },
   { id: "diploma-electronics-communication", icon: Cpu, color: "text-cyan-600", bg: "bg-cyan-50", border: "border-cyan-100", image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop" },
@@ -27,7 +39,7 @@ const diplomaDepartments = [
   { id: "diploma-mechanical-engineering", icon: Wrench, color: "text-orange-600", bg: "bg-orange-50", border: "border-orange-100", image: "https://images.unsplash.com/photo-1537462715879-360eeb61a0ad?q=80&w=800&auto=format&fit=crop" }
 ];
 
-function DepartmentGrid({ title, departments }: { title: string, departments: any[] }) {
+function DepartmentGrid({ title, departments, cmsMap }: { title: string, departments: DepartmentCardItem[], cmsMap?: Map<string, PublicDepartmentSummary> }) {
   return (
     <div className="mb-32">
       <div className="flex items-center justify-between mb-16 max-w-7xl mx-auto px-6">
@@ -37,10 +49,11 @@ function DepartmentGrid({ title, departments }: { title: string, departments: an
       
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-10 max-w-7xl mx-auto px-6">
         {departments.map((dept) => {
+          const cmsItem = cmsMap?.get(dept.id);
           const deptData = departmentsData[dept.id];
-          const name = deptData?.name || dept.id;
+          const name = cmsItem?.name || deptData?.name || dept.id;
           const cleanName = name.replace("Department of ", "");
-          const description = deptData?.shortDescription || "Fostering academic excellence and advanced technical skills.";
+          const description = cmsItem?.short_description || deptData?.shortDescription || "Fostering academic excellence and advanced technical skills.";
           const highlights = [...(deptData?.events || []), ...(deptData?.coreAreas || [])].slice(0, 3);
 
           return (
@@ -102,7 +115,10 @@ function DepartmentGrid({ title, departments }: { title: string, departments: an
   );
 }
 
-export default function DepartmentsPage() {
+export default async function DepartmentsPage() {
+  const cmsDepts = await getPublicDepartmentsList().catch(() => []);
+  const cmsMap = new Map<string, PublicDepartmentSummary>(cmsDepts.map(d => [d.slug, d]));
+
   return (
     <main className="min-h-screen pb-24 bg-[#FAFAFA] relative">
       {/* Hero Section */}
@@ -133,8 +149,8 @@ export default function DepartmentsPage() {
       </div>
 
       <div className="relative z-20 -mt-10">
-        <DepartmentGrid title="B.Tech Programmes" departments={btechDepartments} />
-        <DepartmentGrid title="Diploma Programmes" departments={diplomaDepartments} />
+        <DepartmentGrid title="B.Tech Programmes" departments={btechDepartments} cmsMap={cmsMap} />
+        <DepartmentGrid title="Diploma Programmes" departments={diplomaDepartments} cmsMap={cmsMap} />
       </div>
     </main>
   );

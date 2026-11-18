@@ -1,17 +1,25 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Target, ShieldCheck, Briefcase, Building2, Users, Mail, Globe, CheckCircle2, TrendingUp, BookOpen, ChevronRight } from 'lucide-react';
+import { Target, ShieldCheck, Briefcase, Building2, Users, Globe, TrendingUp } from 'lucide-react';
 import { facultyData } from '@/data/faculty';
 import { departmentsData } from '@/data/departments';
+import { getPublicDepartmentBySlug } from '@/lib/cms/departments';
 
-export const metadata: Metadata = {
-  title: 'Diploma in Electrical Engineering | JCMCSIIT',
-  description: 'AICTE-approved Diploma in Electrical Engineering at JCMCSIIT. Focus on practical skills and career readiness.',
-};
+export const dynamic = "force-dynamic";
 
-export default function DiplomaEEEPage() {
-  const data = departmentsData["diploma-electrical-engineering"];
+const departmentSlug = "diploma-electrical-engineering";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const dept = await getPublicDepartmentBySlug(departmentSlug);
+  return {
+    title: dept?.seo?.metaTitle || 'Diploma in Electrical Engineering | JCMCSIIT',
+    description: dept?.seo?.metaDescription || 'AICTE-approved Diploma in Electrical Engineering at JCMCSIIT. Focus on practical skills and career readiness.',
+  };
+}
+
+export default async function DiplomaEEEPage() {
+  const data = (await getPublicDepartmentBySlug(departmentSlug)) || departmentsData[departmentSlug];
   // Pulling the main EEE department data to inherit its vision and mission as requested
   const mainEeeData = departmentsData["eee"];
   const eeeFaculty = facultyData.filter((f) => f.department_id === 'eee');
