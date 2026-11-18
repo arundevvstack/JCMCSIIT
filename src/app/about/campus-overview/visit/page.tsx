@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ComingSoon title="Visit" />;
+  return <ComingSoon title="Visit" routePath="/about/campus-overview/visit" />;
 }

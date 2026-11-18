@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ComingSoon title="Power Quiz Winners" />;
+  return <ComingSoon title="Power Quiz Winners" routePath="/news-events/news/power-quiz-winners" />;
 }

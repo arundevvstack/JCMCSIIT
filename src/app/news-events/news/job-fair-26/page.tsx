@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ComingSoon title="Job Fair 26" />;
+  return <ComingSoon title="Job Fair 26" routePath="/news-events/news/job-fair-26" />;
 }

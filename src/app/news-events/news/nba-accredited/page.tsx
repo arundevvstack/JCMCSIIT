@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ComingSoon title="Nba Accredited" />;
+  return <ComingSoon title="Nba Accredited" routePath="/news-events/news/nba-accredited" />;
 }

@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ComingSoon title="Giving" />;
+  return <ComingSoon title="Giving" routePath="/campus-life/alumni/giving" />;
 }

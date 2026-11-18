@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ComingSoon title="Financial Aid" />;
+  return <ComingSoon title="Financial Aid" routePath="/admissions/financial-aid" />;
 }

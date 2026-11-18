@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ComingSoon title="Map" />;
+  return <ComingSoon title="Map" routePath="/downloads/resources/map" />;
 }
