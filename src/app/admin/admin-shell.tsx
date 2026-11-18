@@ -26,6 +26,8 @@ import {
     ExternalLink,
     Menu,
     X,
+    Compass,
+    Landmark,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { AdminProfile, AdminRole } from "@/lib/auth/rbac";
@@ -75,6 +77,18 @@ const NAV_ITEMS: readonly AdminNavItem[] = [
         href: "/admin/homepage",
         label: "Homepage Management",
         icon: Home,
+        allowedRoles: ALL_CMS_ROLES,
+    },
+    {
+        href: "/admin/facilities",
+        label: "Facilities Management",
+        icon: Landmark,
+        allowedRoles: ALL_CMS_ROLES,
+    },
+    {
+        href: "/admin/campus-life",
+        label: "Campus Life & Committees",
+        icon: Compass,
         allowedRoles: ALL_CMS_ROLES,
     },
     {
